@@ -66,13 +66,9 @@
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.3</version>
+                <version>0.0.5</version>
                 <configuration>
-                    <mainClass>com.javierllorente.wlfx.App</mainClass>
-                    <options>
-                        <option>--module-path /usr/share/openjfx/lib</option>
-                        <option>--add-modules javafx.controls,javafx.fxml</option>
-                    </options>
+                    <mainClass>com.javierllorente.wlfx/com.javierllorente.wlfx.App</mainClass>
                 </configuration>
             </plugin>
         </plugins>
