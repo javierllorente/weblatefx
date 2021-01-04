@@ -11,3 +11,7 @@ Dependencies
 * ikonli-javafx
 * ikonli-icomoon-pack
 * java-diff-utils
+
+Build & Run with Maven
+------------
+`mvn javafx:run`
