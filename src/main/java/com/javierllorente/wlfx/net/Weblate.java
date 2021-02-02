@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Javier Llorente <javier@opensuse.org>
+ * Copyright (C) 2020-2021 Javier Llorente <javier@opensuse.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,8 +102,8 @@ public class Weblate {
 
         while (elements.hasNext()) {
             JsonNode project = elements.next();
-            projects.add(project.path("name").asText());
-            System.out.println("Project: " + project.path("name"));
+            projects.add(project.path("slug").asText());
+            System.out.println("Project: " + project.path("slug"));
         }
 
         return projects;
@@ -122,8 +122,8 @@ public class Weblate {
 
         while (elements.hasNext()) {
             JsonNode component = elements.next();
-            components.add(component.path("name").asText());
-            System.out.println("Project: " + component.path("name"));
+            components.add(component.path("slug").asText());
+            System.out.println("Project: " + component.path("slug"));
         }
 
         return components;
