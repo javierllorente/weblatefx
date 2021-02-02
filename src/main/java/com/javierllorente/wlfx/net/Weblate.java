@@ -123,7 +123,7 @@ public class Weblate {
         while (elements.hasNext()) {
             JsonNode component = elements.next();
             components.add(component.path("slug").asText());
-            System.out.println("Project: " + component.path("slug"));
+            System.out.println("Component: " + component.path("slug"));
         }
 
         return components;
