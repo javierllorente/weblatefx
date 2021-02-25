@@ -7,6 +7,7 @@ module com.javierllorente.wlfx {
     requires java.prefs;
     requires java.net.http;
     requires com.fasterxml.jackson.databind;
+    requires com.javierllorente.jgettext;
     requires org.kordamp.ikonli.javafx;
     requires io.github.javadiffutils;
 
