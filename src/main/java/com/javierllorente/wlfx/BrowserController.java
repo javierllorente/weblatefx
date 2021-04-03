@@ -209,7 +209,6 @@ public class BrowserController implements Initializable {
                         lastComponent = null;
                         lastLanguage = null;
                     } else {
-                        selectedProject = t1.toLowerCase().replace(".", "-");
                         logger.log(Level.INFO, "Selected project: {0}", selectedProject);
 
                         new Thread(() -> {
@@ -247,7 +246,7 @@ public class BrowserController implements Initializable {
                     if (t1 == null) {
                         languagesListView.getItems().clear();
                     } else {
-                        selectedComponent = t1.toLowerCase().replace(".", "_").replace(" ", "-");
+                        selectedComponent = t1;
                         lastComponent = selectedComponent;
                         logger.log(Level.INFO, "Selected component: {0}", selectedComponent);
 
@@ -285,7 +284,7 @@ public class BrowserController implements Initializable {
                 addListener((ov, t, t1) -> {
                     if (t1 == null) {
                     } else {
-                        selectedLanguage = t1.toLowerCase().replace(" ", "-");
+                        selectedLanguage = t1;
                         lastLanguage = t1;
                         logger.log(Level.INFO, "Selected language: {0}", selectedLanguage);
 
