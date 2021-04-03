@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Javier Llorente <javier@opensuse.org>
+ * Copyright (C) 2020, 2021 Javier Llorente <javier@opensuse.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,10 +50,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javax.naming.AuthenticationException;
 
 /**
@@ -63,6 +62,7 @@ import javax.naming.AuthenticationException;
  */
 public class BrowserController implements Initializable {
     private static final Logger logger = Logger.getLogger(BrowserController.class.getName());
+    private TranslationTabController translationTabController;
     private Preferences preferences;
     private String selectedProject;
     private String selectedComponent;
@@ -73,10 +73,12 @@ public class BrowserController implements Initializable {
     private POFile poFile;
     private int entryIndex;
     private IntegerProperty entryIndexProperty;
-    private boolean translationChanged;
     
     @FXML
     private BorderPane borderPane;
+    
+    @FXML
+    private VBox workArea;
     
     @FXML
     private Button signInButton;
@@ -91,7 +93,7 @@ public class BrowserController implements Initializable {
     private Button nextButton;
     
     @FXML
-    private ProgressIndicator progressIndicator;
+    private ProgressIndicator progressIndicator;    
     
     @FXML
     private ListView<String> projectsListView;
@@ -102,15 +104,6 @@ public class BrowserController implements Initializable {
     @FXML
     private ListView<String> languagesListView;
     
-    @FXML
-    private TextArea sourceTextArea;
-    
-    @FXML
-    private TextArea translationTextArea;
-    
-    @FXML
-    private TextArea sourceFileTextArea;
-    
     /**
      * Initializes the controller class.
      */
@@ -119,29 +112,24 @@ public class BrowserController implements Initializable {
         preferences = Preferences.userRoot();
         entryIndex = -1;
         entryIndexProperty = new SimpleIntegerProperty(entryIndex);
-        translationChanged = false;
+        translationTabController = new TranslationTabController(workArea);        
         
         setupProjectListView();
         setupComponentsListView();
         setupLanguagesListView();
         setupBindings();
-
+        
         entryIndexProperty.addListener((ObservableValue<? extends Number> ov, Number t, Number t1) -> {
             logger.log(Level.INFO, "Index changed: {0}", entryIndexProperty.get());
             if ((entryIndex != -1) && (poFile.getEntries().get(entryIndex).getMsgId() != null)) {
-                addEntries(poFile.getEntries().get(entryIndex).getMsgId(), sourceTextArea);
-                addEntries(poFile.getEntries().get(entryIndex).getMsgStr(), translationTextArea);
+                translationTabController.loadTranslations(poFile.getEntries().get(entryIndex));
             }
         });       
-        
-        translationTextArea.setOnKeyTyped((KeyEvent t) -> {
-            translationChanged = true;
-        });
         
         Platform.runLater(() -> {
             autoLogin();
         });
-    }
+    }    
     
     public void autoLogin() {
         if (preferences.getBoolean(App.AUTOLOGIN, false)) {
@@ -151,23 +139,35 @@ public class BrowserController implements Initializable {
     
     @FXML
     private void previousItem() {        
-        if (entryIndex != 0) {
-            if (translationChanged) {
-                poFile.updateEntry(entryIndex, translationTextArea.getParagraphs());
-                translationChanged = false;
+        if (entryIndex != 0) {                       
+            if (translationTabController.translationChangedProperty().get()) {
+                poFile.updateEntry(entryIndex, translationTabController.getTranslations());
+            }            
+            
+            if (poFile.getEntries().get(--entryIndex).isPlural()) {
+                translationTabController.clearTranslationAreas();
+            } else {
+                translationTabController.clearAllButFirst();
             }
-            entryIndexProperty.set(--entryIndex);
+            
+            entryIndexProperty.set(entryIndex);            
         }
     }
     
     @FXML
     private void nextItem() {
         if (entryIndex != poFile.getEntries().size() - 1) {
-            if (translationChanged) {
-                poFile.updateEntry(entryIndex, translationTextArea.getParagraphs());
-                translationChanged = false;
+            if (translationTabController.translationChangedProperty().get()) {
+                poFile.updateEntry(entryIndex, translationTabController.getTranslations());
             }
-            entryIndexProperty.set(++entryIndex);
+
+            if (poFile.getEntries().get(++entryIndex).isPlural()) {
+                translationTabController.clearTranslationAreas();
+            } else {
+                translationTabController.clearAllButFirst();
+            }
+            
+            entryIndexProperty.set(entryIndex);            
         }
     }
 
@@ -204,11 +204,8 @@ public class BrowserController implements Initializable {
                 addListener((ov, t, t1) -> {
                     selectedProject = t1;
                     if (t1 == null) {
-                        sourceTextArea.clear();
-                        translationTextArea.clear();
                         componentsListView.getItems().clear();
                         languagesListView.getItems().clear();
-                        sourceFileTextArea.clear();
                         lastComponent = null;
                         lastLanguage = null;
                     } else {
@@ -248,9 +245,6 @@ public class BrowserController implements Initializable {
         componentsListView.getSelectionModel().selectedItemProperty().
                 addListener((ov, t, t1) -> {
                     if (t1 == null) {
-                        sourceFileTextArea.clear();
-                        sourceTextArea.clear();
-                        translationTextArea.clear();
                         languagesListView.getItems().clear();
                     } else {
                         selectedComponent = t1.toLowerCase().replace(".", "_").replace(" ", "-");
@@ -290,7 +284,6 @@ public class BrowserController implements Initializable {
         languagesListView.getSelectionModel().selectedItemProperty().
                 addListener((ov, t, t1) -> {
                     if (t1 == null) {
-                        sourceFileTextArea.clear();
                     } else {
                         selectedLanguage = t1.toLowerCase().replace(" ", "-");
                         lastLanguage = t1;
@@ -312,7 +305,6 @@ public class BrowserController implements Initializable {
                                     }
                                     entryIndex = 0;
                                     entryIndexProperty.set(entryIndex);
-                                    sourceFileTextArea.textProperty().set(translation);
                                     progressIndicator.setVisible(false);
                                 });
                             } catch (URISyntaxException | InterruptedException | IOException ex) {
@@ -343,9 +335,8 @@ public class BrowserController implements Initializable {
         ).or(Bindings.createBooleanBinding(() -> {
             return poFile != null ? entryIndex + 1 > poFile.getEntries().size() - 1 : false;
         }, entryIndexProperty)
-        ));   
-
-        translationTextArea.scrollTopProperty().bindBidirectional(sourceTextArea.scrollTopProperty());
+        ));
+        
     }
 
     @FXML
@@ -372,7 +363,7 @@ public class BrowserController implements Initializable {
         aboutAlert.setGraphic(new ImageView(App.class.getResource("/wlfx.png").toString()));
         aboutAlert.setHeaderText(App.NAME + " " + App.VERSION + "\n" 
                 + "A JavaFX-based Weblate client");
-        aboutAlert.setContentText("© 2020 Javier Llorente" + "\n" +
+        aboutAlert.setContentText("© 2020, 2021 Javier Llorente" + "\n" +
                 "This program is under the GPLv3");
         aboutAlert.setResizable(true);
         aboutAlert.showAndWait();
@@ -477,15 +468,6 @@ public class BrowserController implements Initializable {
 
     }
     
-    private void addEntries(List<String> entries, TextArea textArea) {
-        textArea.clear();
-        Platform.runLater(() -> {
-            for (String entry : entries) {
-                textArea.appendText(entry);
-            }            
-        });
-    }
-    
     private void showExceptionAlert(Throwable throwable) {
         ExceptionAlert exceptionAlert = new ExceptionAlert(borderPane.getScene().getWindow());
         exceptionAlert.setThrowable(throwable);
@@ -499,9 +481,8 @@ public class BrowserController implements Initializable {
         poFile.setRevisionDate();
         poFile.setGenerator(App.NAME + " " + App.VERSION);
 
-        if (translationChanged) {
-            poFile.updateEntry(entryIndex, translationTextArea.getParagraphs());
-            translationChanged = false;
+        if (translationTabController.translationChangedProperty().get()) {
+            poFile.updateEntry(entryIndex, translationTabController.getTranslations());
         }
 
         String poFileStr = poFile.toString();
