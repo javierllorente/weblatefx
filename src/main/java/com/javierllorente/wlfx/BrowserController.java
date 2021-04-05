@@ -124,7 +124,7 @@ public class BrowserController implements Initializable {
             if ((entryIndex != -1) && (poFile.getEntries().get(entryIndex).getMsgId() != null)) {
                 translationTabController.loadTranslations(poFile.getEntries().get(entryIndex));
             }
-        });       
+        }); 
         
         Platform.runLater(() -> {
             autoLogin();
@@ -181,7 +181,7 @@ public class BrowserController implements Initializable {
                 });
                 ObservableList<String> items = FXCollections.observableArrayList(
                         App.getWeblate().getProjects());
-
+                Collections.sort(items);
                 Platform.runLater(() -> {
                     projectsListView.setItems(items);
                     progressIndicator.setVisible(false);
