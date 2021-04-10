@@ -119,10 +119,20 @@ public class BrowserController implements Initializable {
         setupLanguagesListView();
         setupBindings();
         
-        entryIndexProperty.addListener((ObservableValue<? extends Number> ov, Number t, Number t1) -> {
-            logger.log(Level.INFO, "Index changed: {0}", entryIndexProperty.get());
-            if ((entryIndex != -1) && (poFile.getEntries().get(entryIndex).getMsgId() != null)) {
-                translationTabController.loadTranslations(poFile.getEntries().get(entryIndex));
+        entryIndexProperty.addListener((ObservableValue<? extends Number> ov, Number oldIndex, Number newIndex) -> {    
+            logger.log(Level.INFO, "Index value changed. Old: {0}, new: {1}", new Object[]{oldIndex, newIndex});
+            
+            if (translationTabController.translationChangedProperty().get()) {
+                poFile.updateEntry(oldIndex.intValue(), translationTabController.getTranslations());
+            }
+            
+            if (!(newIndex.equals(-1)) && (poFile.getEntries().get(newIndex.intValue()).getMsgId() != null)) {
+                if (poFile.getEntries().get(newIndex.intValue()).isPlural()) {
+                    translationTabController.clearTranslationAreas();
+                } else {
+                    translationTabController.clearAllButFirst();
+                }
+                translationTabController.loadTranslations(poFile.getEntries().get(newIndex.intValue()));
             }
         }); 
         
@@ -139,35 +149,15 @@ public class BrowserController implements Initializable {
     
     @FXML
     private void previousItem() {        
-        if (entryIndex != 0) {                       
-            if (translationTabController.translationChangedProperty().get()) {
-                poFile.updateEntry(entryIndex, translationTabController.getTranslations());
-            }            
-            
-            if (poFile.getEntries().get(--entryIndex).isPlural()) {
-                translationTabController.clearTranslationAreas();
-            } else {
-                translationTabController.clearAllButFirst();
-            }
-            
-            entryIndexProperty.set(entryIndex);            
+        if (entryIndex != 0) {
+            entryIndexProperty.set(--entryIndex);
         }
     }
     
     @FXML
     private void nextItem() {
         if (entryIndex != poFile.getEntries().size() - 1) {
-            if (translationTabController.translationChangedProperty().get()) {
-                poFile.updateEntry(entryIndex, translationTabController.getTranslations());
-            }
-
-            if (poFile.getEntries().get(++entryIndex).isPlural()) {
-                translationTabController.clearTranslationAreas();
-            } else {
-                translationTabController.clearAllButFirst();
-            }
-            
-            entryIndexProperty.set(entryIndex);            
+            entryIndexProperty.set(++entryIndex);            
         }
     }
 
