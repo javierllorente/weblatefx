@@ -114,6 +114,7 @@ public class TranslationTabController implements Initializable {
                 if (i == 0) {
                     tac = tacList.get(0);
                     tac.clear();
+                    tac.setSource(entry.getMsgId());
                 } else {
 
                     if (moreTranslationAreasNeeded) {
@@ -123,11 +124,10 @@ public class TranslationTabController implements Initializable {
                     } else {
                         tac = tacList.get(i);
                     }
-
+                    tac.setSource(entry.getMsgIdPluralElement().get());
                 }
 
                 tac.setTitle("Plural " + (i + 1));
-                tac.setSource(entry.getMsgId());
                 tac.setTranslation(entry.getMsgStrElements().get(i).get());
             }
 
