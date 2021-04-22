@@ -21,6 +21,8 @@ import com.github.difflib.UnifiedDiffUtils;
 import com.github.difflib.patch.Patch;
 import com.javierllorente.jgettext.POFile;
 import com.javierllorente.jgettext.POParser;
+import com.javierllorente.jgettext.TranslationElement;
+import com.javierllorente.jgettext.TranslationEntry;
 import com.javierllorente.jgettext.TranslationParser;
 import java.io.IOException;
 import java.net.URI;
@@ -35,22 +37,33 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javax.naming.AuthenticationException;
@@ -72,7 +85,11 @@ public class BrowserController implements Initializable {
     private String translation;
     private POFile poFile;
     private int entryIndex;
+    private int filteredEntryIndex;
     private IntegerProperty entryIndexProperty;
+    private IntegerProperty filteredIndexProperty;
+    private ObservableList<TranslationEntry> quickTableData;
+    private FilteredList<TranslationEntry> quickTableFilteredData;
     
     @FXML
     private BorderPane borderPane;
@@ -104,6 +121,27 @@ public class BrowserController implements Initializable {
     @FXML
     private ListView<String> languagesListView;
     
+    @FXML
+    TableView<TranslationEntry> quickTable;
+    
+    @FXML
+    TableColumn<Integer, String> entryColumn;
+    
+    @FXML
+    TableColumn<TranslationEntry, String> sourceColumn;
+    
+    @FXML
+    TableColumn<TranslationEntry, String> targetColumn;
+    
+    @FXML
+    TextField quickFilter;
+    
+    @FXML
+    ChoiceBox quickChoice;
+    
+    @FXML
+    TextArea metadataTextArea;
+    
     /**
      * Initializes the controller class.
      */
@@ -111,35 +149,154 @@ public class BrowserController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         preferences = Preferences.userRoot();
         entryIndex = -1;
+        filteredEntryIndex = -1;
+        filteredIndexProperty = new SimpleIntegerProperty(filteredEntryIndex);
         entryIndexProperty = new SimpleIntegerProperty(entryIndex);
         translationTabController = new TranslationTabController(workArea);        
         
         setupProjectListView();
         setupComponentsListView();
         setupLanguagesListView();
+        setupTable();
         setupBindings();
         
-        entryIndexProperty.addListener((ObservableValue<? extends Number> ov, Number oldIndex, Number newIndex) -> {    
-            logger.log(Level.INFO, "Index value changed. Old: {0}, new: {1}", new Object[]{oldIndex, newIndex});
+        entryIndexProperty.addListener((ObservableValue<? extends Number> ov, 
+                Number oldIndex, Number newIndex) -> {
+            logger.log(Level.INFO, "Index value changed. Old: {0}, new: {1}", 
+                    new Object[]{oldIndex, newIndex});
             
             if (translationTabController.translationChangedProperty().get()) {
-                poFile.updateEntry(oldIndex.intValue(), translationTabController.getTranslations());
+                poFile.updateEntry(oldIndex.intValue(), 
+                        translationTabController.getTranslations());
+                quickTableData.set(oldIndex.intValue(), 
+                        poFile.getEntries().get(oldIndex.intValue()));
             }
             
-            if (!(newIndex.equals(-1)) && (poFile.getEntries().get(newIndex.intValue()).getMsgId() != null)) {
+            if (!(newIndex.equals(-1)) && (poFile.getEntries()
+                    .get(newIndex.intValue()).getMsgId() != null)) {
+
+                int index = quickFilter.getText().isEmpty() 
+                        ? newIndex.intValue()
+                        : filteredEntryIndex;    
+
+                if (!quickTable.getSelectionModel().isSelected(index)) {
+                    quickTable.getSelectionModel().select(index);
+                }
+                
+                metadataTextArea.clear();
+                poFile.getEntries().get(index).getComments().forEach((t) -> {
+                    metadataTextArea.appendText(t.replaceAll("^#(\\.|\\:|\\,)\\s", "") + "\n");
+                });                
+
                 if (poFile.getEntries().get(newIndex.intValue()).isPlural()) {
                     translationTabController.clearTranslationAreas();
                 } else {
                     translationTabController.clearAllButFirst();
                 }
-                translationTabController.loadTranslations(poFile.getEntries().get(newIndex.intValue()));
+
+                translationTabController.loadTranslations(poFile.getEntries()
+                        .get(newIndex.intValue()));
             }
-        }); 
+        });
         
         Platform.runLater(() -> {
             autoLogin();
         });
     }    
+
+    private void setupTable() {
+        quickTable.setRowFactory((p) -> {
+            TableRow<TranslationEntry> row = new TableRow<>();
+            row.setOnMouseClicked((t) -> {
+                if (t.getButton() == MouseButton.PRIMARY) {
+                    entryIndex = Integer.parseInt((String) p.getColumns().get(0)
+                            .getCellData(row.getIndex()));
+                    if (!quickFilter.getText().isEmpty()) {
+                        filteredEntryIndex = row.getIndex();
+                        filteredIndexProperty.set(filteredEntryIndex);
+                    }
+                    entryIndexProperty.set(entryIndex);
+                }
+            });
+            return row;
+        });
+        
+        entryColumn.setCellValueFactory((p) -> {
+           return new ReadOnlyObjectWrapper(quickTableData.indexOf(p.getValue()) + "");
+        });
+
+        sourceColumn.setCellValueFactory((p) -> {
+            return new ReadOnlyObjectWrapper(
+                    p.getValue().isPlural()
+                    ? getMessageDisplayString(p.getValue().getMsgId())
+                    + ", "
+                    + getMessageDisplayString(p.getValue().getMsgIdPluralElement().get())
+                    : getMessageDisplayString(p.getValue().getMsgId()));
+        });
+
+        targetColumn.setCellValueFactory((p) -> {
+            TranslationEntry entry = p.getValue();
+
+            return new SimpleStringProperty(
+                    entry.isPlural()
+                    ? getElementsDisplayString(entry.getMsgStrElements())
+                    : getMessageDisplayString(entry.getMsgStr()));
+        });
+        
+        quickTableData = FXCollections.observableArrayList();
+        quickTableFilteredData = new FilteredList<>(quickTableData, f -> true);
+
+        
+        quickFilter.textProperty().addListener((ov, oldValue, newValue) -> {
+            
+            if (!oldValue.equals(newValue)) {
+                filteredEntryIndex = -1;
+                filteredIndexProperty.set(filteredEntryIndex);
+            }
+            
+            quickTableFilteredData.setPredicate((f) -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                
+                String entry;
+                
+                // Filter by source/target
+                if (quickChoice.getSelectionModel()
+                        .selectedIndexProperty().get() == 0) {
+                    entry = f.isPlural()
+                            ? getMessageDisplayString(f.getMsgId())
+                            + ", " + getMessageDisplayString(f
+                                    .getMsgIdPluralElement().get())
+                            : getMessageDisplayString(f.getMsgId());
+                } else {                    
+                    entry = f.isPlural() 
+                            ? getElementsDisplayString(f.getMsgStrElements()) 
+                            : getMessageDisplayString(f.getMsgStr());  
+                }                
+
+                String lowerCaseFilter = newValue.toLowerCase();
+                return entry.toLowerCase().contains(lowerCaseFilter);
+           });
+        });
+        
+        quickChoice.setItems(FXCollections.observableArrayList("Source", "Target"));
+        quickChoice.getSelectionModel().select(1);
+
+        quickTable.setItems(quickTableFilteredData);
+        
+    }
+
+    private String getMessageDisplayString(List<String> msg) {
+        return String.join(", ", msg).replace("\n", "").replaceFirst(", ", "");
+    }
+    
+    private String getElementsDisplayString(List<TranslationElement> elements) {
+        return elements
+                .stream().map(Object::toString)
+                .collect(Collectors.joining(", "))
+                .replace("\n", "").replaceAll("msgstr\\[\\d\\]", "");
+    }
     
     public void autoLogin() {
         if (preferences.getBoolean(App.AUTOLOGIN, false)) {
@@ -149,16 +306,34 @@ public class BrowserController implements Initializable {
     
     @FXML
     private void previousItem() {        
-        if (entryIndex != 0) {
-            entryIndexProperty.set(--entryIndex);
+        if (!quickFilter.getText().isEmpty()
+                && filteredEntryIndex != 0) {
+
+            entryIndex = Integer.parseInt((String) quickTable.getColumns()
+                    .get(0).getCellData(--filteredEntryIndex));
+            filteredIndexProperty.set(filteredEntryIndex);
+            
+        } else if (entryIndex != 0) {
+            --entryIndex;
         }
+
+        entryIndexProperty.set(entryIndex);
     }
     
     @FXML
     private void nextItem() {
-        if (entryIndex != poFile.getEntries().size() - 1) {
-            entryIndexProperty.set(++entryIndex);            
+        if (!quickFilter.getText().isEmpty()
+                && filteredEntryIndex < quickTableFilteredData.size() - 1) {
+
+            entryIndex = Integer.parseInt((String) quickTable.getColumns()
+                    .get(0).getCellData(++filteredEntryIndex));
+            filteredIndexProperty.set(filteredEntryIndex);
+            
+        } else if (entryIndex != poFile.getEntries().size() - 1) {
+            ++entryIndex;
         }
+        
+        entryIndexProperty.set(entryIndex);
     }
 
     @FXML
@@ -287,6 +462,9 @@ public class BrowserController implements Initializable {
                                 TranslationParser poParser = new POParser();
                                 poFile = (POFile) poParser.parse(translation);
 
+                                quickTableData.clear();
+                                quickTableData.addAll(poFile.getEntries());
+
                                 Platform.runLater(() -> {
                                     if (entryIndex == 0) {
                                         entryIndex = -1;
@@ -316,16 +494,27 @@ public class BrowserController implements Initializable {
                 languagesListView.getSelectionModel().selectedItemProperty().isNull()
         ));
 
-        previousButton.disableProperty().bind(entryIndexProperty.lessThanOrEqualTo(0));
+        previousButton.disableProperty().bind(Bindings.and(quickFilter.textProperty().isEmpty(),
+                entryIndexProperty.lessThanOrEqualTo(0))
+                .or(Bindings.and(quickFilter.textProperty().isNotEmpty(),
+                        filteredIndexProperty.lessThanOrEqualTo(0))));
 
         nextButton.disableProperty().bind(Bindings.or(
                 componentsListView.getSelectionModel().selectedItemProperty().isNull(),
-                languagesListView.getSelectionModel().selectedItemProperty().isNull()
-        ).or(Bindings.createBooleanBinding(() -> {
-            return poFile != null ? entryIndex + 1 > poFile.getEntries().size() - 1 : false;
-        }, entryIndexProperty)
-        ));
-        
+                languagesListView.getSelectionModel().selectedItemProperty().isNull())
+                .or(Bindings.createBooleanBinding(() -> {
+                    boolean disable = true;
+
+                    if (poFile != null) {
+                        disable = quickFilter.getText().isEmpty()
+                                ? (entryIndex == poFile.getEntries().size() - 1)
+                                : (filteredEntryIndex == quickTableFilteredData.size() - 1);
+                    }
+
+                    return disable;
+
+                }, entryIndexProperty))
+        );   
     }
 
     @FXML
