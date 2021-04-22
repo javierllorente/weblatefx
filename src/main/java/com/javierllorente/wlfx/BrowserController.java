@@ -44,6 +44,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -247,7 +248,8 @@ public class BrowserController implements Initializable {
         quickTableFilteredData = new FilteredList<>(quickTableData, f -> true);
 
         
-        quickFilter.textProperty().addListener((ov, oldValue, newValue) -> {
+        
+        ChangeListener<String> quickFilterListener = ((ov, oldValue, newValue) -> {
             
             if (!oldValue.equals(newValue)) {
                 filteredEntryIndex = -1;
@@ -280,10 +282,17 @@ public class BrowserController implements Initializable {
            });
         });
         
+        quickFilter.textProperty().addListener(quickFilterListener);
+        
         quickChoice.setItems(FXCollections.observableArrayList("Source", "Target"));
         quickChoice.getSelectionModel().select(1);
 
         quickTable.setItems(quickTableFilteredData);
+        
+        quickChoice.setOnAction((t) -> {
+            quickFilterListener.changed(quickFilter.textProperty(), "",
+                    quickFilter.textProperty().get());
+        });
         
     }
 
