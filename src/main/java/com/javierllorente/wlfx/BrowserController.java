@@ -126,25 +126,25 @@ public class BrowserController implements Initializable {
     private ListView<String> languagesListView;
     
     @FXML
-    TableView<TranslationEntry> quickTable;
+    private TableView<TranslationEntry> quickTable;
     
     @FXML
-    TableColumn<Integer, String> entryColumn;
+    private TableColumn<Integer, String> entryColumn;
     
     @FXML
-    TableColumn<TranslationEntry, String> sourceColumn;
+    private TableColumn<TranslationEntry, String> sourceColumn;
     
     @FXML
-    TableColumn<TranslationEntry, String> targetColumn;
+    private TableColumn<TranslationEntry, String> targetColumn;
     
     @FXML
-    TextField quickFilter;
+    private TextField quickFilter;
     
     @FXML
-    ChoiceBox quickChoice;
+    private ChoiceBox quickChoice;
     
     @FXML
-    TextArea metadataTextArea;
+    private TextArea metadataTextArea;
     
     /**
      * Initializes the controller class.
