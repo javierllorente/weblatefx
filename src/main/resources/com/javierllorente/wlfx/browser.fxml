@@ -108,6 +108,9 @@
                </children>
             </HBox>
             <TableView fx:id="quickTable" prefHeight="510.0">
+                <placeholder>
+                    <Label text="" />
+                </placeholder>
               <columns>
                   <TableColumn fx:id="entryColumn" editable="false" prefWidth="45.0" text="Entry" />
                 <TableColumn fx:id="sourceColumn" editable="false" prefWidth="100.0" text="Source" />
