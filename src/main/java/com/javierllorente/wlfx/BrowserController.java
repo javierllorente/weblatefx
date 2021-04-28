@@ -91,6 +91,7 @@ public class BrowserController implements Initializable {
     private IntegerProperty filteredIndexProperty;
     private ObservableList<TranslationEntry> quickTableData;
     private FilteredList<TranslationEntry> quickTableFilteredData;
+    private boolean dataLoaded;
     
     @FXML
     private BorderPane borderPane;
@@ -153,7 +154,8 @@ public class BrowserController implements Initializable {
         filteredEntryIndex = -1;
         filteredIndexProperty = new SimpleIntegerProperty(filteredEntryIndex);
         entryIndexProperty = new SimpleIntegerProperty(entryIndex);
-        translationTabController = new TranslationTabController(workArea);        
+        translationTabController = new TranslationTabController(workArea);
+        dataLoaded = false;
         
         setupProjectListView();
         setupComponentsListView();
@@ -307,6 +309,15 @@ public class BrowserController implements Initializable {
                 .replace("\n", "").replaceAll("msgstr\\[\\d\\]", "");
     }
     
+    private void clearWorkArea() {
+        translationTabController.clearTranslationAreas();
+        quickTableData.clear();
+        metadataTextArea.clear();
+        dataLoaded = false;
+        entryIndex = -1;
+        entryIndexProperty.set(entryIndex);
+    }
+    
     public void autoLogin() {
         if (preferences.getBoolean(App.AUTOLOGIN, false)) {
             handleSignIn();
@@ -383,7 +394,11 @@ public class BrowserController implements Initializable {
                         lastComponent = null;
                         lastLanguage = null;
                     } else {
-                        logger.log(Level.INFO, "Selected project: {0}", selectedProject);
+                        logger.log(Level.INFO, "Selected project: {0}", selectedProject);                        
+
+                        if (dataLoaded) {
+                            clearWorkArea();
+                        }
 
                         new Thread(() -> {
                             try {
@@ -423,6 +438,10 @@ public class BrowserController implements Initializable {
                         selectedComponent = t1;
                         lastComponent = selectedComponent;
                         logger.log(Level.INFO, "Selected component: {0}", selectedComponent);
+                        
+                        if (dataLoaded) {
+                            clearWorkArea();
+                        }
 
                         new Thread(() -> {
                             try {
@@ -456,12 +475,15 @@ public class BrowserController implements Initializable {
     private void setupLanguagesListView() {        
         languagesListView.getSelectionModel().selectedItemProperty().
                 addListener((ov, t, t1) -> {
-                    if (t1 == null) {
-                    } else {
+                    if (t1 != null) {
                         selectedLanguage = t1;
                         lastLanguage = t1;
                         logger.log(Level.INFO, "Selected language: {0}", selectedLanguage);
 
+                        if (dataLoaded) {
+                            clearWorkArea();
+                        }
+                        
                         new Thread(() -> {
                             try {
                                 Platform.runLater(() -> {
@@ -470,9 +492,8 @@ public class BrowserController implements Initializable {
                                 translation = App.getWeblate().getFile(selectedProject, selectedComponent, t1);
                                 TranslationParser poParser = new POParser();
                                 poFile = (POFile) poParser.parse(translation);
-
-                                quickTableData.clear();
                                 quickTableData.addAll(poFile.getEntries());
+                                dataLoaded = !quickTableData.isEmpty();
 
                                 Platform.runLater(() -> {
                                     if (entryIndex == 0) {
@@ -499,18 +520,22 @@ public class BrowserController implements Initializable {
     private void setupBindings() {
         submitButton.disableProperty().bind(Bindings.or(
                 projectsListView.getSelectionModel().selectedItemProperty().isNull(),
-                componentsListView.getSelectionModel().selectedItemProperty().isNull()).or(
-                languagesListView.getSelectionModel().selectedItemProperty().isNull()
-        ));
+                componentsListView.getSelectionModel().selectedItemProperty().isNull())
+                .or(languagesListView.getSelectionModel().selectedItemProperty().isNull())
+                .or(entryIndexProperty.isEqualTo(-1)));
 
-        previousButton.disableProperty().bind(Bindings.and(quickFilter.textProperty().isEmpty(),
-                entryIndexProperty.lessThanOrEqualTo(0))
+        previousButton.disableProperty().bind(Bindings.or(
+                componentsListView.getSelectionModel().selectedItemProperty().isNull(),
+                languagesListView.getSelectionModel().selectedItemProperty().isNull())
+                .or(Bindings.and(quickFilter.textProperty().isEmpty(),
+                entryIndexProperty.lessThanOrEqualTo(0)))
                 .or(Bindings.and(quickFilter.textProperty().isNotEmpty(),
                         filteredIndexProperty.lessThanOrEqualTo(0))));
 
         nextButton.disableProperty().bind(Bindings.or(
                 componentsListView.getSelectionModel().selectedItemProperty().isNull(),
                 languagesListView.getSelectionModel().selectedItemProperty().isNull())
+                .or(entryIndexProperty.isEqualTo(-1))
                 .or(Bindings.createBooleanBinding(() -> {
                     boolean disable = true;
 
@@ -523,7 +548,7 @@ public class BrowserController implements Initializable {
                     return disable;
 
                 }, entryIndexProperty))
-        );   
+        );    
     }
 
     @FXML
