@@ -40,6 +40,7 @@ import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -92,6 +93,7 @@ public class BrowserController implements Initializable {
     private ObservableList<TranslationEntry> quickTableData;
     private FilteredList<TranslationEntry> quickTableFilteredData;
     private boolean dataLoaded;
+    private BooleanBinding menuItemNotSelected;
     
     @FXML
     private BorderPane borderPane;
@@ -187,18 +189,22 @@ public class BrowserController implements Initializable {
                 }
                 
                 metadataTextArea.clear();
-                poFile.getEntries().get(index).getComments().forEach((t) -> {
-                    metadataTextArea.appendText(t.replaceAll("^#(\\.|\\:|\\,)\\s", "") + "\n");
-                });                
-
-                if (poFile.getEntries().get(newIndex.intValue()).isPlural()) {
-                    translationTabController.clearTranslationAreas();
-                } else {
-                    translationTabController.clearAllButFirst();
+                if (index != -1) {
+                    poFile.getEntries().get(index).getComments().forEach((t) -> {
+                        metadataTextArea.appendText(t.replaceAll("^#(\\.|\\:|\\,)\\s", "") + "\n");
+                    });
                 }
 
-                translationTabController.loadTranslations(poFile.getEntries()
-                        .get(newIndex.intValue()));
+                if (newIndex.intValue() != -1) {
+                    if (poFile.getEntries().get(newIndex.intValue()).isPlural()) {
+                        translationTabController.clearTranslationAreas();
+                    } else {
+                        translationTabController.clearAllButFirst();
+                    }
+
+                    translationTabController.loadTranslations(poFile.getEntries()
+                            .get(newIndex.intValue()));
+                }
             }
         });
         
@@ -517,24 +523,23 @@ public class BrowserController implements Initializable {
                 });
     }
     
-    private void setupBindings() {
-        submitButton.disableProperty().bind(Bindings.or(
-                projectsListView.getSelectionModel().selectedItemProperty().isNull(),
-                componentsListView.getSelectionModel().selectedItemProperty().isNull())
-                .or(languagesListView.getSelectionModel().selectedItemProperty().isNull())
+    private void setupBindings() {        
+        menuItemNotSelected = projectsListView.getSelectionModel().selectedItemProperty().isNull()
+                .or(componentsListView.getSelectionModel().selectedItemProperty().isNull())
+                .or(languagesListView.getSelectionModel().selectedItemProperty().isNull());
+
+        submitButton.disableProperty().bind(menuItemNotSelected
                 .or(entryIndexProperty.isEqualTo(-1)));
 
-        previousButton.disableProperty().bind(Bindings.or(
-                componentsListView.getSelectionModel().selectedItemProperty().isNull(),
-                languagesListView.getSelectionModel().selectedItemProperty().isNull())
-                .or(Bindings.and(quickFilter.textProperty().isEmpty(),
-                entryIndexProperty.lessThanOrEqualTo(0)))
-                .or(Bindings.and(quickFilter.textProperty().isNotEmpty(),
-                        filteredIndexProperty.lessThanOrEqualTo(0))));
+        previousButton.disableProperty().bind(menuItemNotSelected
+                .or(quickFilter.textProperty().isEmpty()
+                        .and(entryIndexProperty.lessThanOrEqualTo(0)))
+                .or(quickFilter.textProperty().isNotEmpty()
+                        .and(entryIndexProperty.isEqualTo(-1)))
+                .or(quickFilter.textProperty().isNotEmpty()
+                        .and(filteredIndexProperty.lessThanOrEqualTo(0))));
 
-        nextButton.disableProperty().bind(Bindings.or(
-                componentsListView.getSelectionModel().selectedItemProperty().isNull(),
-                languagesListView.getSelectionModel().selectedItemProperty().isNull())
+        nextButton.disableProperty().bind(menuItemNotSelected
                 .or(entryIndexProperty.isEqualTo(-1))
                 .or(Bindings.createBooleanBinding(() -> {
                     boolean disable = true;
@@ -547,8 +552,7 @@ public class BrowserController implements Initializable {
 
                     return disable;
 
-                }, entryIndexProperty))
-        );    
+                }, entryIndexProperty)));
     }
 
     @FXML
