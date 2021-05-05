@@ -173,6 +173,15 @@ public class Weblate {
         String resource = "/translations/" + project + "/" + component
                 + "/" + language + "/file/";
         String response = http.post(new URI(getApiUrl() + resource), file);
+        
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree(response);
+        JsonNode detailNode = rootNode.path("detail");
+        
+        if (!detailNode.isNull()) {
+            throw new IOException(detailNode.asText());
+        }
+        
         return response;
     }    
 }
