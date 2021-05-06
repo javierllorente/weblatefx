@@ -38,6 +38,7 @@ public class App extends Application {
     public static final int WINDOW_HEIGHT = 768;
     public static final String TRANSLATOR_NAME = "translator_name";
     public static final String TRANSLATOR_EMAIL = "translator_email";
+    public static final String TRANSLATOR_LANGUAGE = "translator_language";
     public static final String AUTH_TOKEN = "auth_token";
     public static final String API_URI = "api_uri";
     public static final String AUTOLOGIN = "autologin";

@@ -83,7 +83,6 @@ public class BrowserController implements Initializable {
     private String selectedComponent;
     private String lastComponent;
     private String selectedLanguage;
-    private String lastLanguage;
     private String translation;
     private POFile poFile;
     private int entryIndex;
@@ -398,7 +397,6 @@ public class BrowserController implements Initializable {
                         componentsListView.getItems().clear();
                         languagesListView.getItems().clear();
                         lastComponent = null;
-                        lastLanguage = null;
                     } else {
                         logger.log(Level.INFO, "Selected project: {0}", selectedProject);                        
 
@@ -460,10 +458,18 @@ public class BrowserController implements Initializable {
                                         selectedProject, selectedComponent.toLowerCase(), 1);
                                 Collections.sort(items);
                                 Platform.runLater(() -> {
-                                    languages.setAll(items);                                    
-                                    if (lastLanguage != null && languages.contains(lastLanguage)) {
-                                        languagesListView.getSelectionModel().select(lastLanguage);
+                                    languages.setAll(items);
+
+                                    String translatorLanguage = preferences
+                                            .get(App.TRANSLATOR_LANGUAGE, "");
+
+                                    if (!translatorLanguage.isEmpty()
+                                            && languages.contains(translatorLanguage)) {
+                                        languagesListView.getSelectionModel()
+                                                .select(translatorLanguage);
+                                        languagesListView.scrollTo(translatorLanguage);
                                     }
+                                    
                                     progressIndicator.setVisible(false);
                                 });
 
@@ -485,11 +491,14 @@ public class BrowserController implements Initializable {
                 addListener((ov, t, t1) -> {
                     if (t1 != null) {
                         selectedLanguage = t1;
-                        lastLanguage = t1;
                         logger.log(Level.INFO, "Selected language: {0}", selectedLanguage);
 
                         if (dataLoaded) {
                             clearWorkArea();
+                        }
+
+                        if (!selectedLanguage.equals(preferences.get(App.TRANSLATOR_LANGUAGE, ""))) {
+                            preferences.put(App.TRANSLATOR_LANGUAGE, selectedLanguage);                            
                         }
                         
                         new Thread(() -> {
