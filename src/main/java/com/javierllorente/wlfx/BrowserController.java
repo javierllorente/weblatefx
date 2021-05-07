@@ -57,6 +57,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableColumn;
@@ -120,9 +121,9 @@ public class BrowserController implements Initializable {
     
     @FXML
     private ListView<String> componentsListView;
-    
+
     @FXML
-    private ListView<String> languagesListView;
+    private ComboBox<String> languagesComboBox;
     
     @FXML
     private TableView<TranslationEntry> quickTable;
@@ -160,7 +161,7 @@ public class BrowserController implements Initializable {
         
         setupProjectListView();
         setupComponentsListView();
-        setupLanguagesListView();
+        setupLanguagesComboBox();
         setupTable();
         setupBindings();
         
@@ -395,7 +396,7 @@ public class BrowserController implements Initializable {
                     selectedProject = t1;
                     if (t1 == null) {
                         componentsListView.getItems().clear();
-                        languagesListView.getItems().clear();
+                        languagesComboBox.getItems().clear();
                         lastComponent = null;
                     } else {
                         logger.log(Level.INFO, "Selected project: {0}", selectedProject);                        
@@ -434,12 +435,12 @@ public class BrowserController implements Initializable {
     
     private void setupComponentsListView() {
         ObservableList<String> languages = FXCollections.observableArrayList();
-        languagesListView.setItems(languages);
+        languagesComboBox.setItems(languages);
         
         componentsListView.getSelectionModel().selectedItemProperty().
                 addListener((ov, t, t1) -> {
                     if (t1 == null) {
-                        languagesListView.getItems().clear();
+                        languagesComboBox.getItems().clear();
                     } else {
                         selectedComponent = t1;
                         lastComponent = selectedComponent;
@@ -465,9 +466,8 @@ public class BrowserController implements Initializable {
 
                                     if (!translatorLanguage.isEmpty()
                                             && languages.contains(translatorLanguage)) {
-                                        languagesListView.getSelectionModel()
+                                        languagesComboBox.getSelectionModel()
                                                 .select(translatorLanguage);
-                                        languagesListView.scrollTo(translatorLanguage);
                                     }
                                     
                                     progressIndicator.setVisible(false);
@@ -485,9 +485,9 @@ public class BrowserController implements Initializable {
                     }
                 });
     }
-    
-    private void setupLanguagesListView() {        
-        languagesListView.getSelectionModel().selectedItemProperty().
+
+    private void setupLanguagesComboBox() {        
+        languagesComboBox.getSelectionModel().selectedItemProperty().
                 addListener((ov, t, t1) -> {
                     if (t1 != null) {
                         selectedLanguage = t1;
@@ -537,7 +537,7 @@ public class BrowserController implements Initializable {
     private void setupBindings() {        
         menuItemNotSelected = projectsListView.getSelectionModel().selectedItemProperty().isNull()
                 .or(componentsListView.getSelectionModel().selectedItemProperty().isNull())
-                .or(languagesListView.getSelectionModel().selectedItemProperty().isNull());
+                .or(languagesComboBox.getSelectionModel().selectedItemProperty().isNull());
 
         submitButton.disableProperty().bind(menuItemNotSelected
                 .or(entryIndexProperty.isEqualTo(-1)));
