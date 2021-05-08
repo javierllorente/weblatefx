@@ -78,6 +78,7 @@ public class TranslationAreaController implements Initializable {
         translationTextArea.setOnKeyTyped((KeyEvent t) -> {
             translationChangedProperty.set(true);
         });
+        translationTextArea.editableProperty().bind(sourceTextArea.textProperty().isNotEmpty());
     }
 
     public void setTitle(String title) {
@@ -138,5 +139,5 @@ public class TranslationAreaController implements Initializable {
     public BooleanProperty translationChangedProperty() {
         return translationChangedProperty;
     }
-
+    
 }
