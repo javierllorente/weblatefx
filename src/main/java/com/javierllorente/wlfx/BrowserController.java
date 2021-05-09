@@ -189,6 +189,7 @@ public class BrowserController implements Initializable {
 
                 if (!quickTable.getSelectionModel().isSelected(index)) {
                     quickTable.getSelectionModel().select(index);
+                    quickTable.scrollTo(index);
                 }
                 
                 metadataTextArea.clear();
