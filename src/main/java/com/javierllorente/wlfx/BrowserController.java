@@ -170,16 +170,19 @@ public class BrowserController implements Initializable {
             logger.log(Level.INFO, "Index value changed. Old: {0}, new: {1}", 
                     new Object[]{oldIndex, newIndex});
             
-            if (translationTabController.translationChangedProperty().get()) {
+            if (newIndex.equals(-1)) {
+                return;
+            }
+            
+            if (!oldIndex.equals(-1)
+                    && translationTabController.translationChangedProperty().get()) {
                 poFile.updateEntry(oldIndex.intValue(), 
                         translationTabController.getTranslations());
                 quickTableData.set(oldIndex.intValue(), 
                         poFile.getEntries().get(oldIndex.intValue()));
             }
             
-            if (!(newIndex.equals(-1)) && (poFile.getEntries()
-                    .get(newIndex.intValue()).getMsgId() != null)) {
-
+            if (poFile.getEntries().get(newIndex.intValue()).getMsgId() != null) {
                 int index = quickFilter.getText().isEmpty() 
                         ? newIndex.intValue()
                         : filteredEntryIndex;    
@@ -191,20 +194,19 @@ public class BrowserController implements Initializable {
                 metadataTextArea.clear();
                 if (index != -1) {
                     poFile.getEntries().get(index).getComments().forEach((t) -> {
-                        metadataTextArea.appendText(t.replaceAll("^#(\\.|\\:|\\,)\\s", "") + "\n");
+                        metadataTextArea.appendText(t
+                                .replaceAll("^#(\\.|\\:|\\,)\\s", "") + "\n");
                     });
                 }
 
-                if (newIndex.intValue() != -1) {
-                    if (poFile.getEntries().get(newIndex.intValue()).isPlural()) {
-                        translationTabController.clearTranslationAreas();
-                    } else {
-                        translationTabController.clearAllButFirst();
-                    }
-
-                    translationTabController.loadTranslations(poFile.getEntries()
-                            .get(newIndex.intValue()));
+                if (poFile.getEntries().get(newIndex.intValue()).isPlural()) {
+                    translationTabController.clearTranslationAreas();
+                } else {
+                    translationTabController.clearAllButFirst();
                 }
+
+                translationTabController.loadTranslations(poFile.getEntries()
+                        .get(newIndex.intValue()));
             }
         });
         
