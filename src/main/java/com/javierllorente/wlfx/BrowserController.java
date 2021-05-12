@@ -50,6 +50,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -87,9 +88,8 @@ public class BrowserController implements Initializable {
     private String translation;
     private POFile poFile;
     private int entryIndex;
-    private int filteredEntryIndex;
+    private int quickTableIndex;
     private IntegerProperty entryIndexProperty;
-    private IntegerProperty filteredIndexProperty;
     private ObservableList<TranslationEntry> quickTableData;
     private FilteredList<TranslationEntry> quickTableFilteredData;
     private boolean dataLoaded;
@@ -153,8 +153,7 @@ public class BrowserController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         preferences = Preferences.userRoot();
         entryIndex = -1;
-        filteredEntryIndex = -1;
-        filteredIndexProperty = new SimpleIntegerProperty(filteredEntryIndex);
+        quickTableIndex = 0;
         entryIndexProperty = new SimpleIntegerProperty(entryIndex);
         translationTabController = new TranslationTabController(workArea);
         dataLoaded = false;
@@ -182,23 +181,18 @@ public class BrowserController implements Initializable {
                         poFile.getEntries().get(oldIndex.intValue()));
             }
             
-            if (poFile.getEntries().get(newIndex.intValue()).getMsgId() != null) {
-                int index = quickFilter.getText().isEmpty() 
-                        ? newIndex.intValue()
-                        : filteredEntryIndex;    
+            if (poFile.getEntries().get(newIndex.intValue()).getMsgId() != null) {    
 
-                if (!quickTable.getSelectionModel().isSelected(index)) {
-                    quickTable.getSelectionModel().select(index);
-                    quickTable.scrollTo(index);
+                if (!quickTable.getSelectionModel().isSelected(quickTableIndex)) {
+                    quickTable.getSelectionModel().select(quickTableIndex);
+                    quickTable.scrollTo(quickTableIndex);
                 }
                 
                 metadataTextArea.clear();
-                if (index != -1) {
-                    poFile.getEntries().get(index).getComments().forEach((t) -> {
-                        metadataTextArea.appendText(t
-                                .replaceAll("^#(\\.|\\:|\\,)\\s", "") + "\n");
-                    });
-                }
+                poFile.getEntries().get(newIndex.intValue()).getComments().forEach((t) -> {
+                    metadataTextArea.appendText(t
+                            .replaceAll("^#(\\.|\\:|\\,)\\s", "") + "\n");
+                });
 
                 if (poFile.getEntries().get(newIndex.intValue()).isPlural()) {
                     translationTabController.clearTranslationAreas();
@@ -216,17 +210,26 @@ public class BrowserController implements Initializable {
         });
     }    
 
-    private void setupTable() {
+    private void setupTable() {        
+        quickTableData = FXCollections.observableArrayList();
+        quickTableFilteredData = new FilteredList<>(quickTableData, f -> true);
+        
+        SortedList<TranslationEntry> quickTableSortedData = new SortedList<>(quickTableFilteredData);
+        quickTableSortedData.comparatorProperty().bind(quickTable.comparatorProperty());
+        quickTable.setItems(quickTableSortedData);
+        
+        quickTable.setOnSort((t) -> {
+            quickTableIndex = quickTable.getSelectionModel().getSelectedIndex();
+            quickTable.scrollTo(quickTableIndex);
+        });
+        
         quickTable.setRowFactory((p) -> {
             TableRow<TranslationEntry> row = new TableRow<>();
             row.setOnMouseClicked((t) -> {
                 if (t.getButton() == MouseButton.PRIMARY) {
                     entryIndex = Integer.parseInt((String) p.getColumns().get(0)
                             .getCellData(row.getIndex()));
-                    if (!quickFilter.getText().isEmpty()) {
-                        filteredEntryIndex = row.getIndex();
-                        filteredIndexProperty.set(filteredEntryIndex);
-                    }
+                    quickTableIndex = row.getIndex();
                     entryIndexProperty.set(entryIndex);
                 }
             });
@@ -255,16 +258,10 @@ public class BrowserController implements Initializable {
                     : getMessageDisplayString(entry.getMsgStr()));
         });
         
-        quickTableData = FXCollections.observableArrayList();
-        quickTableFilteredData = new FilteredList<>(quickTableData, f -> true);
-
-        
-        
         ChangeListener<String> quickFilterListener = ((ov, oldValue, newValue) -> {
             
             if (!oldValue.equals(newValue)) {
-                filteredEntryIndex = -1;
-                filteredIndexProperty.set(filteredEntryIndex);
+                quickTableIndex = -1;
             }
             
             quickTableFilteredData.setPredicate((f) -> {
@@ -297,14 +294,10 @@ public class BrowserController implements Initializable {
         
         quickChoice.setItems(FXCollections.observableArrayList("Source", "Target"));
         quickChoice.getSelectionModel().select(1);
-
-        quickTable.setItems(quickTableFilteredData);
-        
         quickChoice.setOnAction((t) -> {
             quickFilterListener.changed(quickFilter.textProperty(), "",
                     quickFilter.textProperty().get());
         });
-        
     }
 
     private String getMessageDisplayString(List<String> msg) {
@@ -323,6 +316,7 @@ public class BrowserController implements Initializable {
         quickTableData.clear();
         metadataTextArea.clear();
         dataLoaded = false;
+        quickTableIndex = 0;
         entryIndex = -1;
         entryIndexProperty.set(entryIndex);
     }
@@ -334,34 +328,16 @@ public class BrowserController implements Initializable {
     }    
     
     @FXML
-    private void previousItem() {        
-        if (!quickFilter.getText().isEmpty()
-                && filteredEntryIndex != 0) {
-
-            entryIndex = Integer.parseInt((String) quickTable.getColumns()
-                    .get(0).getCellData(--filteredEntryIndex));
-            filteredIndexProperty.set(filteredEntryIndex);
-            
-        } else if (entryIndex != 0) {
-            --entryIndex;
-        }
-
+    private void previousItem() {
+        entryIndex = Integer.parseInt((String) quickTable.getColumns()
+                .get(0).getCellData(--quickTableIndex));
         entryIndexProperty.set(entryIndex);
     }
     
     @FXML
     private void nextItem() {
-        if (!quickFilter.getText().isEmpty()
-                && filteredEntryIndex < quickTableFilteredData.size() - 1) {
-
-            entryIndex = Integer.parseInt((String) quickTable.getColumns()
-                    .get(0).getCellData(++filteredEntryIndex));
-            filteredIndexProperty.set(filteredEntryIndex);
-            
-        } else if (entryIndex != poFile.getEntries().size() - 1) {
-            ++entryIndex;
-        }
-        
+        entryIndex = Integer.parseInt((String) quickTable.getColumns()
+                .get(0).getCellData(++quickTableIndex));
         entryIndexProperty.set(entryIndex);
     }
 
@@ -543,30 +519,29 @@ public class BrowserController implements Initializable {
                 .or(languagesComboBox.getSelectionModel().selectedItemProperty().isNull());
 
         submitButton.disableProperty().bind(menuItemNotSelected
-                .or(entryIndexProperty.isEqualTo(-1)));
+                .or(quickTable.getSelectionModel().selectedIndexProperty().isEqualTo(-1)));
 
         previousButton.disableProperty().bind(menuItemNotSelected
                 .or(quickFilter.textProperty().isEmpty()
-                        .and(entryIndexProperty.lessThanOrEqualTo(0)))
+                        .and(quickTable.getSelectionModel().selectedIndexProperty().lessThanOrEqualTo(0)))
                 .or(quickFilter.textProperty().isNotEmpty()
-                        .and(entryIndexProperty.isEqualTo(-1)))
-                .or(quickFilter.textProperty().isNotEmpty()
-                        .and(filteredIndexProperty.lessThanOrEqualTo(0))));
+                        .and(quickTable.getSelectionModel().selectedIndexProperty().lessThanOrEqualTo(0))));
 
         nextButton.disableProperty().bind(menuItemNotSelected
-                .or(entryIndexProperty.isEqualTo(-1))
+                .or(quickTable.getSelectionModel().selectedIndexProperty().isEqualTo(-1)
+                        .and(quickFilter.textProperty().isEmpty()))
                 .or(Bindings.createBooleanBinding(() -> {
                     boolean disable = true;
 
                     if (poFile != null) {
                         disable = quickFilter.getText().isEmpty()
-                                ? (entryIndex == poFile.getEntries().size() - 1)
-                                : (filteredEntryIndex == quickTableFilteredData.size() - 1);
+                                ? (quickTableIndex == poFile.getEntries().size() - 1)
+                                : (quickTableIndex == quickTableFilteredData.size() - 1);
                     }
 
                     return disable;
 
-                }, entryIndexProperty)));
+                }, quickTable.getSelectionModel().selectedIndexProperty())));
     }
 
     @FXML
