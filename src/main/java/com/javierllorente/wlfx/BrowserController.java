@@ -87,7 +87,6 @@ public class BrowserController implements Initializable {
     private String selectedLanguage;
     private String translation;
     private POFile poFile;
-    private int entryIndex;
     private int quickTableIndex;
     private IntegerProperty entryIndexProperty;
     private ObservableList<TranslationEntry> quickTableData;
@@ -152,9 +151,8 @@ public class BrowserController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         preferences = Preferences.userRoot();
-        entryIndex = -1;
         quickTableIndex = 0;
-        entryIndexProperty = new SimpleIntegerProperty(entryIndex);
+        entryIndexProperty = new SimpleIntegerProperty(-1);
         translationTabController = new TranslationTabController(workArea);
         dataLoaded = false;
         
@@ -227,10 +225,9 @@ public class BrowserController implements Initializable {
             TableRow<TranslationEntry> row = new TableRow<>();
             row.setOnMouseClicked((t) -> {
                 if (t.getButton() == MouseButton.PRIMARY) {
-                    entryIndex = Integer.parseInt((String) p.getColumns().get(0)
-                            .getCellData(row.getIndex()));
                     quickTableIndex = row.getIndex();
-                    entryIndexProperty.set(entryIndex);
+                    entryIndexProperty.set(Integer.parseInt((String) p.getColumns()
+                            .get(0).getCellData(row.getIndex())));
                 }
             });
             return row;
@@ -317,8 +314,7 @@ public class BrowserController implements Initializable {
         metadataTextArea.clear();
         dataLoaded = false;
         quickTableIndex = 0;
-        entryIndex = -1;
-        entryIndexProperty.set(entryIndex);
+        entryIndexProperty.set(-1);
     }
     
     public void autoLogin() {
@@ -329,16 +325,14 @@ public class BrowserController implements Initializable {
     
     @FXML
     private void previousItem() {
-        entryIndex = Integer.parseInt((String) quickTable.getColumns()
-                .get(0).getCellData(--quickTableIndex));
-        entryIndexProperty.set(entryIndex);
+        entryIndexProperty.set(Integer.parseInt((String) quickTable.getColumns()
+                .get(0).getCellData(--quickTableIndex)));
     }
     
     @FXML
     private void nextItem() {
-        entryIndex = Integer.parseInt((String) quickTable.getColumns()
-                .get(0).getCellData(++quickTableIndex));
-        entryIndexProperty.set(entryIndex);
+        entryIndexProperty.set(Integer.parseInt((String) quickTable.getColumns()
+                .get(0).getCellData(++quickTableIndex)));
     }
 
     @FXML
@@ -492,12 +486,10 @@ public class BrowserController implements Initializable {
                                 dataLoaded = !quickTableData.isEmpty();
 
                                 Platform.runLater(() -> {
-                                    if (entryIndex == 0) {
-                                        entryIndex = -1;
-                                        entryIndexProperty.set(entryIndex);
+                                    if (entryIndexProperty.equals(0)) {
+                                        entryIndexProperty.set(-1);
                                     }
-                                    entryIndex = 0;
-                                    entryIndexProperty.set(entryIndex);
+                                    entryIndexProperty.set(0);
                                     progressIndicator.setVisible(false);
                                 });
                             } catch (URISyntaxException | InterruptedException | IOException ex) {
@@ -687,7 +679,7 @@ public class BrowserController implements Initializable {
         poFile.setGenerator(App.NAME + " " + App.VERSION);
 
         if (translationTabController.translationChangedProperty().get()) {
-            poFile.updateEntry(entryIndex, translationTabController.getTranslations());
+            poFile.updateEntry(entryIndexProperty.get(), translationTabController.getTranslations());
         }
 
         String poFileStr = poFile.toString();
