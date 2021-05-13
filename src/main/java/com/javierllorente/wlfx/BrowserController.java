@@ -523,16 +523,8 @@ public class BrowserController implements Initializable {
                 .or(quickTable.getSelectionModel().selectedIndexProperty().isEqualTo(-1)
                         .and(quickFilter.textProperty().isEmpty()))
                 .or(Bindings.createBooleanBinding(() -> {
-                    boolean disable = true;
-
-                    if (poFile != null) {
-                        disable = quickFilter.getText().isEmpty()
-                                ? (quickTableIndex == poFile.getEntries().size() - 1)
-                                : (quickTableIndex == quickTableFilteredData.size() - 1);
-                    }
-
-                    return disable;
-
+                    return (quickTable.getSelectionModel().getSelectedIndex()
+                            == quickTableFilteredData.size() - 1);
                 }, quickTable.getSelectionModel().selectedIndexProperty())));
     }
 
