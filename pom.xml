@@ -8,6 +8,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <jpackage.path>/usr/lib64/jvm/java-16-openjdk-16/bin/jpackage</jpackage.path>
     </properties>
     <dependencies>
         <dependency>
@@ -76,14 +77,26 @@
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
-                        <phase>package</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>
-                                ${project.build.directory}/lib/
-                            </outputDirectory>
+                            <outputDirectory>${project.build.directory}/lib/</outputDirectory>
+                            <includeScope>runtime</includeScope>
+                            <excludeGroupIds>org.openjfx</excludeGroupIds>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-modules</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/mods/</outputDirectory>
+                            <includeScope>runtime</includeScope>
+                            <includeGroupIds>org.openjfx</includeGroupIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -93,8 +106,47 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.5</version>
                 <configuration>
-                    <mainClass>com.javierllorente.wlfx/com.javierllorente.wlfx.App</mainClass>
+                    <mainClass>com.javierllorente.wlfx.App</mainClass>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>create-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${jpackage.path}</executable>
+                            <workingDirectory>${project.build.directory}</workingDirectory>
+                            <environmentVariables>
+                                <JAVA_HOME>${java.home}</JAVA_HOME>
+                            </environmentVariables>
+                            <arguments>
+                                <argument>--verbose</argument>
+                                <argument>--input</argument>
+                                <argument>${project.build.directory}</argument>
+                                <argument>--main-jar</argument>
+                                <argument>${project.build.finalName}.jar</argument>
+                                <argument>--name</argument>
+                                <argument>${project.artifactId}</argument>
+                                <argument>--module-path</argument>
+                                <argument>${java.home}/jmods:${project.build.directory}/mods:${project.build.directory}/lib</argument>
+                                <argument>--add-modules</argument>
+                                <argument>javafx.controls,javafx.fxml,java.naming,java.base,java.logging,java.prefs,java.net.http,jdk.crypto.ec</argument>
+                                <argument>--icon</argument>
+                                <argument>../${project.artifactId}.png</argument>
+                                <argument>--linux-shortcut</argument>
+                                <argument>--linux-menu-group</argument>
+                                <argument>Development;Translation;</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
