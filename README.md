@@ -8,7 +8,7 @@ Dependencies
 ------------
 * JavaFX 11+
 * jackson-databind
-* jgettext
+* jgettext (from https://github.com/javierllorente/jgettext)
 * ikonli-javafx
 * ikonli-icomoon-pack
 * java-diff-utils
