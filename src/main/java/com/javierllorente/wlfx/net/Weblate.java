@@ -82,14 +82,6 @@ public class Weblate {
             throws AuthenticationException, IOException, InterruptedException {
         http.authenticate();
     }
-    
-    public boolean isLegacyMode() {
-        return http.isLegacyMode();
-    }
-
-    public void setLegacyMode(boolean legacyMode) {
-        http.setLegacyMode(legacyMode);
-    }
 
     public List<String> getProjects() throws URISyntaxException, IOException, 
             InterruptedException {

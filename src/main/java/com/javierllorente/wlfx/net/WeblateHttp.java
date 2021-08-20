@@ -49,11 +49,9 @@ public class WeblateHttp {
     private String authToken;
     private URI apiURI;
     boolean authenticated;
-    boolean legacyMode;
 
     public WeblateHttp() {
         authenticated = false;
-        legacyMode = false;
         client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(20))
                 .followRedirects(HttpClient.Redirect.NORMAL)
@@ -104,14 +102,6 @@ public class WeblateHttp {
     public void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
     } 
-
-    public boolean isLegacyMode() {
-        return legacyMode;
-    }
-
-    public void setLegacyMode(boolean legacyMode) {
-        this.legacyMode = legacyMode;
-    }   
     
     public void authenticate() throws AuthenticationException, IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
