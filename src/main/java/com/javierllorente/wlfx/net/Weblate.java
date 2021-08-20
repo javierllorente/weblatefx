@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.AuthenticationException;
 
@@ -173,15 +174,16 @@ public class Weblate {
         String resource = "translations/" + project + "/" + component
                 + "/" + language + "/file/";
         String response = http.post(new URI(getApiUrl() + resource), file);
+        logger.log(Level.INFO, "Response: {0}", response);
         
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(response);
-        JsonNode detailNode = rootNode.path("detail");
+        JsonNode fieldNode = rootNode.get("result");
 
-        if (!detailNode.isNull()) {
-            throw new IOException(detailNode.asText());
+        if (fieldNode == null || fieldNode.isNull()) {
+            throw new IOException(response);
         }
-
+ 
         return response;
     }    
 }
