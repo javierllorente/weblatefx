@@ -591,9 +591,6 @@ public class BrowserController implements Initializable {
 
         String authToken = preferences.get(App.AUTH_TOKEN, "");
         String apiUri = preferences.get(App.API_URI, "");
-        if (apiUri.endsWith("/")) {
-            apiUri = apiUri.substring(0, apiUri.lastIndexOf("/"));
-        }
         
         try {
             App.getWeblate().setApiUrl(new URI(apiUri));

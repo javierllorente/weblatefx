@@ -92,7 +92,7 @@ public class Weblate {
 
     public List<String> getProjects() throws URISyntaxException, IOException, 
             InterruptedException {
-        String response = http.get(new URI(getApiUrl() + "/projects"));
+        String response = http.get(new URI(getApiUrl() + "projects/"));
         List<String> projects = new ArrayList<>();
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -111,7 +111,7 @@ public class Weblate {
 
     public List<String> getComponents(String project) throws URISyntaxException,
             IOException, InterruptedException {
-        String resource = String.format("/projects/%s/components", project);
+        String resource = String.format("projects/%s/components/", project);
         String response = http.get(new URI(getApiUrl() + resource));
         List<String> components = new ArrayList<>();
 
@@ -132,7 +132,7 @@ public class Weblate {
     public List<String> getTranslations(String project, String component, int page)
             throws URISyntaxException, IOException, InterruptedException {
         System.out.println("getTranslations() page: " + page);
-        String resource = String.format("/components/%s/%s/translations/?page=%d", project, component, page);
+        String resource = String.format("components/%s/%s/translations/?page=%d", project, component, page);
         String response = http.get(new URI(getApiUrl() + resource));
 
         if (page == 1) {
@@ -162,26 +162,26 @@ public class Weblate {
 
     public String getFile(String project, String component, String language)
             throws URISyntaxException, IOException, InterruptedException {
-        String resource = "/translations/" + project + "/" + component
-                + "/" + language + "/file";
+        String resource = "translations/" + project + "/" + component
+                + "/" + language + "/file/";
         String response = http.get(new URI(getApiUrl() + resource));
         return response;
     }
 
     public String submit(String project, String component, String language, String file)
             throws URISyntaxException, IOException, InterruptedException {
-        String resource = "/translations/" + project + "/" + component
+        String resource = "translations/" + project + "/" + component
                 + "/" + language + "/file/";
         String response = http.post(new URI(getApiUrl() + resource), file);
         
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(response);
         JsonNode detailNode = rootNode.path("detail");
-        
+
         if (!detailNode.isNull()) {
             throw new IOException(detailNode.asText());
         }
-        
+
         return response;
     }    
 }
