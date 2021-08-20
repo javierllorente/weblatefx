@@ -16,6 +16,8 @@
  */
 package com.javierllorente.wlfx;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.difflib.DiffUtils;
 import com.github.difflib.UnifiedDiffUtils;
 import com.github.difflib.patch.Patch;
@@ -30,6 +32,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -69,6 +72,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javax.naming.AuthenticationException;
 
@@ -709,10 +713,36 @@ public class BrowserController implements Initializable {
                 try {
                     String submitResult = App.getWeblate().submit(selectedProject,
                             selectedComponent, selectedLanguage, poFileStr);
+                    
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode jsonNode = objectMapper.readTree(submitResult);
+                    
                     Platform.runLater(() -> {
                         progressIndicator.setVisible(false);
+                        
+                        Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
+                        String contextText = "";
+                        int acceptedChanges = jsonNode.get("accepted").asInt();
+                        
+                        while (fields.hasNext()) {
+                            Map.Entry<String, JsonNode> field = fields.next();
+                            String fieldName = field.getKey();
+                            JsonNode fieldValue = field.getValue();
+                            contextText += fieldName + ": " + fieldValue.asText() + "\n";
+                        }
+                        contextText = contextText.substring(0, contextText.length() - 1);
+                        
+                        Alert alert = new Alert(AlertType.INFORMATION);
+                        alert.initOwner(borderPane.getScene().getWindow());
+                        alert.setTitle("Submit results");
+                        alert.setHeaderText("Accepted changes: " + acceptedChanges);
+                        alert.setContentText(contextText);
+                        alert.setResizable(true); // FIXME: Workaround for JavaFX 11
+                        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+                        alert.getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
+                        alert.showAndWait();
                     });
-                    logger.log(Level.INFO, "Submit result: {0}", submitResult);
+                    
                 } catch (IOException | URISyntaxException | InterruptedException ex) {
                     Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
                     Platform.runLater(() -> {
