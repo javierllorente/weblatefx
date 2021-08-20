@@ -30,7 +30,9 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.naming.AuthenticationException;
 import javax.net.ssl.HttpsURLConnection;
 
@@ -139,13 +141,17 @@ public class WeblateHttp {
         return response.body();
     } 
     
-    public String post(URI uri, String text) throws IOException, InterruptedException {
+    public String post(URI uri, String strings) throws IOException, InterruptedException {
         String boundary = App.NAME + System.currentTimeMillis();
+        Map<String, String> formParams = new LinkedHashMap<>();
+        formParams.put("method", "translate");
+        formParams.put("conflicts", "replace-translated");
+        
         HttpRequest request = HttpRequest.newBuilder()
                 .header("User-Agent", App.NAME + " " + App.VERSION)
                 .header("Authorization", authToken)
                 .header("Content-Type", "multipart/form-data; boundary=" + boundary)
-                .POST(ofMimeMultipartData(text, boundary))
+                .POST(ofMimeMultipartData(formParams, strings, boundary))
                 .uri(uri)
                 .build();
 
@@ -155,30 +161,24 @@ public class WeblateHttp {
         return response.body();
     }
     
-    private BodyPublisher ofMimeMultipartData(String text, String boundary)
-            throws IOException {        
+    private BodyPublisher ofMimeMultipartData(Map<String, String> formParams, 
+            String strings, String boundary) throws IOException {        
         List<byte[]> byteArrays = new ArrayList<>();
-        String crlf = "\r\n";
-        byte[] separator = ("--" + boundary + crlf + "Content-Disposition: form-data; name=")
+        byte[] separator = ("--" + boundary + "\r\n" + "Content-Disposition: form-data; name=")
                 .getBytes(StandardCharsets.UTF_8);
-        byteArrays.add(separator);
-
-        byteArrays.add(("\"" + "file" + "\"; filename=\"" + "strings.po"
-                + "\"\r\nContent-Type: " + "text/x-gettext-translation" + "\r\n\r\n").getBytes(StandardCharsets.UTF_8));
-        byteArrays.add(text.getBytes());
         
-        // Legacy mode: up to Weblate 4.0.4
-        if (legacyMode) {
+        byteArrays.add(separator);
+        byteArrays.add(("\"" + "file" + "\"; filename=\"" + "strings.po" + "\"\r\n" 
+                + "Content-Type: " + "text/x-gettext-translation" + "\r\n\r\n")
+                .getBytes(StandardCharsets.UTF_8));
+        byteArrays.add(strings.getBytes(StandardCharsets.UTF_8));
+        byteArrays.add(("\r\n").getBytes(StandardCharsets.UTF_8));
+        
+        formParams.entrySet().forEach(entry -> {
             byteArrays.add(separator);
-            byteArrays.add(("\"" + "overwrite" + "\"" + crlf).getBytes(StandardCharsets.UTF_8));
-            byteArrays.add(("Content-Type: " + "text/plain" + crlf + crlf).getBytes(StandardCharsets.UTF_8));
-            byteArrays.add(("true" + crlf).getBytes(StandardCharsets.UTF_8));     
-        }
-        
-        byteArrays.add(separator);
-        byteArrays.add(("\"" + "method" + "\"" + crlf).getBytes(StandardCharsets.UTF_8));
-        byteArrays.add(("Content-Type: " + "text/plain" + crlf + crlf).getBytes(StandardCharsets.UTF_8));
-        byteArrays.add((legacyMode ? "translate" : "replace" + crlf).getBytes(StandardCharsets.UTF_8));        
+            byteArrays.add(("\"" + entry.getKey() + "\"\r\n\r\n" + entry.getValue() + "\r\n")
+                    .getBytes(StandardCharsets.UTF_8));
+        });
         
         byteArrays.add(("--" + boundary + "--").getBytes(StandardCharsets.UTF_8));
         
