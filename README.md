@@ -1,7 +1,7 @@
 # wlfx
 WLFX is a JavaFX-based Weblate client
 
-Copyright (C) 2020 Javier Llorente <javier@opensuse.org>
+Copyright (C) 2020, 2021 Javier Llorente <javier@opensuse.org>
 
 
 Dependencies
