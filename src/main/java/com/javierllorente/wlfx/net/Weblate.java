@@ -36,7 +36,6 @@ public class Weblate {
 
     private static final Logger logger = Logger.getLogger(Weblate.class.getName());
     private final WeblateHttp http;
-    private List<String> translations;
 
     public Weblate() {
         http = new WeblateHttp();
@@ -82,75 +81,49 @@ public class Weblate {
             throws AuthenticationException, IOException, InterruptedException {
         http.authenticate();
     }
-
-    public List<String> getProjects() throws URISyntaxException, IOException, 
-            InterruptedException {
-        String response = http.get(new URI(getApiUrl() + "projects/"));
-        List<String> projects = new ArrayList<>();
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode = objectMapper.readTree(response);
-        JsonNode resultsNode = rootNode.path("results");
-        Iterator<JsonNode> elements = resultsNode.elements();
-
-        while (elements.hasNext()) {
-            JsonNode project = elements.next();
-            projects.add(project.path("slug").asText());
-            System.out.println("Project: " + project.path("slug"));
-        }
-
-        return projects;
-    }
-
-    public List<String> getComponents(String project) throws URISyntaxException,
-            IOException, InterruptedException {
-        String resource = String.format("projects/%s/components/", project);
-        String response = http.get(new URI(getApiUrl() + resource));
-        List<String> components = new ArrayList<>();
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode = objectMapper.readTree(response);
-        JsonNode resultsNode = rootNode.path("results");
-        Iterator<JsonNode> elements = resultsNode.elements();
-
-        while (elements.hasNext()) {
-            JsonNode component = elements.next();
-            components.add(component.path("slug").asText());
-            System.out.println("Component: " + component.path("slug"));
-        }
-
-        return components;
-    }
-
-    public List<String> getTranslations(String project, String component, int page)
+    
+    private void get(String resource, String path, int page, List<String> elements) 
             throws URISyntaxException, IOException, InterruptedException {
-        System.out.println("getTranslations() page: " + page);
-        String resource = String.format("components/%s/%s/translations/?page=%d", project, component, page);
-        String response = http.get(new URI(getApiUrl() + resource));
-
-        if (page == 1) {
-            translations = new ArrayList<>();
-        }
+        String response = http.get(new URI(getApiUrl() + resource + "?page=" + page));
 
         ObjectMapper objectMapper = new ObjectMapper();
-//        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         JsonNode rootNode = objectMapper.readTree(response);
-
         JsonNode resultsNode = rootNode.path("results");
-        Iterator<JsonNode> elements = resultsNode.elements();
+        Iterator<JsonNode> jsonElements = resultsNode.elements();
 
-        while (elements.hasNext()) {
-            JsonNode translation = elements.next();
-            translations.add(translation.path("language_code").asText());
-            System.out.println("translation: " + translation.path("language_code"));
+        while (jsonElements.hasNext()) {
+            JsonNode project = jsonElements.next();
+            elements.add(project.path(path).asText());
+            System.out.println(project.path(path));
         }
-
+        
         JsonNode nextNode = rootNode.path("next");
         if (!nextNode.isMissingNode() && !nextNode.asText().equals("null")) {
-            getTranslations(project, component, ++page);
+            get(resource, path, ++page, elements);
         }
+    }
+    
+    private List<String> getElements(String resource, String path) 
+            throws URISyntaxException, IOException, InterruptedException {
+        List<String> elements = new ArrayList<>();
+        get(resource, path, 1, elements);
+        return elements;
+    }
 
-        return translations;
+    public List<String> getProjects() 
+            throws URISyntaxException, IOException, InterruptedException {
+        return getElements("projects/", "slug");
+    }
+
+    public List<String> getComponents(String project) 
+            throws URISyntaxException, IOException, InterruptedException {
+        return getElements("projects/" + project + "/components/", "slug");
+    }
+
+    public List<String> getTranslations(String project, String component)
+            throws URISyntaxException, IOException, InterruptedException {
+        return getElements("components/" + project + "/" + component + "/translations/", 
+                "language_code");
     }
 
     public String getFile(String project, String component, String language)
