@@ -496,7 +496,8 @@ public class BrowserController implements Initializable {
                                     entryIndexProperty.set(0);
                                     progressIndicator.setVisible(false);
                                 });
-                            } catch (URISyntaxException | InterruptedException | IOException ex) {
+                            } catch (URISyntaxException | InterruptedException | 
+                                    IOException | NullPointerException ex) {
                                 Logger.getLogger(BrowserController.class.getName())
                                         .log(Level.SEVERE, null, ex);
                                 Platform.runLater(() -> {
