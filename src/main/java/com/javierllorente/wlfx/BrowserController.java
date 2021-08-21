@@ -391,8 +391,6 @@ public class BrowserController implements Initializable {
                                 List<String> items = App.getWeblate().getComponents(selectedProject);
                                 Platform.runLater(() -> {
                                     components.setAll(items);
-                                    // FIXME: Glossaries are currently not supported
-                                    components.remove("glossary");
                                     if (lastComponent != null && components.contains(lastComponent)) {
                                         componentsListView.getSelectionModel().select(lastComponent);
                                     }
