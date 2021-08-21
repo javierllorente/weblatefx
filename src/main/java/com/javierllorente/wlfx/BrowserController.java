@@ -26,6 +26,7 @@ import com.javierllorente.jgettext.POParser;
 import com.javierllorente.jgettext.TranslationElement;
 import com.javierllorente.jgettext.TranslationEntry;
 import com.javierllorente.jgettext.TranslationParser;
+import com.javierllorente.wlfx.exception.UnsupportedFileFormatException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -483,7 +484,15 @@ public class BrowserController implements Initializable {
                                 Platform.runLater(() -> {
                                     progressIndicator.setVisible(true);
                                 });
-                                translation = App.getWeblate().getFile(selectedProject, selectedComponent, t1);
+                                
+                                String fileFormat = App.getWeblate().getFileFormat(selectedProject,
+                                        selectedComponent, selectedLanguage);
+                                if (!fileFormat.equals("po")) {
+                                    throw new UnsupportedFileFormatException("The " + fileFormat
+                                            + " file format is currently not supported");
+                                }
+                                
+                                translation = App.getWeblate().getFile(selectedProject, selectedComponent, t1);                                
                                 TranslationParser poParser = new POParser();
                                 poFile = (POFile) poParser.parse(translation);
                                 quickTableData.addAll(poFile.getEntries());
@@ -496,8 +505,8 @@ public class BrowserController implements Initializable {
                                     entryIndexProperty.set(0);
                                     progressIndicator.setVisible(false);
                                 });
-                            } catch (URISyntaxException | InterruptedException | 
-                                    IOException | NullPointerException ex) {
+                            } catch (URISyntaxException | InterruptedException
+                                    | IOException | UnsupportedFileFormatException | NullPointerException ex) {
                                 Logger.getLogger(BrowserController.class.getName())
                                         .log(Level.SEVERE, null, ex);
                                 Platform.runLater(() -> {

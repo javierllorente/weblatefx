@@ -125,6 +125,17 @@ public class Weblate {
         return getElements("components/" + project + "/" + component + "/translations/", 
                 "language_code");
     }
+    
+    public String getFileFormat(String project, String component, String language)
+            throws URISyntaxException, IOException, InterruptedException {
+        String resource = "translations/" + project + "/" + component
+                + "/" + language + "/";
+        String response = http.get(new URI(getApiUrl() + resource));
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree(response);
+        JsonNode fileFormatNode = rootNode.at("/component/file_format");
+        return fileFormatNode.asText();
+    }
 
     public String getFile(String project, String component, String language)
             throws URISyntaxException, IOException, InterruptedException {
