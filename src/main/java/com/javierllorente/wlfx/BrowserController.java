@@ -433,7 +433,7 @@ public class BrowserController implements Initializable {
                                     progressIndicator.setVisible(true);
                                 });
                                 List<String> items = App.getWeblate().getTranslations(
-                                        selectedProject, selectedComponent.toLowerCase(), 1);
+                                        selectedProject, selectedComponent.toLowerCase());
                                 Collections.sort(items);
                                 Platform.runLater(() -> {
                                     languages.setAll(items);
