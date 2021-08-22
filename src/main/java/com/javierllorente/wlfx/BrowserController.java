@@ -184,7 +184,7 @@ public class BrowserController implements Initializable {
                         poFile.getEntries().get(oldIndex.intValue()));
 
                 if (poFile.getEntries().get(oldIndex.intValue()).isFuzzy()) {
-                    removeFuzzyFlag(oldIndex.intValue());
+                    poFile.getEntries().get(oldIndex.intValue()).removeFuzzyFlag();
                 }
             }
             
@@ -683,13 +683,6 @@ public class BrowserController implements Initializable {
         exceptionAlert.showAndWait();
     }
     
-    private void removeFuzzyFlag(int index) {
-        poFile.getEntries().get(index).getComments()
-                .removeIf((String s) -> (
-                        s.startsWith("#, fuzzy") || s.startsWith("#| msgid")));
-        poFile.getEntries().get(index).setFuzzy(false);
-    }
-    
     @FXML
     private void submit() {
         poFile.setTranslator(preferences.get(App.TRANSLATOR_NAME, ""),
@@ -701,7 +694,7 @@ public class BrowserController implements Initializable {
             poFile.updateEntry(entryIndexProperty.get(), translationTabController.getTranslations());
 
             if (poFile.getEntries().get(entryIndexProperty.get()).isFuzzy()) {
-                removeFuzzyFlag(entryIndexProperty.get());
+                poFile.getEntries().get(entryIndexProperty.get()).removeFuzzyFlag();
             }
         }
 
