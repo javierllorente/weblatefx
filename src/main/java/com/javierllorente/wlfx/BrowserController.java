@@ -179,9 +179,13 @@ public class BrowserController implements Initializable {
             if (!oldIndex.equals(-1)
                     && translationTabController.translationChangedProperty().get()) {
                 poFile.updateEntry(oldIndex.intValue(), 
-                        translationTabController.getTranslations());
+                        translationTabController.getTranslations());                
                 quickTableData.set(oldIndex.intValue(), 
                         poFile.getEntries().get(oldIndex.intValue()));
+
+                if (poFile.getEntries().get(oldIndex.intValue()).isFuzzy()) {
+                    removeFuzzyFlag(oldIndex.intValue());
+                }
             }
             
             if (poFile.getEntries().get(newIndex.intValue()).getMsgId() != null) {    
@@ -679,6 +683,13 @@ public class BrowserController implements Initializable {
         exceptionAlert.showAndWait();
     }
     
+    private void removeFuzzyFlag(int index) {
+        poFile.getEntries().get(index).getComments()
+                .removeIf((String s) -> (
+                        s.startsWith("#, fuzzy") || s.startsWith("#| msgid")));
+        poFile.getEntries().get(index).setFuzzy(false);
+    }
+    
     @FXML
     private void submit() {
         poFile.setTranslator(preferences.get(App.TRANSLATOR_NAME, ""),
@@ -688,6 +699,10 @@ public class BrowserController implements Initializable {
 
         if (translationTabController.translationChangedProperty().get()) {
             poFile.updateEntry(entryIndexProperty.get(), translationTabController.getTranslations());
+
+            if (poFile.getEntries().get(entryIndexProperty.get()).isFuzzy()) {
+                removeFuzzyFlag(entryIndexProperty.get());
+            }
         }
 
         String poFileStr = poFile.toString();
