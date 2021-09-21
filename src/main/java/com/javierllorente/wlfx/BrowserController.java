@@ -489,14 +489,12 @@ public class BrowserController implements Initializable {
                                 
                                 String fileFormat = App.getWeblate().getFileFormat(selectedProject,
                                         selectedComponent, selectedLanguage);
-                                if (!fileFormat.equals("po")) {
-                                    throw new UnsupportedFileFormatException("The " + fileFormat
-                                            + " file format is currently not supported");
-                                }
+
+                                ParserFactory parserFactory = new ParserFactory();
+                                TranslationParser translationParser = parserFactory.getParser(fileFormat);
                                 
-                                translation = App.getWeblate().getFile(selectedProject, selectedComponent, t1);                                
-                                TranslationParser poParser = new POParser();
-                                poFile = (POFile) poParser.parse(translation);
+                                translation = App.getWeblate().getFile(selectedProject, selectedComponent, t1);
+                                poFile = (POFile) translationParser.parse(translation);
                                 quickTableData.addAll(poFile.getEntries());
                                 dataLoaded = !quickTableData.isEmpty();
 
