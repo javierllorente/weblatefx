@@ -21,10 +21,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.difflib.DiffUtils;
 import com.github.difflib.UnifiedDiffUtils;
 import com.github.difflib.patch.Patch;
-import com.javierllorente.jgettext.POFile;
-import com.javierllorente.jgettext.POParser;
 import com.javierllorente.jgettext.TranslationElement;
 import com.javierllorente.jgettext.TranslationEntry;
+import com.javierllorente.jgettext.TranslationFile;
 import com.javierllorente.jgettext.TranslationParser;
 import com.javierllorente.wlfx.exception.UnsupportedFileFormatException;
 import java.io.IOException;
@@ -91,7 +90,7 @@ public class BrowserController implements Initializable {
     private String lastComponent;
     private String selectedLanguage;
     private String translation;
-    private POFile poFile;
+    private TranslationFile translationFile;
     private int quickTableIndex;
     private IntegerProperty entryIndexProperty;
     private ObservableList<TranslationEntry> quickTableData;
@@ -178,17 +177,17 @@ public class BrowserController implements Initializable {
             
             if (!oldIndex.equals(-1)
                     && translationTabController.translationChangedProperty().get()) {
-                poFile.updateEntry(oldIndex.intValue(), 
+                translationFile.updateEntry(oldIndex.intValue(), 
                         translationTabController.getTranslations());                
                 quickTableData.set(oldIndex.intValue(), 
-                        poFile.getEntries().get(oldIndex.intValue()));
+                        translationFile.getEntries().get(oldIndex.intValue()));
 
-                if (poFile.getEntries().get(oldIndex.intValue()).isFuzzy()) {
-                    poFile.getEntries().get(oldIndex.intValue()).removeFuzzyFlag();
+                if (translationFile.getEntries().get(oldIndex.intValue()).isFuzzy()) {
+                    translationFile.getEntries().get(oldIndex.intValue()).removeFuzzyFlag();
                 }
             }
             
-            if (poFile.getEntries().get(newIndex.intValue()).getMsgId() != null) {    
+            if (translationFile.getEntries().get(newIndex.intValue()).getMsgId() != null) {    
 
                 if (!quickTable.getSelectionModel().isSelected(quickTableIndex)) {
                     quickTable.getSelectionModel().select(quickTableIndex);
@@ -196,18 +195,18 @@ public class BrowserController implements Initializable {
                 }
                 
                 metadataTextArea.clear();
-                poFile.getEntries().get(newIndex.intValue()).getComments().forEach((t) -> {
+                translationFile.getEntries().get(newIndex.intValue()).getComments().forEach((t) -> {
                     metadataTextArea.appendText(t
                             .replaceAll("^#(\\.|\\:|\\,)\\s", "") + "\n");
                 });
 
-                if (poFile.getEntries().get(newIndex.intValue()).isPlural()) {
+                if (translationFile.getEntries().get(newIndex.intValue()).isPlural()) {
                     translationTabController.clearTranslationAreas();
                 } else {
                     translationTabController.clearAllButFirst();
                 }
 
-                translationTabController.loadTranslations(poFile.getEntries()
+                translationTabController.loadTranslations(translationFile.getEntries()
                         .get(newIndex.intValue()));
             }
         });
@@ -494,8 +493,8 @@ public class BrowserController implements Initializable {
                                 TranslationParser translationParser = parserFactory.getParser(fileFormat);
                                 
                                 translation = App.getWeblate().getFile(selectedProject, selectedComponent, t1);
-                                poFile = (POFile) translationParser.parse(translation);
-                                quickTableData.addAll(poFile.getEntries());
+                                translationFile = translationParser.parse(translation);
+                                quickTableData.addAll(translationFile.getEntries());
                                 dataLoaded = !quickTableData.isEmpty();
 
                                 Platform.runLater(() -> {
@@ -683,25 +682,25 @@ public class BrowserController implements Initializable {
     
     @FXML
     private void submit() {
-        poFile.setTranslator(preferences.get(App.TRANSLATOR_NAME, ""),
+        translationFile.setTranslator(preferences.get(App.TRANSLATOR_NAME, ""),
                 preferences.get(App.TRANSLATOR_EMAIL, ""));
-        poFile.setRevisionDate();
-        poFile.setGenerator(App.NAME + " " + App.VERSION);
+        translationFile.setRevisionDate();
+        translationFile.setGenerator(App.NAME + " " + App.VERSION);
 
         if (translationTabController.translationChangedProperty().get()) {
-            poFile.updateEntry(entryIndexProperty.get(), translationTabController.getTranslations());
+            translationFile.updateEntry(entryIndexProperty.get(), translationTabController.getTranslations());
 
-            if (poFile.getEntries().get(entryIndexProperty.get()).isFuzzy()) {
-                poFile.getEntries().get(entryIndexProperty.get()).removeFuzzyFlag();
+            if (translationFile.getEntries().get(entryIndexProperty.get()).isFuzzy()) {
+                translationFile.getEntries().get(entryIndexProperty.get()).removeFuzzyFlag();
             }
         }
 
-        String poFileStr = poFile.toString();
+        String translationFileStr = translationFile.toString();
         logger.log(Level.INFO, "lines old: {0} lines new: {1}", new Object[]{
-            translation.split("\n", -1).length, poFileStr.split("\n", -1).length});
+            translation.split("\n", -1).length, translationFileStr.split("\n", -1).length});
 
         List<String> oldTranslation = Arrays.asList(translation.split("\n"));
-        List<String> newTranslation = Arrays.asList(poFileStr.split("\n"));
+        List<String> newTranslation = Arrays.asList(translationFileStr.split("\n"));
         
 //        System.out.println("New translation:");
 //        newTranslation.forEach(System.out::println);
@@ -726,7 +725,7 @@ public class BrowserController implements Initializable {
                 });
                 try {
                     String submitResult = App.getWeblate().submit(selectedProject,
-                            selectedComponent, selectedLanguage, poFileStr);
+                            selectedComponent, selectedLanguage, translationFileStr);
                     
                     ObjectMapper objectMapper = new ObjectMapper();
                     JsonNode jsonNode = objectMapper.readTree(submitResult);
