@@ -214,9 +214,7 @@ public class BrowserController implements Initializable {
             }
         });
         
-        Platform.runLater(() -> {
-            autoLogin();
-        });
+        autoLogin();
     }    
 
     private void setupTable() {        
