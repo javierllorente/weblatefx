@@ -16,7 +16,7 @@
  */
 package com.javierllorente.wlfx;
 
-import com.javierllorente.jgettext.POElement;
+import com.javierllorente.jgettext.PoElement;
 import com.javierllorente.jgettext.TranslationElement;
 import java.io.IOException;
 import java.net.URL;
@@ -118,7 +118,7 @@ public class TranslationAreaController implements Initializable {
         if (paragraphs.size() > 1) {
             paragraphs.add(0, "");
         }
-        TranslationElement element = new POElement();
+        TranslationElement element = new PoElement();
         element.set(paragraphs);
         return element;
     }
