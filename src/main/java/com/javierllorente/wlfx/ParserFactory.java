@@ -16,7 +16,8 @@
  */
 package com.javierllorente.wlfx;
 
-import com.javierllorente.jgettext.POParser;
+import com.javierllorente.jgettext.JsonParser;
+import com.javierllorente.jgettext.PoParser;
 import com.javierllorente.jgettext.TranslationParser;
 import com.javierllorente.wlfx.exception.UnsupportedFileFormatException;
 
@@ -30,9 +31,11 @@ public class ParserFactory {
         if (fileFormat == null) {
             return null;
         }
-
+        
         if (fileFormat.equalsIgnoreCase("po")) {
-            return new POParser();
+            return new PoParser();
+        } else if(fileFormat.equalsIgnoreCase("json")) {
+            return new JsonParser();
         } else {
             throw new UnsupportedFileFormatException("The " + fileFormat
                     + " file format is currently not supported");

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.difflib.DiffUtils;
 import com.github.difflib.UnifiedDiffUtils;
 import com.github.difflib.patch.Patch;
+import com.javierllorente.jgettext.JsonParser;
 import com.javierllorente.jgettext.TranslationElement;
 import com.javierllorente.jgettext.TranslationEntry;
 import com.javierllorente.jgettext.TranslationFile;
@@ -195,10 +196,12 @@ public class BrowserController implements Initializable {
                 }
                 
                 metadataTextArea.clear();
-                translationFile.getEntries().get(newIndex.intValue()).getComments().forEach((t) -> {
-                    metadataTextArea.appendText(t
-                            .replaceAll("^#(\\.|\\:|\\,)\\s", "") + "\n");
-                });
+                if (translationFile.getEntries().get(newIndex.intValue()).getComments() != null) {
+                    translationFile.getEntries().get(newIndex.intValue()).getComments().forEach((t) -> {
+                        metadataTextArea.appendText(t
+                                .replaceAll("^#(\\.|\\:|\\,)\\s", "") + "\n");
+                    });
+                }
 
                 if (translationFile.getEntries().get(newIndex.intValue()).isPlural()) {
                     translationTabController.clearTranslationAreas();
@@ -490,10 +493,22 @@ public class BrowserController implements Initializable {
                                         selectedComponent, selectedLanguage);
 
                                 ParserFactory parserFactory = new ParserFactory();
-                                TranslationParser translationParser = parserFactory.getParser(fileFormat);
+                                TranslationParser translationParser = parserFactory.getParser(fileFormat);  
                                 
-                                translation = App.getWeblate().getFile(selectedProject, selectedComponent, t1);
+                                translation = App.getWeblate().getFile(selectedProject, 
+                                        selectedComponent, selectedLanguage);
                                 translationFile = translationParser.parse(translation);
+
+                                if (fileFormat.equalsIgnoreCase("json")) {
+                                    String sourceLanguage = App.getWeblate().getFile(selectedProject, 
+                                            selectedComponent, "en");
+                                    JsonParser jsonTranslationParser 
+                                            = (JsonParser) translationParser;
+                                    jsonTranslationParser.setSourceLanguage(true);
+                                    translationFile = translationParser.parse(sourceLanguage);
+                                    jsonTranslationParser.setSourceLanguage(false);
+                                }
+                                
                                 quickTableData.addAll(translationFile.getEntries());
                                 dataLoaded = !quickTableData.isEmpty();
 
