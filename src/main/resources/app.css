@@ -125,4 +125,8 @@
     -fx-background-insets: 2.0, 0.0, 0.0;
     -fx-background-radius: 0.2em;
 }
- 
+
+.split-pane-divider {
+    -fx-padding: 2;
+    -fx-background-color: transparent;
+}

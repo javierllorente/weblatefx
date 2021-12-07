@@ -9,6 +9,7 @@
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
@@ -20,110 +21,116 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<BorderPane fx:id="borderPane" prefWidth="1024.0" prefHeight="768.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.javierllorente.wlfx.BrowserController">
-   <left>
-      <VBox BorderPane.alignment="CENTER">
-         <children>
-            <Label text="Projects">
-               <VBox.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </VBox.margin></Label>
-            <ListView fx:id="projectsListView" prefWidth="200.0" VBox.vgrow="ALWAYS" />
-            <Label text="Components">
-               <VBox.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </VBox.margin></Label>
-            <ListView fx:id="componentsListView" prefHeight="251.0" prefWidth="200.0" />
-            <Label text="Languages">
-               <VBox.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </VBox.margin></Label>
-            <ComboBox fx:id="languagesComboBox" prefWidth="200.0" />
-         </children>
-      </VBox>
-   </left>
-   <top>
-       <VBox BorderPane.alignment="CENTER">
-           <children>
-               <ToolBar prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                   <items>
-                       <Button id="submitButton" fx:id="submitButton" disable="true" mnemonicParsing="true" onAction="#submit" prefWidth="80.0" text="_Submit">
-                     <graphic>
-                        <FontIcon iconLiteral="icm-upload" />
-                     </graphic></Button>
-                  <Pane prefWidth="15.0" />
-                  <Button id="previousButton" fx:id="previousButton" disable="true" mnemonicParsing="true" onAction="#previousItem" prefWidth="90.0" text="_Previous">
-                     <graphic>
-                        <FontIcon iconLiteral="icm-arrow-left2" />
-                     </graphic></Button>
-                  <Button id="nextButton" fx:id="nextButton" contentDisplay="RIGHT" disable="true" mnemonicParsing="true" onAction="#nextItem" prefWidth="90.0" text="_Next">
-                     <graphic>
-                        <FontIcon iconLiteral="icm-arrow-right2" />
-                     </graphic></Button>
-                       <Pane HBox.hgrow="ALWAYS" />
-                  <ProgressIndicator fx:id="progressIndicator" prefHeight="28.0" prefWidth="20.0" visible="false" />
-                  <Pane prefWidth="10.0" />
-                  <Button id="settingsButton" fx:id="settingsButton" mnemonicParsing="false" onAction="#handleSettings">
-                     <graphic>
-                        <FontIcon iconLiteral="icm-wrench" />
-                     </graphic>
-                  </Button>
-                  <MenuButton id="menuButton" fx:id="menuButton" mnemonicParsing="false">
+<BorderPane fx:id="borderPane" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.javierllorente.wlfx.BrowserController">
+    <top>
+        <VBox BorderPane.alignment="CENTER">
+            <children>
+                <ToolBar prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                     <items>
-                      <MenuItem mnemonicParsing="false" onAction="#handleSettings" text="Settings" />
-                      <MenuItem mnemonicParsing="true" onAction="#handleAbout" text="_About" />
-                      <MenuItem accelerator="Shortcut+Q" mnemonicParsing="false" onAction="#handleQuit" text="Quit" />
+                        <Button id="submitButton" fx:id="submitButton" disable="true" mnemonicParsing="true" onAction="#submit" prefWidth="80.0" text="_Submit">
+                            <graphic>
+                                <FontIcon iconLiteral="icm-upload" />
+                            </graphic>
+                        </Button>
+                        <Pane prefWidth="15.0" />
+                        <Button id="previousButton" fx:id="previousButton" disable="true" mnemonicParsing="true" onAction="#previousItem" prefWidth="90.0" text="_Previous">
+                            <graphic>
+                                <FontIcon iconLiteral="icm-arrow-left2" />
+                            </graphic>
+                        </Button>
+                        <Button id="nextButton" fx:id="nextButton" contentDisplay="RIGHT" disable="true" mnemonicParsing="true" onAction="#nextItem" prefWidth="90.0" text="_Next">
+                            <graphic>
+                                <FontIcon iconLiteral="icm-arrow-right2" />
+                            </graphic>
+                        </Button>
+                        <Pane HBox.hgrow="ALWAYS" />
+                        <ProgressIndicator fx:id="progressIndicator" prefHeight="28.0" prefWidth="20.0" visible="false" />
+                        <Pane prefWidth="10.0" />
+                        <Button id="settingsButton" fx:id="settingsButton" mnemonicParsing="false" onAction="#handleSettings">
+                            <graphic>
+                                <FontIcon iconLiteral="icm-wrench" />
+                            </graphic>
+                        </Button>
+                        <MenuButton id="menuButton" fx:id="menuButton" mnemonicParsing="false">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#handleSettings" text="Settings" />
+                                <MenuItem mnemonicParsing="true" onAction="#handleAbout" text="_About" />
+                                <MenuItem accelerator="Shortcut+Q" mnemonicParsing="false" onAction="#handleQuit" text="Quit" />
+                            </items>
+                            <graphic>
+                                <FontIcon iconLiteral="icm-menu" />
+                            </graphic>
+                        </MenuButton>
+                        <Pane prefWidth="5.0" />
+                        <Button id="signInButton" fx:id="signInButton" mnemonicParsing="false" onAction="#handleSignIn" text="Sign in">
+                            <graphic>
+                                <FontIcon iconLiteral="icm-user" />
+                            </graphic>
+                        </Button>
                     </items>
-                     <graphic>
-                        <FontIcon iconLiteral="icm-menu" />
-                     </graphic>
-                  </MenuButton>
-                  <Pane prefWidth="5.0" />
-                  <Button id="signInButton" fx:id="signInButton" mnemonicParsing="false" onAction="#handleSignIn" text="Sign in">
-                      <graphic>
-                          <FontIcon iconLiteral="icm-user" />
-                      </graphic>
-                  </Button>
-                   </items>
-               </ToolBar>
-           </children>
-       </VBox>
-   </top>
-   <center>
-      <VBox fx:id="workArea" BorderPane.alignment="CENTER">
-      </VBox>
-   </center>
-   <right>
-      <VBox prefHeight="718.0" prefWidth="260.0" BorderPane.alignment="CENTER">
-         <children>
-            <HBox>
-               <children>
-                  <TextField fx:id="quickFilter" promptText="Quick search">
-                     <HBox.margin>
-                        <Insets bottom="2.0" left="1.0" right="1.0" top="2.0" />
-                     </HBox.margin></TextField>
-                  <ChoiceBox fx:id="quickChoice" prefWidth="100.0">
-                     <HBox.margin>
-                        <Insets bottom="2.0" left="0.0" right="1.0" top="2.0" />
-                     </HBox.margin></ChoiceBox>
-               </children>
-            </HBox>
-            <TableView fx:id="quickTable" prefHeight="510.0" VBox.vgrow="ALWAYS">
-                <placeholder>
-                    <Label text="" />
-                </placeholder>
-              <columns>
-                  <TableColumn fx:id="entryColumn" editable="false" prefWidth="45.0" text="Entry" />
-                <TableColumn fx:id="sourceColumn" editable="false" prefWidth="100.0" text="Source" />
-                <TableColumn fx:id="targetColumn" editable="false" prefWidth="100.0" text="Target" />
-              </columns>
-            </TableView>
-            <Label text="Metadata">
-               <VBox.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </VBox.margin></Label>
-            <TextArea fx:id="metadataTextArea" editable="false" wrapText="true" prefHeight="200.0" prefWidth="200.0" />
-         </children>
-      </VBox>
-   </right>
+                </ToolBar>
+            </children>
+        </VBox>
+    </top>
+    <center>
+        <SplitPane BorderPane.alignment="CENTER" dividerPositions="0.19f, 0.74f">
+            <VBox prefWidth="200.0">
+                <children>
+                    <Label text="Projects">
+                        <VBox.margin>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                        </VBox.margin>
+                    </Label>
+                    <ListView fx:id="projectsListView" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                    <Label text="Components">
+                        <VBox.margin>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                        </VBox.margin>
+                    </Label>
+                    <ListView fx:id="componentsListView" prefHeight="251.0" prefWidth="200.0" />
+                    <Label text="Languages">
+                        <VBox.margin>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                        </VBox.margin>
+                    </Label>
+                    <ComboBox fx:id="languagesComboBox" prefWidth="200.0" />
+                </children>
+            </VBox>
+            <VBox fx:id="workArea" prefWidth="500.0" />
+            <VBox prefHeight="718.0" prefWidth="260.0">
+                <children>
+                    <HBox>
+                        <children>
+                            <TextField fx:id="quickFilter" promptText="Quick search">
+                                <HBox.margin>
+                                    <Insets bottom="2.0" left="1.0" right="1.0" top="2.0" />
+                                </HBox.margin>
+                            </TextField>
+                            <ChoiceBox fx:id="quickChoice" prefWidth="100.0">
+                                <HBox.margin>
+                                    <Insets bottom="2.0" left="0.0" right="1.0" top="2.0" />
+                                </HBox.margin>
+                            </ChoiceBox>
+                        </children>
+                    </HBox>
+                    <TableView fx:id="quickTable" prefHeight="510.0" VBox.vgrow="ALWAYS">
+                        <placeholder>
+                            <Label text="" />
+                        </placeholder>
+                        <columns>
+                            <TableColumn fx:id="entryColumn" editable="false" prefWidth="45.0" text="Entry" />
+                            <TableColumn fx:id="sourceColumn" editable="false" prefWidth="100.0" text="Source" />
+                            <TableColumn fx:id="targetColumn" editable="false" prefWidth="100.0" text="Target" />
+                        </columns>
+                    </TableView>
+                    <Label text="Metadata">
+                        <VBox.margin>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                        </VBox.margin>
+                    </Label>
+                    <TextArea fx:id="metadataTextArea" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true" />
+                </children>
+            </VBox>
+        </SplitPane>
+    </center>
 </BorderPane>
