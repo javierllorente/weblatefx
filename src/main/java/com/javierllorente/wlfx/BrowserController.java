@@ -767,6 +767,10 @@ public class BrowserController implements Initializable {
                         alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
                         alert.getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
                         alert.showAndWait();
+                        
+                        if (acceptedChanges > 0) {
+                            translation = translationFileStr;
+                        }
                     });
                     
                 } catch (IOException | URISyntaxException | InterruptedException ex) {
