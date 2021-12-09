@@ -74,7 +74,7 @@
     </top>
     <center>
         <SplitPane BorderPane.alignment="CENTER" dividerPositions="0.19f, 0.74f">
-            <VBox prefWidth="200.0">
+            <VBox prefWidth="200.0" SplitPane.resizableWithParent="false">
                 <children>
                     <Label text="Projects">
                         <VBox.margin>
@@ -97,7 +97,7 @@
                 </children>
             </VBox>
             <VBox fx:id="workArea" prefWidth="500.0" />
-            <VBox prefHeight="718.0" prefWidth="260.0">
+            <VBox prefHeight="718.0" prefWidth="260.0" SplitPane.resizableWithParent="false">
                 <children>
                     <HBox>
                         <children>
