@@ -504,46 +504,52 @@ public class BrowserController implements Initializable {
     }
 
     private void authenticate(String authToken) {
-        try {
-            App.getWeblate().setAuthToken(authToken);
-            App.getWeblate().authenticate();
-            progressIndicator.setVisible(true);
-        } catch (IOException | InterruptedException | AuthenticationException ex) {            
-            
-            if ((ex.getMessage() != null) && (ex.getMessage().equals("401"))) {
-                Logger.getLogger(BrowserController.class.getName())
-                        .log(Level.WARNING, "Error 401. Wrong auth token.");
-                preferences.put(App.AUTH_TOKEN, authToken);
+        new Thread(() -> {
+            try {
+                App.getWeblate().setAuthToken(authToken);
+                App.getWeblate().authenticate();
                 Platform.runLater(() -> {
-                    LoginDialog dialog = new LoginDialog(borderPane.getScene().getWindow(),
-                            preferences);
-                    Optional<String> result = dialog.showAndWait();
-                    result.ifPresent(authTokenEntered -> {
-                        authenticate(authTokenEntered);
+                    progressIndicator.setVisible(true);
+                });
+            } catch (IOException | InterruptedException | AuthenticationException ex) {
+
+                if ((ex.getMessage() != null) && (ex.getMessage().equals("401"))) {
+                    Logger.getLogger(BrowserController.class.getName())
+                            .log(Level.WARNING, "Error 401. Wrong auth token.");
+                    preferences.put(App.AUTH_TOKEN, authToken);
+                    Platform.runLater(() -> {
+                        LoginDialog dialog = new LoginDialog(borderPane.getScene().getWindow(),
+                                preferences);
+                        Optional<String> result = dialog.showAndWait();
+                        result.ifPresent(authTokenEntered -> {
+                            authenticate(authTokenEntered);
+                        });
                     });
-                });
-            } else {
-                Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
+                } else {
+                    Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
 
-                Platform.runLater(() -> {
-                    Alert alert = new Alert(AlertType.ERROR);
-                    alert.initOwner(borderPane.getScene().getWindow());
-                    alert.setResizable(true);
-                    alert.setTitle("Error");
-                    alert.setHeaderText(ex.getClass().toString());
-                    alert.setContentText(ex.getMessage());
-                    alert.showAndWait();
-                });
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(AlertType.ERROR);
+                        alert.initOwner(borderPane.getScene().getWindow());
+                        alert.setResizable(true);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(ex.getClass().toString());
+                        alert.setContentText(ex.getMessage());
+                        alert.showAndWait();
+                    });
+                }
             }
-        }        
 
-        if (App.getWeblate().isAuthenticated()) {
-            progressIndicator.setVisible(false);
-            preferences.put(App.AUTH_TOKEN, authToken);
-            signInButton.setText("Sign out");
-            getProjects();
-        }
+            if (App.getWeblate().isAuthenticated()) {
+                Platform.runLater(() -> {
+                    progressIndicator.setVisible(false);
+                    signInButton.setText("Sign out");
+                });
+                preferences.put(App.AUTH_TOKEN, authToken);
+                getProjects();
+            }
 
+        }).start();
     }
     
     private void showExceptionAlert(Throwable throwable) {
