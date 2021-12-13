@@ -15,7 +15,7 @@
     <children>
         <HBox>
             <children>
-                <TextField fx:id="quickFilter" promptText="Quick search">
+                <TextField fx:id="quickFilter" promptText="Quick search" HBox.hgrow="ALWAYS">
                     <HBox.margin>
                         <Insets bottom="2.0" left="1.0" right="1.0" top="2.0" />
                     </HBox.margin>
