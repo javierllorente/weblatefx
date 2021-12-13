@@ -73,7 +73,7 @@
         </VBox>
     </top>
     <center>
-        <SplitPane BorderPane.alignment="CENTER" dividerPositions="0.19f, 0.74f">
+        <SplitPane fx:id="splitPane" BorderPane.alignment="CENTER">
             <VBox prefWidth="200.0" SplitPane.resizableWithParent="false">
                 <children>
                     <Label text="Projects">
@@ -97,40 +97,6 @@
                 </children>
             </VBox>
             <VBox fx:id="workArea" prefWidth="500.0" />
-            <VBox prefHeight="718.0" prefWidth="260.0" SplitPane.resizableWithParent="false">
-                <children>
-                    <HBox>
-                        <children>
-                            <TextField fx:id="quickFilter" promptText="Quick search">
-                                <HBox.margin>
-                                    <Insets bottom="2.0" left="1.0" right="1.0" top="2.0" />
-                                </HBox.margin>
-                            </TextField>
-                            <ChoiceBox fx:id="quickChoice" prefWidth="100.0">
-                                <HBox.margin>
-                                    <Insets bottom="2.0" left="0.0" right="1.0" top="2.0" />
-                                </HBox.margin>
-                            </ChoiceBox>
-                        </children>
-                    </HBox>
-                    <TableView fx:id="quickTable" prefHeight="510.0" VBox.vgrow="ALWAYS">
-                        <placeholder>
-                            <Label text="" />
-                        </placeholder>
-                        <columns>
-                            <TableColumn fx:id="entryColumn" editable="false" prefWidth="45.0" text="Entry" />
-                            <TableColumn fx:id="sourceColumn" editable="false" prefWidth="100.0" text="Source" />
-                            <TableColumn fx:id="targetColumn" editable="false" prefWidth="100.0" text="Target" />
-                        </columns>
-                    </TableView>
-                    <Label text="Metadata">
-                        <VBox.margin>
-                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                        </VBox.margin>
-                    </Label>
-                    <TextArea fx:id="metadataTextArea" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true" />
-                </children>
-            </VBox>
         </SplitPane>
     </center>
 </BorderPane>
