@@ -206,27 +206,24 @@ public class BrowserController implements Initializable {
 
     @FXML
     private void getProjects() {
-        
-        new Thread(() -> {
-            try {
-                Platform.runLater(() -> {
-                    progressIndicator.setVisible(true);
-                });
-                ObservableList<String> items = FXCollections.observableArrayList(
-                        App.getWeblate().getProjects());
-                Collections.sort(items);
-                Platform.runLater(() -> {
-                    projectsListView.setItems(items);
-                    progressIndicator.setVisible(false);
-                });
-            } catch (URISyntaxException | InterruptedException | IOException ex) {
-                Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
-                Platform.runLater(() -> {
-                    progressIndicator.setVisible(false);
-                    showExceptionAlert(ex);                    
-                });
-            }
-        }).start();
+        try {
+            Platform.runLater(() -> {
+                progressIndicator.setVisible(true);
+            });
+            ObservableList<String> items = FXCollections.observableArrayList(
+                    App.getWeblate().getProjects());
+            Collections.sort(items);
+            Platform.runLater(() -> {
+                projectsListView.setItems(items);
+                progressIndicator.setVisible(false);
+            });
+        } catch (URISyntaxException | InterruptedException | IOException ex) {
+            Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
+            Platform.runLater(() -> {
+                progressIndicator.setVisible(false);
+                showExceptionAlert(ex);
+            });
+        }
     }
 
     private void setupProjectListView() {
