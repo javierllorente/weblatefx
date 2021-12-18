@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Javier Llorente <javier@opensuse.org>
+ * Copyright (C) 2020-2021 Javier Llorente <javier@opensuse.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,16 @@
  */
 package com.javierllorente.wlfx;
 
+import java.util.List;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Window;
 
 /**
@@ -29,7 +34,7 @@ import javafx.stage.Window;
  */
 public class SubmitAlert extends Alert {
     
-    private final TextArea textArea;
+    private final TextFlow textFlow;
     
     public SubmitAlert(AlertType at, Window w) {
         super(at);
@@ -39,26 +44,51 @@ public class SubmitAlert extends Alert {
         setResizable(true); // FIXME: Workaround for JavaFX 11
         getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
         getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
-
-        textArea = new TextArea();
-        textArea.setEditable(false);
-        textArea.setMaxWidth(Double.MAX_VALUE);
-        textArea.setMaxHeight(Double.MAX_VALUE);
-        GridPane.setVgrow(textArea, Priority.ALWAYS);
-        GridPane.setHgrow(textArea, Priority.ALWAYS);
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setMaxWidth(Double.MAX_VALUE);
+        scrollPane.setMaxHeight(Double.MAX_VALUE);
+        GridPane.setVgrow(scrollPane, Priority.ALWAYS);
+        GridPane.setHgrow(scrollPane, Priority.ALWAYS);
+        
+        textFlow = new TextFlow();
+        textFlow.setLineSpacing(3);
+        textFlow.setMaxWidth(Double.MAX_VALUE);
+        textFlow.setMaxHeight(Double.MAX_VALUE);
+        GridPane.setVgrow(textFlow, Priority.ALWAYS);
+        GridPane.setHgrow(textFlow, Priority.ALWAYS);        
+        scrollPane.setContent(textFlow);
         
         GridPane gridPane = new GridPane();
         gridPane.setPrefSize(700, 500);
-        gridPane.add(textArea, 0, 1);
+        gridPane.add(scrollPane, 0, 1);
         getDialogPane().setExpandableContent(gridPane);
         getDialogPane().setExpanded(true);
     }
 
     public String getDiff() {
-        return textArea.getText();
+        String diff = "";
+        for (Node node : textFlow.getChildren()) {
+            if (node instanceof Text) {
+                diff += ((Text) node).getText();
+            }
+        }
+        return diff;
     }
-
-    public void setDiff(String diff) {
-        textArea.setText(diff);
+    
+    public void setDiff(List<String> diff) {
+        Text text;
+        for (String line : diff) {
+            text = new Text();
+            
+            if (line.startsWith("+")) {
+                text.setFill(Color.BLUE);
+            } else if (line.startsWith("-")) {
+                text.setFill(Color.RED);
+            }
+            
+            text.setText(line + "\n");
+            textFlow.getChildren().add(text);
+        }       
     }
+    
 }

@@ -590,7 +590,7 @@ public class BrowserController implements Initializable {
 
         SubmitAlert submitAlert = new SubmitAlert(AlertType.CONFIRMATION,
                 borderPane.getScene().getWindow());
-        submitAlert.setDiff(String.join("\n", unifiedDiff));
+        submitAlert.setDiff(unifiedDiff);
         Optional<ButtonType> result = submitAlert.showAndWait();
         
         if (result.get() == ButtonType.OK) {
