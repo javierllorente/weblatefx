@@ -11,8 +11,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="quickPanel" prefHeight="718.0" prefWidth="260.0" SplitPane.resizableWithParent="false" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17">
-    <children>
+<SplitPane fx:id="quickPanel" orientation="VERTICAL" prefHeight="718.0" prefWidth="260.0" 
+           dividerPositions="0.72f" SplitPane.resizableWithParent="false" 
+           xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17">
+    <VBox>
         <HBox>
             <children>
                 <TextField fx:id="quickFilter" promptText="Quick search" HBox.hgrow="ALWAYS">
@@ -37,11 +39,14 @@
                 <TableColumn fx:id="targetColumn" editable="false" prefWidth="100.0" text="Target" />
             </columns>
         </TableView>
+    </VBox>
+    <VBox SplitPane.resizableWithParent="false">
         <Label text="Metadata">
             <VBox.margin>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </VBox.margin>
         </Label>
-        <TextArea fx:id="metadataTextArea" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true" />
-    </children>
-</VBox>
+        <TextArea fx:id="metadataTextArea" editable="false" prefHeight="200.0" prefWidth="200.0" 
+                  wrapText="true" VBox.vgrow="ALWAYS" />
+    </VBox>
+</SplitPane>
