@@ -74,28 +74,33 @@
     </top>
     <center>
         <SplitPane fx:id="splitPane" BorderPane.alignment="CENTER">
-            <VBox prefWidth="200.0" SplitPane.resizableWithParent="false">
-                <children>
+            <SplitPane orientation="VERTICAL" dividerPositions="0.5471f, 0.9245f" 
+                       prefWidth="200.0" SplitPane.resizableWithParent="false">
+                <VBox>
                     <Label text="Projects">
                         <VBox.margin>
                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                         </VBox.margin>
                     </Label>
                     <ListView fx:id="projectsListView" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                </VBox>
+                <VBox>
                     <Label text="Components">
                         <VBox.margin>
                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                         </VBox.margin>
                     </Label>
-                    <ListView fx:id="componentsListView" prefHeight="251.0" prefWidth="200.0" />
+                    <ListView fx:id="componentsListView" prefHeight="251.0" prefWidth="200.0" VBox.vgrow="ALWAYS"/>
+                </VBox>
+                <VBox minHeight="52" maxHeight="52">
                     <Label text="Languages">
                         <VBox.margin>
                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                         </VBox.margin>
                     </Label>
                     <ComboBox fx:id="languagesComboBox" prefWidth="200.0" />
-                </children>
-            </VBox>
+                </VBox>
+            </SplitPane>
             <VBox fx:id="workArea" prefWidth="500.0" />
         </SplitPane>
     </center>
