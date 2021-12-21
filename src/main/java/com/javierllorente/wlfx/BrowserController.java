@@ -290,7 +290,7 @@ public class BrowserController implements Initializable {
                         new Thread(() -> {
                             try {
                                 Platform.runLater(() -> {
-                                    progressIndicator.setVisible(true);
+                                    progressIndicator.setVisible(true); 
                                 });
                                 List<String> items = App.getWeblate().getTranslations(
                                         selectedProject, selectedComponent.toLowerCase());
@@ -301,10 +301,14 @@ public class BrowserController implements Initializable {
                                     String translatorLanguage = preferences
                                             .get(App.TRANSLATOR_LANGUAGE, "");
 
-                                    if (!translatorLanguage.isEmpty()
-                                            && languages.contains(translatorLanguage)) {
-                                        languagesComboBox.getSelectionModel()
-                                                .select(translatorLanguage);
+                                    if (!translatorLanguage.isEmpty()) {
+                                        if (languages.contains(translatorLanguage)) {
+                                            languagesComboBox.getSelectionModel()
+                                                    .select(translatorLanguage);
+                                        } else {
+                                            // Clear selection
+                                            languagesComboBox.setValue(null);
+                                        }
                                     }
                                     
                                     progressIndicator.setVisible(false);
