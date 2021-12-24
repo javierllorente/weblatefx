@@ -47,8 +47,10 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -58,6 +60,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.SplitPane;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -180,6 +183,28 @@ public class BrowserController implements Initializable {
         
         autoLogin();
     }
+
+    public void setOnCloseWindow(Scene scene) {
+        scene.getWindow().setOnCloseRequest((e) -> {
+            closeWindowEvent(e);
+        });
+        scene.setOnKeyPressed((e) -> {
+            if (e.isControlDown() && e.getCode() == KeyCode.Q) {
+                closeWindowEvent(e);
+            }
+        });      
+    }
+    
+    private void closeWindowEvent(Event event) {
+        if (translationTabController.translationChangedProperty().get()) {
+            Alert alert = new UncommittedChangesAlert(borderPane.getScene().getWindow(), "close");
+            alert.showAndWait().ifPresent((response) -> {
+                if (response == ButtonType.NO) {
+                    event.consume();
+                }
+            });
+        }
+    }
     
     private void clearWorkArea() {
         translationTabController.clearTranslationAreas();
@@ -225,11 +250,14 @@ public class BrowserController implements Initializable {
             });
         }
     }
-
+    
     private void setupProjectListView() {
         ObservableList<String> components = FXCollections.observableArrayList();
         componentsListView.setItems(components);
 
+        projectsListView.setCellFactory(new SelectionCellFactory(
+                translationTabController.translationChangedProperty(), borderPane, "project"));
+        
         projectsListView.getSelectionModel().selectedItemProperty().
                 addListener((ov, t, t1) -> {
                     selectedProject = t1;
@@ -238,8 +266,8 @@ public class BrowserController implements Initializable {
                         languagesComboBox.getItems().clear();
                         lastComponent = null;
                     } else {
-                        logger.log(Level.INFO, "Selected project: {0}", selectedProject);                        
-
+                        logger.log(Level.INFO, "Selected project: {0}", selectedProject);
+                                                
                         if (dataLoaded) {
                             clearWorkArea();
                         }
@@ -269,10 +297,13 @@ public class BrowserController implements Initializable {
                     }
                 });
     }
-    
+
     private void setupComponentsListView() {
         ObservableList<String> languages = FXCollections.observableArrayList();
         languagesComboBox.setItems(languages);
+        
+        componentsListView.setCellFactory(new SelectionCellFactory(
+                translationTabController.translationChangedProperty(), borderPane, "component"));
         
         componentsListView.getSelectionModel().selectedItemProperty().
                 addListener((ov, t, t1) -> {
@@ -281,7 +312,7 @@ public class BrowserController implements Initializable {
                     } else {
                         selectedComponent = t1;
                         lastComponent = selectedComponent;
-                        logger.log(Level.INFO, "Selected component: {0}", selectedComponent);
+                        logger.log(Level.INFO, "Selected component: {0}", selectedComponent);                        
                         
                         if (dataLoaded) {
                             clearWorkArea();
@@ -327,13 +358,16 @@ public class BrowserController implements Initializable {
                 });
     }
 
-    private void setupLanguagesComboBox() {        
+    private void setupLanguagesComboBox() {
+        languagesComboBox.setCellFactory(new SelectionCellFactory(
+                translationTabController.translationChangedProperty(), borderPane, "language"));
+        
         languagesComboBox.getSelectionModel().selectedItemProperty().
                 addListener((ov, t, t1) -> {
                     if (t1 != null) {
                         selectedLanguage = t1;
                         logger.log(Level.INFO, "Selected language: {0}", selectedLanguage);
-
+                        
                         if (dataLoaded) {
                             clearWorkArea();
                         }

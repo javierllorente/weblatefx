@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Javier Llorente <javier@opensuse.org>
+ * Copyright (C) 2020, 2021 Javier Llorente <javier@opensuse.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,13 +51,16 @@ public class App extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws IOException {        
-        scene = new Scene(loadFXML("browser"), WINDOW_WIDTH, WINDOW_HEIGHT);
+    public void start(Stage stage) throws IOException {
+        FXMLLoader loader = getFXMLLoader("browser");
+        scene = new Scene(loader.load(), WINDOW_WIDTH, WINDOW_HEIGHT);
         scene.getStylesheets().add("app.css");
         stage.setScene(scene);
         stage.setTitle(NAME);
         stage.getIcons().add(new Image(App.class.getResourceAsStream("/wlfx.png")));
         stage.show(); 
+        BrowserController browserController = (BrowserController) loader.getController();
+        browserController.setOnCloseWindow(scene);
     }
 
     static void setRoot(String fxml) throws IOException {
