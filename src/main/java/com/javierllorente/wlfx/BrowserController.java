@@ -84,6 +84,7 @@ public class BrowserController implements Initializable {
     private TranslationFile translationFile;
     private IntegerProperty entryIndexProperty;
     private boolean dataLoaded;
+    private History history;
     private BooleanBinding menuItemNotSelected;
     
     @FXML
@@ -130,6 +131,7 @@ public class BrowserController implements Initializable {
         quickPanelController = new QuickPanelController(splitPane);
         splitPane.setDividerPositions(0.19f, 0.74f);
         dataLoaded = false;
+        history = new History();
         
         setupProjectListView();
         setupComponentsListView();
@@ -147,8 +149,14 @@ public class BrowserController implements Initializable {
             
             if (!oldIndex.equals(-1)
                     && translationTabController.translationChangedProperty().get()) {
+
+                history.compare(translationFile.getEntries().get(oldIndex.intValue()), 
+                        translationTabController.getTranslations(),
+                        oldIndex.intValue());
+                
                 translationFile.updateEntry(oldIndex.intValue(), 
                         translationTabController.getTranslations());
+                
                 quickPanelController.updateTableEntry(oldIndex.intValue(), 
                         translationFile.getEntries().get(oldIndex.intValue()));
 
@@ -180,7 +188,7 @@ public class BrowserController implements Initializable {
         quickPanelController.entryIndexProperty().addListener((ov, t, t1) -> {
             entryIndexProperty.set(t1.intValue());
         });
-        
+                
         autoLogin();
     }
 
@@ -195,19 +203,26 @@ public class BrowserController implements Initializable {
         });      
     }
     
-    private void closeWindowEvent(Event event) {
-        if (translationTabController.translationChangedProperty().get()) {
-            Alert alert = new UncommittedChangesAlert(borderPane.getScene().getWindow(), "close");
-            alert.showAndWait().ifPresent((response) -> {
-                if (response == ButtonType.NO) {
-                    event.consume();
-                }
-            });
+    private void closeWindowEvent(Event event) {        
+        if (entryIndexProperty.get() != -1) {
+            history.compare(translationFile.getEntries().get(entryIndexProperty.get()),
+                    translationTabController.getTranslations(),
+                    entryIndexProperty.get());
+
+            if (history.hasTranslationChanged()) {
+                Alert alert = new UncommittedChangesAlert(borderPane.getScene().getWindow(), "close");
+                alert.showAndWait().ifPresent((response) -> {
+                    if (response == ButtonType.NO) {
+                        event.consume();
+                    }
+                });
+            }
         }
     }
     
     private void clearWorkArea() {
         translationTabController.clearTranslationAreas();
+        history.clear();
         quickPanelController.clear();
         dataLoaded = false;
         entryIndexProperty.set(-1);
