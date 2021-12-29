@@ -33,7 +33,7 @@ import javafx.beans.property.SimpleIntegerProperty;
  * @author javier
  */
 public class History {
-    
+
     private final Map<String, List<String>> historyMap;
     private final Set<String> changesSet;
     private TranslationFile translationFile;
@@ -44,12 +44,15 @@ public class History {
         historyMap = new HashMap<>();
         changesSet = new HashSet<>();
         entryIndexProperty = new SimpleIntegerProperty();
-    }    
+    }
 
-    public void set(TranslationFile translationFile, TranslationTabController ttc) {
+    public void setTranslationFile(TranslationFile translationFile) {
         this.translationFile = translationFile;
+    }
+    
+    public void setTtc(TranslationTabController ttc) {
         this.ttc = ttc;
-     }
+    }
 
     public IntegerProperty entryIndexProperty() {
         return entryIndexProperty;

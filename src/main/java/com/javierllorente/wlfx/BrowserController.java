@@ -133,6 +133,7 @@ public class BrowserController implements Initializable {
         dataLoaded = false;
         history = new History();
         history.entryIndexProperty().bind(entryIndexProperty);
+        history.setTtc(translationTabController);
         
         setupProjectListView();
         setupComponentsListView();
@@ -402,7 +403,7 @@ public class BrowserController implements Initializable {
                                 translation = App.getWeblate().getFile(selectedProject, 
                                         selectedComponent, selectedLanguage);
                                 translationFile = translationParser.parse(translation);
-                                history.set(translationFile, translationTabController);
+                                history.setTranslationFile(translationFile);
 
                                 if (fileFormat.equalsIgnoreCase("json")) {
                                     String sourceLanguage = App.getWeblate().getFile(selectedProject, 
