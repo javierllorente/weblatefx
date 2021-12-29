@@ -32,14 +32,14 @@ import javafx.beans.property.SimpleIntegerProperty;
  */
 public class History {
     
-    private final Map<String, List<String>> translationChangedMap;
+    private final Map<String, List<String>> historyMap;
     private final Map<String, Boolean> changesMap;
     private TranslationFile translationFile;
     private TranslationTabController ttc;
     private final IntegerProperty entryIndexProperty;
         
     public History() {
-        translationChangedMap = new HashMap<>();
+        historyMap = new HashMap<>();
         changesMap = new HashMap<>();
         entryIndexProperty = new SimpleIntegerProperty();
     }    
@@ -66,17 +66,17 @@ public class History {
     }
 
     private void compareEntries(List<String> oldEntries, List<String> newEntries, String key) {     
-        List<String> entries = (translationChangedMap.get(key) == null)
+        List<String> entries = (historyMap.get(key) == null)
                 ? oldEntries
-                : translationChangedMap.get(key);
+                : historyMap.get(key);
 
         entries.replaceAll(item -> item.replaceAll("\n", ""));
         
         boolean translationLinesChanged = !entries.equals(newEntries);
         
         if (translationLinesChanged) {
-            if (translationChangedMap.get(key) == null) {
-                translationChangedMap.put(key, new ArrayList<>(entries));
+            if (historyMap.get(key) == null) {
+                historyMap.put(key, new ArrayList<>(entries));
                 changesMap.put(key, translationLinesChanged);
             }            
         } else {
@@ -95,7 +95,7 @@ public class History {
     }
     
     public void clear() {
-        translationChangedMap.clear();
+        historyMap.clear();
         changesMap.clear();
     }
         
