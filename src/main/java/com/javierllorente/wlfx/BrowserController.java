@@ -132,6 +132,7 @@ public class BrowserController implements Initializable {
         splitPane.setDividerPositions(0.19f, 0.74f);
         dataLoaded = false;
         history = new History();
+        history.entryIndexProperty().bind(entryIndexProperty);
         
         setupProjectListView();
         setupComponentsListView();
@@ -149,10 +150,6 @@ public class BrowserController implements Initializable {
             
             if (!oldIndex.equals(-1)
                     && translationTabController.translationChangedProperty().get()) {
-
-                history.compare(translationFile.getEntries().get(oldIndex.intValue()), 
-                        translationTabController.getTranslations(),
-                        oldIndex.intValue());
                 
                 translationFile.updateEntry(oldIndex.intValue(), 
                         translationTabController.getTranslations());
@@ -205,9 +202,6 @@ public class BrowserController implements Initializable {
     
     private void closeWindowEvent(Event event) {        
         if (entryIndexProperty.get() != -1) {
-            history.compare(translationFile.getEntries().get(entryIndexProperty.get()),
-                    translationTabController.getTranslations(),
-                    entryIndexProperty.get());
 
             if (history.hasTranslationChanged()) {
                 Alert alert = new UncommittedChangesAlert(borderPane.getScene().getWindow(), "close");
@@ -271,7 +265,7 @@ public class BrowserController implements Initializable {
         componentsListView.setItems(components);
 
         projectsListView.setCellFactory(new SelectionCellFactory(
-                translationTabController.translationChangedProperty(), borderPane, "project"));
+                history, borderPane, "project"));
         
         projectsListView.getSelectionModel().selectedItemProperty().
                 addListener((ov, t, t1) -> {
@@ -318,7 +312,7 @@ public class BrowserController implements Initializable {
         languagesComboBox.setItems(languages);
         
         componentsListView.setCellFactory(new SelectionCellFactory(
-                translationTabController.translationChangedProperty(), borderPane, "component"));
+                history, borderPane, "component"));
         
         componentsListView.getSelectionModel().selectedItemProperty().
                 addListener((ov, t, t1) -> {
@@ -375,7 +369,7 @@ public class BrowserController implements Initializable {
 
     private void setupLanguagesComboBox() {
         languagesComboBox.setCellFactory(new SelectionCellFactory(
-                translationTabController.translationChangedProperty(), borderPane, "language"));
+                history, borderPane, "language"));
         
         languagesComboBox.getSelectionModel().selectedItemProperty().
                 addListener((ov, t, t1) -> {
@@ -406,6 +400,7 @@ public class BrowserController implements Initializable {
                                 translation = App.getWeblate().getFile(selectedProject, 
                                         selectedComponent, selectedLanguage);
                                 translationFile = translationParser.parse(translation);
+                                history.set(translationFile, translationTabController);
 
                                 if (fileFormat.equalsIgnoreCase("json")) {
                                     String sourceLanguage = App.getWeblate().getFile(selectedProject, 

@@ -16,7 +16,6 @@
  */
 package com.javierllorente.wlfx;
 
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListCell;
@@ -31,12 +30,12 @@ import javafx.util.Callback;
  */
 public class SelectionCellFactory implements Callback<ListView<String>, ListCell<String>> {
 
-    private final ReadOnlyBooleanProperty translationChangedProperty;
+    private final History history;
     private final Pane pane;
     private final String element;
 
-    public SelectionCellFactory(ReadOnlyBooleanProperty translationChangedProperty, Pane pane, String element) {
-        this.translationChangedProperty = translationChangedProperty;
+    public SelectionCellFactory(History history, Pane pane, String element) {
+        this.history = history;
         this.pane = pane;
         this.element = element;
     }
@@ -52,7 +51,7 @@ public class SelectionCellFactory implements Callback<ListView<String>, ListCell
         };
 
         cell.addEventFilter(MouseEvent.MOUSE_PRESSED, (e) -> {
-            if (translationChangedProperty.get()) {
+            if (history.hasTranslationChanged()) {
                 Alert alert = new UncommittedChangesAlert(pane.getScene().getWindow(), element);
 
                 alert.showAndWait().ifPresent((response) -> {

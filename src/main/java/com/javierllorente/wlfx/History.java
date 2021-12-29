@@ -18,10 +18,13 @@ package com.javierllorente.wlfx;
 
 import com.javierllorente.jgettext.TranslationElement;
 import com.javierllorente.jgettext.TranslationEntry;
+import com.javierllorente.jgettext.TranslationFile;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 
 /**
  *
@@ -29,47 +32,71 @@ import java.util.Map;
  */
 public class History {
     
-    private final Map<Integer, List<String>> translationChangedMap;
-
+    private final Map<String, List<String>> translationChangedMap;
+    private final Map<String, Boolean> changesMap;
+    private TranslationFile translationFile;
+    private TranslationTabController ttc;
+    private final IntegerProperty entryIndexProperty;
+        
     public History() {
         translationChangedMap = new HashMap<>();
+        changesMap = new HashMap<>();
+        entryIndexProperty = new SimpleIntegerProperty();
+    }    
+    
+     public void set(TranslationFile translationFile, TranslationTabController ttc) {
+        this.translationFile = translationFile;
+        this.ttc = ttc;
+     }
+
+    public IntegerProperty entryIndexProperty() {
+        return entryIndexProperty;
     }
     
-    public void compare(TranslationEntry entry, List<TranslationElement> elements, int entryIndex) {        
+    private void compare(TranslationEntry entry, List<TranslationElement> elements) {
         if (entry.isPlural()) {
-            for (TranslationElement oldElement : entry.getMsgStrElements()) {
-                for (TranslationElement newElement : elements) {
-                    compareEntries(oldElement.get(), newElement.get(), entryIndex);
-                }
+            for (int i = 0; i<entry.getMsgStrElements().size(); i++) {
+                    compareEntries(entry.getMsgStrElements().get(i).get(), elements.get(i).get(), 
+                            entryIndexProperty.get() + "p" + i);
             }
         } else {
-            compareEntries(entry.getMsgStrElement().get(), elements.get(0).get(), entryIndex);
-        }        
+            compareEntries(entry.getMsgStrElement().get(), elements.get(0).get(), 
+                    Integer.toString(entryIndexProperty.get()));
+        }
     }
 
-    private void compareEntries(List<String> oldEntries, List<String> newEntries, int entryIndex) {
-
-        List<String> entries = (translationChangedMap.get(entryIndex) == null)
+    private void compareEntries(List<String> oldEntries, List<String> newEntries, String key) {     
+        List<String> entries = (translationChangedMap.get(key) == null)
                 ? oldEntries
-                : translationChangedMap.get(entryIndex);
+                : translationChangedMap.get(key);
+
+        entries.replaceAll(item -> item.replaceAll("\n", ""));
         
         boolean translationLinesChanged = !entries.equals(newEntries);
         
         if (translationLinesChanged) {
-            if (translationChangedMap.get(entryIndex) == null) {
-                translationChangedMap.put(entryIndex, new ArrayList<>(entries));
+            if (translationChangedMap.get(key) == null) {
+                translationChangedMap.put(key, new ArrayList<>(entries));
+                changesMap.put(key, translationLinesChanged);
             }            
         } else {
-            translationChangedMap.remove(entryIndex);
-        }        
+            changesMap.remove(key);
+        }
     }
     
     public boolean hasTranslationChanged() {
-        return !translationChangedMap.isEmpty();
+        if (translationFile == null || ttc == null || entryIndexProperty.get() == -1) {
+            return false;
+        }
+
+        compare(translationFile.getEntries().get(entryIndexProperty.get()), ttc.getTranslations());
+        
+        return !changesMap.isEmpty();
     }
     
     public void clear() {
         translationChangedMap.clear();
+        changesMap.clear();
     }
         
 }
