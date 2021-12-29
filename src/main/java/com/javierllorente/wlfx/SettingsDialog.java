@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Javier Llorente <javier@opensuse.org>
+ * Copyright (C) 2020, 2021 Javier Llorente <javier@opensuse.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,9 @@ public class SettingsDialog extends Dialog<Map<String, String>> {
         
         ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
-        
+        ButtonBar buttonBar = (ButtonBar) getDialogPane().lookup(".button-bar");
+        buttonBar.setButtonOrder(ButtonBar.BUTTON_ORDER_WINDOWS);
+                
         GridPane gridPane = new GridPane();
         gridPane.setHgap(10);
         gridPane.setVgap(10);
