@@ -21,8 +21,10 @@ import com.javierllorente.jgettext.TranslationEntry;
 import com.javierllorente.jgettext.TranslationFile;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
@@ -33,14 +35,14 @@ import javafx.beans.property.SimpleIntegerProperty;
 public class History {
     
     private final Map<String, List<String>> historyMap;
-    private final Map<String, Boolean> changesMap;
+    private final Set<String> changesSet;
     private TranslationFile translationFile;
     private TranslationTabController ttc;
     private final IntegerProperty entryIndexProperty;
         
     public History() {
         historyMap = new HashMap<>();
-        changesMap = new HashMap<>();
+        changesSet = new HashSet<>();
         entryIndexProperty = new SimpleIntegerProperty();
     }    
 
@@ -77,10 +79,10 @@ public class History {
         if (translationLinesChanged) {
             if (historyMap.get(key) == null) {
                 historyMap.put(key, new ArrayList<>(entries));
-                changesMap.put(key, translationLinesChanged);
+                changesSet.add(key);
             }            
         } else {
-            changesMap.remove(key);
+            changesSet.remove(key);
         }
     }
     
@@ -99,12 +101,12 @@ public class History {
 
         compare(translationFile.getEntries().get(entryIndexProperty.get()), ttc.getTranslations(), entryIndexProperty.get());
         
-        return !changesMap.isEmpty();
+        return !changesSet.isEmpty();
     }
     
     public void clear() {
         historyMap.clear();
-        changesMap.clear();
+        changesSet.clear();
     }
         
 }
