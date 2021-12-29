@@ -149,11 +149,13 @@ public class BrowserController implements Initializable {
             }
             
             if (!oldIndex.equals(-1)
-                    && translationTabController.translationChangedProperty().get()) {
+                    && translationTabController.translationChangedProperty().get()) { 
+                
+                history.check(oldIndex.intValue());
                 
                 translationFile.updateEntry(oldIndex.intValue(), 
                         translationTabController.getTranslations());
-                
+                                
                 quickPanelController.updateTableEntry(oldIndex.intValue(), 
                         translationFile.getEntries().get(oldIndex.intValue()));
 

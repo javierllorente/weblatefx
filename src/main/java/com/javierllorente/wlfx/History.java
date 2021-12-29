@@ -43,8 +43,8 @@ public class History {
         changesMap = new HashMap<>();
         entryIndexProperty = new SimpleIntegerProperty();
     }    
-    
-     public void set(TranslationFile translationFile, TranslationTabController ttc) {
+
+    public void set(TranslationFile translationFile, TranslationTabController ttc) {
         this.translationFile = translationFile;
         this.ttc = ttc;
      }
@@ -53,15 +53,15 @@ public class History {
         return entryIndexProperty;
     }
     
-    private void compare(TranslationEntry entry, List<TranslationElement> elements) {
+    private void compare(TranslationEntry entry, List<TranslationElement> elements, int entryIndex) {
         if (entry.isPlural()) {
             for (int i = 0; i<entry.getMsgStrElements().size(); i++) {
                     compareEntries(entry.getMsgStrElements().get(i).get(), elements.get(i).get(), 
-                            entryIndexProperty.get() + "p" + i);
+                            entryIndex + "p" + i);
             }
         } else {
             compareEntries(entry.getMsgStrElement().get(), elements.get(0).get(), 
-                    Integer.toString(entryIndexProperty.get()));
+                    Integer.toString(entryIndex));
         }
     }
 
@@ -84,12 +84,20 @@ public class History {
         }
     }
     
+    public void check(int entryIndex) {
+        if (translationFile == null || ttc == null || entryIndex == -1) {
+            return;
+        }
+
+        compare(translationFile.getEntries().get(entryIndex), ttc.getTranslations(), entryIndex);
+    }
+    
     public boolean hasTranslationChanged() {
         if (translationFile == null || ttc == null || entryIndexProperty.get() == -1) {
             return false;
         }
 
-        compare(translationFile.getEntries().get(entryIndexProperty.get()), ttc.getTranslations());
+        compare(translationFile.getEntries().get(entryIndexProperty.get()), ttc.getTranslations(), entryIndexProperty.get());
         
         return !changesMap.isEmpty();
     }
