@@ -19,6 +19,9 @@ package com.javierllorente.wlfx;
 import java.util.List;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -63,6 +66,13 @@ public class SubmitAlert extends Alert {
         gridPane.add(scrollPane, 0, 1);
         getDialogPane().setExpandableContent(gridPane);
         getDialogPane().setExpanded(true);
+        
+        Button yesButton = (Button) getDialogPane().lookupButton(ButtonType.YES);
+        yesButton.setDefaultButton(false);
+        Button noButton = (Button) getDialogPane().lookupButton(ButtonType.NO);
+        noButton.setDefaultButton(true);        
+        ButtonBar buttonBar = (ButtonBar) getDialogPane().lookup(".button-bar");
+        buttonBar.setButtonOrder(ButtonBar.BUTTON_ORDER_WINDOWS);
     }
 
     public String getDiff() {
