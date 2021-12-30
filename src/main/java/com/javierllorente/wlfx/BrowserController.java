@@ -16,8 +16,6 @@
  */
 package com.javierllorente.wlfx;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.difflib.DiffUtils;
 import com.github.difflib.UnifiedDiffUtils;
 import com.github.difflib.patch.Patch;
@@ -25,13 +23,17 @@ import com.javierllorente.jgettext.JsonParser;
 import com.javierllorente.jgettext.TranslationFile;
 import com.javierllorente.jgettext.TranslationParser;
 import com.javierllorente.wlfx.exception.UnsupportedFileFormatException;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonValue;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -648,26 +650,26 @@ public class BrowserController implements Initializable {
             new Thread(() -> {
                 Platform.runLater(() -> {
                     progressIndicator.setVisible(true);
-                });
+                });                
                 try {
                     String submitResult = App.getWeblate().submit(selectedProject,
                             selectedComponent, selectedLanguage, translationFileStr);
-                    
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    JsonNode jsonNode = objectMapper.readTree(submitResult);
-                    
+
+                    JsonObject jsonObject;
+                    try (JsonReader jsonReader = Json.createReader(new StringReader(submitResult))) {
+                        jsonObject = jsonReader.readObject();
+                    }
+
                     Platform.runLater(() -> {
                         progressIndicator.setVisible(false);
                         
-                        Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
                         String contextText = "";
-                        int acceptedChanges = jsonNode.get("accepted").asInt();
-                        
-                        while (fields.hasNext()) {
-                            Map.Entry<String, JsonNode> field = fields.next();
-                            String fieldName = field.getKey();
-                            JsonNode fieldValue = field.getValue();
-                            contextText += fieldName + ": " + fieldValue.asText() + "\n";
+                        int acceptedChanges = jsonObject.getInt("accepted");
+
+                        for (Map.Entry<String, JsonValue> entry : jsonObject.entrySet()) {
+                            String fieldName = entry.getKey();
+                            JsonValue jsonValue = entry.getValue();
+                            contextText += fieldName + ": " + jsonValue.toString() + "\n";
                         }
                         contextText = contextText.substring(0, contextText.length() - 1);
                         
