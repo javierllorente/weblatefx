@@ -67,10 +67,10 @@ public class SubmitAlert extends Alert {
         getDialogPane().setExpandableContent(gridPane);
         getDialogPane().setExpanded(true);
         
-        Button yesButton = (Button) getDialogPane().lookupButton(ButtonType.YES);
-        yesButton.setDefaultButton(false);
-        Button noButton = (Button) getDialogPane().lookupButton(ButtonType.NO);
-        noButton.setDefaultButton(true);        
+        Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
+        okButton.setDefaultButton(false);
+        Button cancelButton = (Button) getDialogPane().lookupButton(ButtonType.CANCEL);
+        cancelButton.setDefaultButton(true);        
         ButtonBar buttonBar = (ButtonBar) getDialogPane().lookup(".button-bar");
         buttonBar.setButtonOrder(ButtonBar.BUTTON_ORDER_WINDOWS);
     }
