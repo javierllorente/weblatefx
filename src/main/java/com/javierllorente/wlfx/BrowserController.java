@@ -685,6 +685,7 @@ public class BrowserController implements Initializable {
                         
                         if (acceptedChanges > 0) {
                             translation = translationFileStr;
+                            history.clear();
                         }
                     });
                     
