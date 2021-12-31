@@ -74,6 +74,7 @@ import javax.naming.AuthenticationException;
  * @author javier
  */
 public class BrowserController implements Initializable {
+
     private static final Logger logger = Logger.getLogger(BrowserController.class.getName());
     private TranslationTabController translationTabController;
     private QuickPanelController quickPanelController;
@@ -88,40 +89,40 @@ public class BrowserController implements Initializable {
     private boolean dataLoaded;
     private History history;
     private BooleanBinding menuItemNotSelected;
-    
+
     @FXML
     private BorderPane borderPane;
-    
+
     @FXML
     private VBox workArea;
-    
+
     @FXML
     private SplitPane splitPane;
-    
+
     @FXML
     private Button signInButton;
-    
+
     @FXML
     private Button submitButton;
-    
+
     @FXML
     private Button previousButton;
-    
+
     @FXML
     private Button nextButton;
-    
+
     @FXML
-    private ProgressIndicator progressIndicator;    
-    
+    private ProgressIndicator progressIndicator;
+
     @FXML
     private ListView<String> projectsListView;
-    
+
     @FXML
     private ListView<String> componentsListView;
 
     @FXML
-    private ComboBox<String> languagesComboBox;    
-    
+    private ComboBox<String> languagesComboBox;
+
     /**
      * Initializes the controller class.
      */
@@ -136,38 +137,38 @@ public class BrowserController implements Initializable {
         history = new History();
         history.entryIndexProperty().bind(entryIndexProperty);
         history.setTtc(translationTabController);
-        
+
         setupProjectListView();
         setupComponentsListView();
         setupLanguagesComboBox();
         setupBindings();
-        
-        entryIndexProperty.addListener((ObservableValue<? extends Number> ov, 
+
+        entryIndexProperty.addListener((ObservableValue<? extends Number> ov,
                 Number oldIndex, Number newIndex) -> {
-            logger.log(Level.INFO, "Index value changed. Old: {0}, new: {1}", 
+            logger.log(Level.INFO, "Index value changed. Old: {0}, new: {1}",
                     new Object[]{oldIndex, newIndex});
-            
+
             if (newIndex.equals(-1)) {
                 return;
             }
-            
+
             if (!oldIndex.equals(-1)
-                    && translationTabController.translationChangedProperty().get()) { 
-                
+                    && translationTabController.translationChangedProperty().get()) {
+
                 history.check(oldIndex.intValue());
-                
-                translationFile.updateEntry(oldIndex.intValue(), 
+
+                translationFile.updateEntry(oldIndex.intValue(),
                         translationTabController.getTranslations());
-                                
-                quickPanelController.updateTableEntry(oldIndex.intValue(), 
+
+                quickPanelController.updateTableEntry(oldIndex.intValue(),
                         translationFile.getEntries().get(oldIndex.intValue()));
 
                 if (translationFile.getEntries().get(oldIndex.intValue()).isFuzzy()) {
                     translationFile.getEntries().get(oldIndex.intValue()).removeFuzzyFlag();
                 }
             }
-            
-            if (translationFile.getEntries().get(newIndex.intValue()).getMsgId() != null) {    
+
+            if (translationFile.getEntries().get(newIndex.intValue()).getMsgId() != null) {
 
                 quickPanelController.selectAndScroll();
                 quickPanelController.clearMetadata();
@@ -186,11 +187,11 @@ public class BrowserController implements Initializable {
                         .get(newIndex.intValue()));
             }
         });
-        
+
         quickPanelController.entryIndexProperty().addListener((ov, t, t1) -> {
             entryIndexProperty.set(t1.intValue());
         });
-                
+
         autoLogin();
     }
 
@@ -202,10 +203,10 @@ public class BrowserController implements Initializable {
             if (e.isControlDown() && e.getCode() == KeyCode.Q) {
                 closeWindowEvent(e);
             }
-        });      
+        });
     }
-    
-    private void closeWindowEvent(Event event) {        
+
+    private void closeWindowEvent(Event event) {
         if (entryIndexProperty.get() != -1) {
 
             if (history.hasTranslationChanged()) {
@@ -218,7 +219,7 @@ public class BrowserController implements Initializable {
             }
         }
     }
-    
+
     private void clearWorkArea() {
         translationTabController.clearTranslationAreas();
         history.clear();
@@ -226,18 +227,18 @@ public class BrowserController implements Initializable {
         dataLoaded = false;
         entryIndexProperty.set(-1);
     }
-    
+
     public void autoLogin() {
         if (preferences.getBoolean(App.AUTOLOGIN, false)) {
             handleSignIn();
         }
-    }    
-    
+    }
+
     @FXML
     private void previousItem() {
         entryIndexProperty.set(quickPanelController.decrementTableIndex());
     }
-    
+
     @FXML
     private void nextItem() {
         entryIndexProperty.set(quickPanelController.incrementTableIndex());
@@ -264,24 +265,25 @@ public class BrowserController implements Initializable {
             });
         }
     }
-    
+
     private void setupProjectListView() {
         ObservableList<String> components = FXCollections.observableArrayList();
         componentsListView.setItems(components);
 
         projectsListView.setCellFactory(new SelectionCellFactory(
                 history, borderPane, "project"));
-        
+
         projectsListView.getSelectionModel().selectedItemProperty().
                 addListener((ov, t, t1) -> {
                     selectedProject = t1;
+                    componentsListView.getItems().clear();
+                    languagesComboBox.getItems().clear();
+
                     if (t1 == null) {
-                        componentsListView.getItems().clear();
-                        languagesComboBox.getItems().clear();
                         lastComponent = null;
                     } else {
                         logger.log(Level.INFO, "Selected project: {0}", selectedProject);
-                                                
+
                         if (dataLoaded) {
                             clearWorkArea();
                         }
@@ -315,19 +317,19 @@ public class BrowserController implements Initializable {
     private void setupComponentsListView() {
         ObservableList<String> languages = FXCollections.observableArrayList();
         languagesComboBox.setItems(languages);
-        
+
         componentsListView.setCellFactory(new SelectionCellFactory(
                 history, borderPane, "component"));
-        
+
         componentsListView.getSelectionModel().selectedItemProperty().
                 addListener((ov, t, t1) -> {
-                    if (t1 == null) {
-                        languagesComboBox.getItems().clear();
-                    } else {
+                    languagesComboBox.getItems().clear();
+                    
+                    if (t1 != null) {
                         selectedComponent = t1;
                         lastComponent = selectedComponent;
-                        logger.log(Level.INFO, "Selected component: {0}", selectedComponent);                        
-                        
+                        logger.log(Level.INFO, "Selected component: {0}", selectedComponent);
+
                         if (dataLoaded) {
                             clearWorkArea();
                         }
@@ -335,7 +337,7 @@ public class BrowserController implements Initializable {
                         new Thread(() -> {
                             try {
                                 Platform.runLater(() -> {
-                                    progressIndicator.setVisible(true); 
+                                    progressIndicator.setVisible(true);
                                 });
                                 List<String> items = App.getWeblate().getTranslations(
                                         selectedProject, selectedComponent.toLowerCase());
@@ -355,7 +357,7 @@ public class BrowserController implements Initializable {
                                             languagesComboBox.setValue(null);
                                         }
                                     }
-                                    
+
                                     progressIndicator.setVisible(false);
                                 });
 
@@ -375,48 +377,48 @@ public class BrowserController implements Initializable {
     private void setupLanguagesComboBox() {
         languagesComboBox.setCellFactory(new SelectionCellFactory(
                 history, borderPane, "language"));
-        
+
         languagesComboBox.getSelectionModel().selectedItemProperty().
                 addListener((ov, t, t1) -> {
                     if (t1 != null) {
                         selectedLanguage = t1;
                         logger.log(Level.INFO, "Selected language: {0}", selectedLanguage);
-                        
+
                         if (dataLoaded) {
                             clearWorkArea();
                         }
 
                         if (!selectedLanguage.equals(preferences.get(App.TRANSLATOR_LANGUAGE, ""))) {
-                            preferences.put(App.TRANSLATOR_LANGUAGE, selectedLanguage);                            
+                            preferences.put(App.TRANSLATOR_LANGUAGE, selectedLanguage);
                         }
-                        
+
                         new Thread(() -> {
                             try {
                                 Platform.runLater(() -> {
                                     progressIndicator.setVisible(true);
                                 });
-                                
+
                                 String fileFormat = App.getWeblate().getFileFormat(selectedProject,
                                         selectedComponent, selectedLanguage);
 
                                 ParserFactory parserFactory = new ParserFactory();
-                                TranslationParser translationParser = parserFactory.getParser(fileFormat);  
-                                
-                                translation = App.getWeblate().getFile(selectedProject, 
+                                TranslationParser translationParser = parserFactory.getParser(fileFormat);
+
+                                translation = App.getWeblate().getFile(selectedProject,
                                         selectedComponent, selectedLanguage);
                                 translationFile = translationParser.parse(translation);
                                 history.setTranslationFile(translationFile);
 
                                 if (fileFormat.equalsIgnoreCase("json")) {
-                                    String sourceLanguage = App.getWeblate().getFile(selectedProject, 
+                                    String sourceLanguage = App.getWeblate().getFile(selectedProject,
                                             selectedComponent, "en");
-                                    JsonParser jsonTranslationParser 
+                                    JsonParser jsonTranslationParser
                                             = (JsonParser) translationParser;
                                     jsonTranslationParser.setSourceLanguage(true);
                                     translationFile = translationParser.parse(sourceLanguage);
                                     jsonTranslationParser.setSourceLanguage(false);
                                 }
-                                
+
                                 quickPanelController.addTableData(translationFile.getEntries());
                                 dataLoaded = !quickPanelController.isTableDataEmpty();
 
@@ -440,8 +442,8 @@ public class BrowserController implements Initializable {
                     }
                 });
     }
-    
-    private void setupBindings() {        
+
+    private void setupBindings() {
         menuItemNotSelected = projectsListView.getSelectionModel().selectedItemProperty().isNull()
                 .or(componentsListView.getSelectionModel().selectedItemProperty().isNull())
                 .or(languagesComboBox.getSelectionModel().selectedItemProperty().isNull());
@@ -464,11 +466,11 @@ public class BrowserController implements Initializable {
     }
 
     @FXML
-    private void handleSettings() {        
-        SettingsDialog dialog = new SettingsDialog(borderPane.getScene().getWindow(), 
+    private void handleSettings() {
+        SettingsDialog dialog = new SettingsDialog(borderPane.getScene().getWindow(),
                 preferences);
-        
-        Optional<Map<String, String>> result = dialog.showAndWait();        
+
+        Optional<Map<String, String>> result = dialog.showAndWait();
         result.ifPresent(data -> {
             preferences.put(App.TRANSLATOR_NAME, data.get(App.TRANSLATOR_NAME));
             preferences.put(App.TRANSLATOR_EMAIL, data.get(App.TRANSLATOR_EMAIL));
@@ -476,9 +478,9 @@ public class BrowserController implements Initializable {
             preferences.put(App.AUTH_TOKEN, data.get(App.AUTH_TOKEN));
             preferences.put(App.AUTOLOGIN, data.get(App.AUTOLOGIN));
         });
-        
+
     }
-    
+
     @FXML
     private void handleAbout() {
         Alert aboutAlert = new Alert(AlertType.INFORMATION);
@@ -486,9 +488,9 @@ public class BrowserController implements Initializable {
         aboutAlert.getDialogPane().setPrefSize(480, 320);
         aboutAlert.setTitle("About " + App.NAME);
         aboutAlert.setGraphic(new ImageView(App.class.getResource("/wlfx.png").toString()));
-        aboutAlert.setHeaderText(App.NAME + " " + App.VERSION + "\n" 
+        aboutAlert.setHeaderText(App.NAME + " " + App.VERSION + "\n"
                 + "A JavaFX-based Weblate client");
-        aboutAlert.setContentText("Java: " 
+        aboutAlert.setContentText("Java: "
                 + System.getProperty("java.runtime.name") + " "
                 + System.getProperty("java.runtime.version") + "\n"
                 + "JavaFX: " + System.getProperty("javafx.runtime.version") + "\n"
@@ -499,19 +501,19 @@ public class BrowserController implements Initializable {
         aboutAlert.setResizable(true);
         aboutAlert.showAndWait();
     }
-    
+
     @FXML
     private void handleQuit() {
-       Platform.exit();
+        Platform.exit();
     }
-    
+
     @FXML
     private void handleSignIn() {
-        
+
         if (App.getWeblate().isAuthenticated()) {
             signInButton.setText("Sign in");
-            
-            LoginDialog dialog = new LoginDialog(borderPane.getScene().getWindow(), 
+
+            LoginDialog dialog = new LoginDialog(borderPane.getScene().getWindow(),
                     preferences);
             Optional<String> result = dialog.showAndWait();
             result.ifPresentOrElse((authTokenEntered) -> {
@@ -520,13 +522,13 @@ public class BrowserController implements Initializable {
             }, () -> {
                 signInButton.setText("Sign out");
             });
-            
+
             return;
         }
 
         String authToken = preferences.get(App.AUTH_TOKEN, "");
         String apiUri = preferences.get(App.API_URI, "");
-        
+
         try {
             App.getWeblate().setApiUrl(new URI(apiUri));
         } catch (URISyntaxException ex) {
@@ -540,9 +542,9 @@ public class BrowserController implements Initializable {
             alert.setTitle("Error");
             alert.setHeaderText("Empty API URI");
             alert.setContentText("API URI is empty. Please add an API URI in settings");
-            alert.showAndWait();    
+            alert.showAndWait();
         } else if (authToken.isEmpty()) {
-            LoginDialog dialog = new LoginDialog(borderPane.getScene().getWindow(), 
+            LoginDialog dialog = new LoginDialog(borderPane.getScene().getWindow(),
                     preferences);
             Optional<String> result = dialog.showAndWait();
             result.ifPresent(authTokenEntered -> {
@@ -601,13 +603,13 @@ public class BrowserController implements Initializable {
 
         }).start();
     }
-    
+
     private void showExceptionAlert(Throwable throwable) {
         ExceptionAlert exceptionAlert = new ExceptionAlert(borderPane.getScene().getWindow());
         exceptionAlert.setThrowable(throwable);
         exceptionAlert.showAndWait();
     }
-    
+
     @FXML
     private void submit() {
         translationFile.setTranslator(preferences.get(App.TRANSLATOR_NAME, ""),
@@ -629,11 +631,10 @@ public class BrowserController implements Initializable {
 
         List<String> oldTranslation = Arrays.asList(translation.split("\n"));
         List<String> newTranslation = Arrays.asList(translationFileStr.split("\n"));
-        
+
 //        System.out.println("New translation:");
 //        newTranslation.forEach(System.out::println);
-        
-        logger.log(Level.INFO, "oldTranslation size: {0} newTranslation size: {1}", 
+        logger.log(Level.INFO, "oldTranslation size: {0} newTranslation size: {1}",
                 new Object[]{oldTranslation.size(), newTranslation.size()});
 
         Patch<String> patch = DiffUtils.diff(oldTranslation, newTranslation);
@@ -645,12 +646,12 @@ public class BrowserController implements Initializable {
                 borderPane.getScene().getWindow());
         submitAlert.setDiff(unifiedDiff);
         Optional<ButtonType> result = submitAlert.showAndWait();
-        
+
         if (result.get() == ButtonType.OK) {
             new Thread(() -> {
                 Platform.runLater(() -> {
                     progressIndicator.setVisible(true);
-                });                
+                });
                 try {
                     String submitResult = App.getWeblate().submit(selectedProject,
                             selectedComponent, selectedLanguage, translationFileStr);
@@ -662,7 +663,7 @@ public class BrowserController implements Initializable {
 
                     Platform.runLater(() -> {
                         progressIndicator.setVisible(false);
-                        
+
                         String contextText = "";
                         int acceptedChanges = jsonObject.getInt("accepted");
 
@@ -672,7 +673,7 @@ public class BrowserController implements Initializable {
                             contextText += fieldName + ": " + jsonValue.toString() + "\n";
                         }
                         contextText = contextText.substring(0, contextText.length() - 1);
-                        
+
                         Alert alert = new Alert(AlertType.INFORMATION);
                         alert.initOwner(borderPane.getScene().getWindow());
                         alert.setTitle("Submit results");
@@ -682,13 +683,13 @@ public class BrowserController implements Initializable {
                         alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
                         alert.getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
                         alert.showAndWait();
-                        
+
                         if (acceptedChanges > 0) {
                             translation = translationFileStr;
                             history.clear();
                         }
                     });
-                    
+
                 } catch (IOException | URISyntaxException | InterruptedException ex) {
                     Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
                     Platform.runLater(() -> {
