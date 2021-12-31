@@ -16,13 +16,16 @@
  */
 package com.javierllorente.wlfx.net;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonValue;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -86,21 +89,20 @@ public class Weblate {
             throws URISyntaxException, IOException, InterruptedException {
         String response = http.get(new URI(getApiUrl() + resource + "?page=" + page));
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode = objectMapper.readTree(response);
-        JsonNode resultsNode = rootNode.path("results");
-        Iterator<JsonNode> jsonElements = resultsNode.elements();
-
-        while (jsonElements.hasNext()) {
-            JsonNode project = jsonElements.next();
-            elements.add(project.path(path).asText());
-            System.out.println(project.path(path));
+        JsonObject jsonObject;
+        try (JsonReader jsonReader = Json.createReader(new StringReader(response))) {
+            jsonObject = jsonReader.readObject();
         }
         
-        JsonNode nextNode = rootNode.path("next");
-        if (!nextNode.isMissingNode() && !nextNode.asText().equals("null")) {
-            get(resource, path, ++page, elements);
+        JsonArray results = jsonObject.getJsonArray("results");        
+        for (JsonValue value : results) {
+            elements.add(value.asJsonObject().getString(path));
+            System.out.println(value.asJsonObject().getString(path));
         }
+        
+        if (jsonObject.containsKey("next") && !jsonObject.isNull("next")) {
+            get(resource, path, ++page, elements);
+        }        
     }
     
     private List<String> getElements(String resource, String path) 
@@ -131,10 +133,14 @@ public class Weblate {
         String resource = "translations/" + project + "/" + component
                 + "/" + language + "/";
         String response = http.get(new URI(getApiUrl() + resource));
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode = objectMapper.readTree(response);
-        JsonNode fileFormatNode = rootNode.at("/component/file_format");
-        return fileFormatNode.asText();
+
+        JsonObject jsonObject;
+        try (JsonReader jsonReader = Json.createReader(new StringReader(response))) {
+            jsonObject = jsonReader.readObject();
+        }
+        
+        JsonObject componentObject = jsonObject.getJsonObject("component");
+        return componentObject.getString("file_format");        
     }
 
     public String getFile(String project, String component, String language)
@@ -152,14 +158,15 @@ public class Weblate {
         String response = http.post(new URI(getApiUrl() + resource), file);
         logger.log(Level.INFO, "Response: {0}", response);
         
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode = objectMapper.readTree(response);
-        JsonNode fieldNode = rootNode.get("result");
-
-        if (fieldNode == null || fieldNode.isNull()) {
+        JsonObject jsonObject;
+        try (JsonReader jsonReader = Json.createReader(new StringReader(response))) {
+            jsonObject = jsonReader.readObject();
+        }
+        
+        if (!jsonObject.containsKey("result") || jsonObject.isNull("result")) {
             throw new IOException(response);
         }
- 
+        
         return response;
     }    
 }

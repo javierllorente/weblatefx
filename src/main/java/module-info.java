@@ -6,7 +6,6 @@ module com.javierllorente.wlfx {
     requires java.logging;
     requires java.prefs;
     requires java.net.http;
-    requires com.fasterxml.jackson.databind;
     requires jakarta.json;
     requires com.javierllorente.jgettext;
     requires org.kordamp.ikonli.javafx;

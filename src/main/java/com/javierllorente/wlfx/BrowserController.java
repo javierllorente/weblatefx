@@ -492,7 +492,7 @@ public class BrowserController implements Initializable {
                 + System.getProperty("java.runtime.name") + " "
                 + System.getProperty("java.runtime.version") + "\n"
                 + "JavaFX: " + System.getProperty("javafx.runtime.version") + "\n"
-                + "Libraries: jgettext, jackson-databind, java-diff-utils, "
+                + "Libraries: jgettext, jakarta.json, java-diff-utils, "
                 + "ikonli-javafx, ikonli-icomoon-pack" + "\n\n"
                 + "Copyright © 2020, 2021 Javier Llorente" + "\n"
                 + "This program is under the GPLv3");
