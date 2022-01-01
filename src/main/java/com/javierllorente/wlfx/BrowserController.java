@@ -16,6 +16,9 @@
  */
 package com.javierllorente.wlfx;
 
+import com.javierllorente.wlfx.alert.ExceptionAlert;
+import com.javierllorente.wlfx.alert.UncommittedChangesAlert;
+import com.javierllorente.wlfx.alert.SubmitAlert;
 import com.github.difflib.DiffUtils;
 import com.github.difflib.UnifiedDiffUtils;
 import com.github.difflib.patch.Patch;
