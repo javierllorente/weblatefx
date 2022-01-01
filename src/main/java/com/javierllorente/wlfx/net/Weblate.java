@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Javier Llorente <javier@opensuse.org>
+ * Copyright (C) 2020-2022 Javier Llorente <javier@opensuse.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,10 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.AuthenticationException;
@@ -151,7 +154,7 @@ public class Weblate {
         return response;
     }
 
-    public String submit(String project, String component, String language, String file)
+    public Map<String, String> submit(String project, String component, String language, String file)
             throws URISyntaxException, IOException, InterruptedException {
         String resource = "translations/" + project + "/" + component
                 + "/" + language + "/file/";
@@ -166,7 +169,13 @@ public class Weblate {
         if (!jsonObject.containsKey("result") || jsonObject.isNull("result")) {
             throw new IOException(response);
         }
+
+        Map<String, String> result = new HashMap<>();
+        for (Entry<String, JsonValue> entry : jsonObject.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().toString());            
+        }
         
-        return response;
-    }    
+        return result;
+    }
+    
 }
