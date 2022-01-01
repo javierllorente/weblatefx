@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Javier Llorente <javier@opensuse.org>
+ * Copyright (C) 2020-2022 Javier Llorente <javier@opensuse.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,11 @@ public class ExceptionAlert extends Alert {
         getDialogPane().setExpandableContent(expandableContent);
     }
     
-    void setThrowable(Throwable throwable) {
+    public void setHeader(String text) {
+        setHeaderText(text);
+    }
+    
+    public void setThrowable(Throwable throwable) {
         setContentText(throwable.getClass().getCanonicalName());
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
