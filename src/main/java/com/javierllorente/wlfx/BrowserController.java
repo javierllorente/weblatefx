@@ -16,6 +16,8 @@
  */
 package com.javierllorente.wlfx;
 
+import com.javierllorente.wlfx.dialog.LoginDialog;
+import com.javierllorente.wlfx.dialog.SettingsDialog;
 import com.javierllorente.wlfx.alert.ExceptionAlert;
 import com.javierllorente.wlfx.alert.UncommittedChangesAlert;
 import com.javierllorente.wlfx.alert.SubmitAlert;

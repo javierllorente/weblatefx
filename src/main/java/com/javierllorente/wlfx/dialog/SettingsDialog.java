@@ -14,8 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.javierllorente.wlfx;
+package com.javierllorente.wlfx.dialog;
 
+import com.javierllorente.wlfx.App;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
