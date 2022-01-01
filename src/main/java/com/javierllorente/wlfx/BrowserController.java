@@ -606,10 +606,13 @@ public class BrowserController implements Initializable {
 
     private void showExceptionAlert(Throwable throwable) {
         ExceptionAlert exceptionAlert = new ExceptionAlert(borderPane.getScene().getWindow());
+        if (throwable instanceof UnsupportedFileFormatException) {
+            exceptionAlert.setHeader("File format not supported");
+        }
         exceptionAlert.setThrowable(throwable);
         exceptionAlert.showAndWait();
     }
-
+    
     @FXML
     private void submit() {
         translationFile.setTranslator(preferences.get(App.TRANSLATOR_NAME, ""),
