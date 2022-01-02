@@ -96,7 +96,7 @@
                     <ComboBox fx:id="languagesComboBox" prefWidth="200.0" />
                 </VBox>
             </SplitPane>
-            <VBox fx:id="workArea" prefWidth="500.0" />
+            <fx:include source="TranslationTab.fxml" fx:id="translationTab" />
         </SplitPane>
     </center>
 </BorderPane>

@@ -65,7 +65,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 import javax.naming.AuthenticationException;
 
 /**
@@ -76,7 +75,6 @@ import javax.naming.AuthenticationException;
 public class BrowserController implements Initializable {
 
     private static final Logger logger = Logger.getLogger(BrowserController.class.getName());
-    private TranslationTabController translationTabController;
     private QuickPanelController quickPanelController;
     private Preferences preferences;
     private String selectedProject;
@@ -94,7 +92,7 @@ public class BrowserController implements Initializable {
     private BorderPane borderPane;
 
     @FXML
-    private VBox workArea;
+    private TranslationTabController translationTabController;
 
     @FXML
     private SplitPane splitPane;
@@ -122,7 +120,7 @@ public class BrowserController implements Initializable {
 
     @FXML
     private ComboBox<String> languagesComboBox;
-
+    
     /**
      * Initializes the controller class.
      */
@@ -130,7 +128,6 @@ public class BrowserController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         preferences = Preferences.userRoot();
         entryIndexProperty = new SimpleIntegerProperty(-1);
-        translationTabController = new TranslationTabController(workArea);
         quickPanelController = new QuickPanelController(splitPane);
         splitPane.setDividerPositions(0.19f, 0.74f);
         dataLoaded = false;

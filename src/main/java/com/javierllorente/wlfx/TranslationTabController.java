@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Javier Llorente <javier@opensuse.org>
+ * Copyright (C) 2021-2022 Javier Llorente <javier@opensuse.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.Pane;
 
 /**
  *
@@ -52,20 +51,10 @@ public class TranslationTabController implements Initializable {
     private BooleanBinding anyValid;
     
     @FXML
-    private TabPane translationTabPane;
-
-    public TranslationTabController() {
-    }
-
-    public TranslationTabController(Pane pane) {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("TranslationTab.fxml"));
-        loader.setController(this);
-        try {
-             pane.getChildren().add(loader.load());
-        } catch (IOException ex) {
-            Logger.getLogger(TranslationTabController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+    private TabPane tabPane;
+    
+    @FXML
+    TranslationAreaController translationAreaController;
     
     /**
      * Initializes the controller class.
@@ -84,9 +73,8 @@ public class TranslationTabController implements Initializable {
                     translationChangedProperty.get());
         });
 
-        TranslationAreaController firstTac = new TranslationAreaController(translationTabPane);
-        tacList.add(firstTac);
-        propertyList.add(firstTac.translationChangedProperty());
+        tacList.add(translationAreaController);
+        propertyList.add(translationAreaController.translationChangedProperty());
     }
 
     public int size() {
@@ -98,7 +86,7 @@ public class TranslationTabController implements Initializable {
     }
     
     public void clearAllButFirst() {
-        translationTabPane.getTabs().subList(1, translationTabPane.getTabs().size()).clear();
+        tabPane.getTabs().subList(1, tabPane.getTabs().size()).clear();
         tacList.subList(1, tacList.size()).clear();
         propertyList.subList(1, propertyList.size()).clear();
     }
@@ -118,7 +106,13 @@ public class TranslationTabController implements Initializable {
                 } else {
 
                     if (moreTranslationAreasNeeded) {
-                        tac = new TranslationAreaController(translationTabPane);
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("TranslationArea.fxml"));
+                        try {
+                            tabPane.getTabs().add(loader.load());
+                            tac = loader.getController();
+                        } catch (IOException ex) {
+                            Logger.getLogger(TranslationTabController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                         tacList.add(tac);
                         propertyList.add(tac.translationChangedProperty());
                     } else {

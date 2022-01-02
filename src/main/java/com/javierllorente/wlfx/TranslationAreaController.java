@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Javier Llorente <javier@opensuse.org>
+ * Copyright (C) 2021-2022 Javier Llorente <javier@opensuse.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,22 +18,17 @@ package com.javierllorente.wlfx;
 
 import com.javierllorente.jgettext.PoElement;
 import com.javierllorente.jgettext.TranslationElement;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyEvent;
 
@@ -45,7 +40,7 @@ import javafx.scene.input.KeyEvent;
 public class TranslationAreaController implements Initializable {
 
     @FXML
-    private Tab translationTab;
+    private Tab tab;
 
     @FXML
     private TextArea translationTextArea;
@@ -54,19 +49,6 @@ public class TranslationAreaController implements Initializable {
     private TextArea sourceTextArea;
 
     private BooleanProperty translationChangedProperty;
-
-    public TranslationAreaController() {
-    }
-
-    public TranslationAreaController(TabPane pane) {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("TranslationArea.fxml"));
-        loader.setController(this);
-        try {
-            pane.getTabs().add(loader.load());
-        } catch (IOException ex) {
-            Logger.getLogger(TranslationAreaController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
 
     /**
      * Initializes the controller class.
@@ -82,7 +64,7 @@ public class TranslationAreaController implements Initializable {
     }
 
     public void setTitle(String title) {
-        translationTab.setText(title);
+        tab.setText(title);
     }
 
     public void addSourceEntry(String line) {

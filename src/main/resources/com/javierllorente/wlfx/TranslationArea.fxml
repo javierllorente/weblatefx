@@ -4,7 +4,9 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.SplitPane?>
 
-<Tab fx:id="translationTab" closable="false" text="Translation" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17">
+<Tab fx:id="tab" closable="false" text="Translation" 
+     xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17" 
+     fx:controller="com.javierllorente.wlfx.TranslationAreaController">
     <content>
         <SplitPane prefHeight="200.0" prefWidth="100.0" orientation="VERTICAL">
             <items>
