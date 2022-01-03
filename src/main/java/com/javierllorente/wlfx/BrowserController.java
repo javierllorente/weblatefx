@@ -60,7 +60,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.SplitPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
@@ -97,9 +96,6 @@ public class BrowserController implements Initializable {
     private QuickPanelController quickPanelController;
 
     @FXML
-    private SplitPane splitPane;
-
-    @FXML
     private Button signInButton;
 
     @FXML
@@ -130,7 +126,6 @@ public class BrowserController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         preferences = Preferences.userRoot();
         entryIndexProperty = new SimpleIntegerProperty(-1);
-        splitPane.setDividerPositions(0.19f, 0.74f);
         dataLoaded = false;
         history = new History();
         history.entryIndexProperty().bind(entryIndexProperty);

@@ -68,7 +68,7 @@
         </VBox>
     </top>
     <center>
-        <SplitPane fx:id="splitPane" BorderPane.alignment="CENTER">
+        <SplitPane fx:id="splitPane" BorderPane.alignment="CENTER" dividerPositions="0.19f, 0.74f">
             <SplitPane orientation="VERTICAL" dividerPositions="0.5471f, 0.9245f" 
                        prefWidth="200.0" SplitPane.resizableWithParent="false">
                 <VBox>
