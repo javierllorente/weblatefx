@@ -97,6 +97,7 @@
                 </VBox>
             </SplitPane>
             <fx:include source="TranslationTab.fxml" fx:id="translationTab" />
+            <fx:include source="QuickPanel.fxml" fx:id="quickPanel" />
         </SplitPane>
     </center>
 </BorderPane>

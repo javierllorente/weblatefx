@@ -75,7 +75,6 @@ import javax.naming.AuthenticationException;
 public class BrowserController implements Initializable {
 
     private static final Logger logger = Logger.getLogger(BrowserController.class.getName());
-    private QuickPanelController quickPanelController;
     private Preferences preferences;
     private String selectedProject;
     private String selectedComponent;
@@ -93,6 +92,9 @@ public class BrowserController implements Initializable {
 
     @FXML
     private TranslationTabController translationTabController;
+    
+    @FXML
+    private QuickPanelController quickPanelController;
 
     @FXML
     private SplitPane splitPane;
@@ -128,7 +130,6 @@ public class BrowserController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         preferences = Preferences.userRoot();
         entryIndexProperty = new SimpleIntegerProperty(-1);
-        quickPanelController = new QuickPanelController(splitPane);
         splitPane.setDividerPositions(0.19f, 0.74f);
         dataLoaded = false;
         history = new History();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Javier Llorente <javier@opensuse.org>
+ * Copyright (C) 2021-2022 Javier Llorente <javier@opensuse.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,12 +18,9 @@ package com.javierllorente.wlfx;
 
 import com.javierllorente.jgettext.TranslationElement;
 import com.javierllorente.jgettext.TranslationEntry;
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -37,10 +34,8 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -79,24 +74,10 @@ public class QuickPanelController implements Initializable {
     
     @FXML
     private TextArea metadataTextArea;
-
-    public QuickPanelController() {
-    }
-    
-    public QuickPanelController(SplitPane pane) {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("QuickPanel.fxml"));
-        loader.setController(this);
-        try {
-             pane.getItems().add(loader.load());
-        } catch (IOException ex) {
-            Logger.getLogger(QuickPanelController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        entryIndexProperty = new ReadOnlyIntegerWrapper();
-    }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        entryIndexProperty = new ReadOnlyIntegerWrapper();
         quickTableIndex = 0;
         setupTable();
     }
