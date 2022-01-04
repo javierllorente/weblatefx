@@ -28,6 +28,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyEvent;
@@ -47,6 +48,9 @@ public class TranslationAreaController implements Initializable {
 
     @FXML
     private TextArea sourceTextArea;
+    
+    @FXML
+    private Button copyButton;
 
     private BooleanProperty translationChangedProperty;
 
@@ -61,6 +65,13 @@ public class TranslationAreaController implements Initializable {
             translationChangedProperty.set(true);
         });
         translationTextArea.editableProperty().bind(sourceTextArea.textProperty().isNotEmpty());
+        
+        copyButton.disableProperty().bind(translationTextArea.editableProperty().not());
+    }
+    
+    @FXML
+    public void copyText() {
+        translationTextArea.setText(sourceTextArea.getText());
     }
 
     public void setTitle(String title) {
