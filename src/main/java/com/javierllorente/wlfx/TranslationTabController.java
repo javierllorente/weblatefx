@@ -49,6 +49,7 @@ public class TranslationTabController implements Initializable {
     private ReadOnlyBooleanWrapper translationChangedProperty;
     private ObservableList<BooleanProperty> propertyList;
     private BooleanBinding anyValid;
+    private History history;
     
     @FXML
     private TabPane tabPane;
@@ -75,6 +76,7 @@ public class TranslationTabController implements Initializable {
 
         tacList.add(translationAreaController);
         propertyList.add(translationAreaController.translationChangedProperty());
+        history.pluralIndexProperty().bind(tabPane.getSelectionModel().selectedIndexProperty());
     }
 
     public int size() {
@@ -92,7 +94,10 @@ public class TranslationTabController implements Initializable {
     }
 
     public void loadTranslations(TranslationEntry entry) {
-        if (entry.isPlural()) {
+        boolean plural = entry.isPlural();
+        history.setPlural(plural);
+        
+        if (plural) {
             logger.log(Level.INFO, "Entry is plural");
             TranslationAreaController tac = null;
             boolean moreTranslationAreasNeeded = (tacList.size() == 1);
@@ -110,6 +115,7 @@ public class TranslationTabController implements Initializable {
                         try {
                             tabPane.getTabs().add(loader.load());
                             tac = loader.getController();
+                            tac.setHistory(history);
                         } catch (IOException ex) {
                             Logger.getLogger(TranslationTabController.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -130,6 +136,11 @@ public class TranslationTabController implements Initializable {
             tacList.get(0).setSource(entry.getMsgId());
             tacList.get(0).setTranslation(entry.getMsgStr());
         }
+    }
+
+    public void setHistory(History history) {
+        this.history = history;
+        translationAreaController.setHistory(history);
     }
 
     public List<TranslationElement> getTranslations() {

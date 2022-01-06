@@ -133,6 +133,7 @@ public class BrowserController implements Initializable {
         historyAdapter = new HistoryAdapter();
         historyAdapter.setTranslationTabController(translationTabController);
         history.setAdapter(historyAdapter);
+        translationTabController.setHistory(history);
 
         setupProjectListView();
         setupComponentsListView();
