@@ -76,7 +76,6 @@ public class TranslationTabController implements Initializable {
 
         tacList.add(translationAreaController);
         propertyList.add(translationAreaController.translationChangedProperty());
-        history.pluralIndexProperty().bind(tabPane.getSelectionModel().selectedIndexProperty());
     }
 
     public int size() {
@@ -140,6 +139,7 @@ public class TranslationTabController implements Initializable {
 
     public void setHistory(History history) {
         this.history = history;
+        history.pluralIndexProperty().bind(tabPane.getSelectionModel().selectedIndexProperty());
         translationAreaController.setHistory(history);
     }
 
