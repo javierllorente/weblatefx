@@ -7,7 +7,7 @@ Copyright (C) 2020-2022 Javier Llorente <javier@opensuse.org>
 Dependencies
 ------------
 * JavaFX 11+
-* jackson-databind
+* jakarta.json
 * jgettext (from https://github.com/javierllorente/jgettext)
 * ikonli-javafx
 * ikonli-icomoon-pack
