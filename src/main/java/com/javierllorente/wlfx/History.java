@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Javier Llorente <javier@opensuse.org>
+ * Copyright (C) 2021-2022 Javier Llorente <javier@opensuse.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,6 +95,10 @@ public class History {
         }
 
         compare(translationFile.getEntries().get(entryIndex), ttc.getTranslations(), entryIndex);
+    }
+    
+    public void check() {
+        check(entryIndexProperty.get());
     }
     
     public boolean hasTranslationChanged() {
