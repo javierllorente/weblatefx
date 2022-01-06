@@ -55,10 +55,13 @@ public class History {
     public IntegerProperty entryIndexProperty() {
         return entryIndexProperty;
     }
+
+    public void setPlural(boolean plural) {
+        this.plural = plural;
+    }
     
     private void compare(TranslationEntry entry, List<TranslationElement> elements, int entryIndex) {
-        plural = entry.isPlural();
-        if (plural) {
+        if (entry.isPlural()) {
             for (int i = 0; i<entry.getMsgStrElements().size(); i++) {
                     compareEntries(entry.getMsgStrElements().get(i).get(), elements.get(i).get(), 
                             entryIndex + "p" + i);
