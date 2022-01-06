@@ -55,6 +55,10 @@ public class History {
     public IntegerProperty entryIndexProperty() {
         return entryIndexProperty;
     }
+    
+    public IntegerProperty pluralIndexProperty() {
+        return pluralIndexProperty;
+    }
 
     public void setPlural(boolean plural) {
         this.plural = plural;
