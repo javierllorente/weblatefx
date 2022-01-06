@@ -493,7 +493,7 @@ public class BrowserController implements Initializable {
                 + "JavaFX: " + System.getProperty("javafx.runtime.version") + "\n"
                 + "Libraries: jgettext, jakarta.json, java-diff-utils, "
                 + "ikonli-javafx, ikonli-icomoon-pack" + "\n\n"
-                + "Copyright © 2020, 2021 Javier Llorente" + "\n"
+                + "Copyright © 2020-2022 Javier Llorente" + "\n"
                 + "This program is under the GPLv3");
         aboutAlert.setResizable(true);
         aboutAlert.showAndWait();
