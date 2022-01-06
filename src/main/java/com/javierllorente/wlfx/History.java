@@ -39,11 +39,15 @@ public class History {
     private TranslationFile translationFile;
     private TranslationTabController ttc;
     private final IntegerProperty entryIndexProperty;
+    private final IntegerProperty pluralIndexProperty;
+    private boolean plural;
         
     public History() {
         historyMap = new HashMap<>();
         changesSet = new HashSet<>();
         entryIndexProperty = new SimpleIntegerProperty();
+        pluralIndexProperty = new SimpleIntegerProperty();
+        plural = false;
     }
 
     public void setTranslationFile(TranslationFile translationFile) {
@@ -59,7 +63,8 @@ public class History {
     }
     
     private void compare(TranslationEntry entry, List<TranslationElement> elements, int entryIndex) {
-        if (entry.isPlural()) {
+        plural = entry.isPlural();
+        if (plural) {
             for (int i = 0; i<entry.getMsgStrElements().size(); i++) {
                     compareEntries(entry.getMsgStrElements().get(i).get(), elements.get(i).get(), 
                             entryIndex + "p" + i);
@@ -111,6 +116,18 @@ public class History {
         return !changesSet.isEmpty();
     }
     
+    private String getKey() {
+        String key = Integer.toString(entryIndexProperty().get());
+        if (plural) {
+            key += "p" + pluralIndexProperty.get();
+        }
+        return key;
+    }
+    
+    public List<String> get() {
+        return historyMap.get(getKey());
+    }
+        
     public void clear() {
         historyMap.clear();
         changesSet.clear();
