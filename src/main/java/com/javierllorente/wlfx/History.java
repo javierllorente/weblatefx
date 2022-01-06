@@ -18,7 +18,6 @@ package com.javierllorente.wlfx;
 
 import com.javierllorente.jgettext.TranslationElement;
 import com.javierllorente.jgettext.TranslationEntry;
-import com.javierllorente.jgettext.TranslationFile;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,8 +35,7 @@ public class History {
 
     private final Map<String, List<String>> historyMap;
     private final Set<String> changesSet;
-    private TranslationFile translationFile;
-    private TranslationTabController ttc;
+    private HistoryAdapter adapter;
     private final IntegerProperty entryIndexProperty;
     private final IntegerProperty pluralIndexProperty;
     private boolean plural;
@@ -50,14 +48,10 @@ public class History {
         plural = false;
     }
 
-    public void setTranslationFile(TranslationFile translationFile) {
-        this.translationFile = translationFile;
+    public void setAdapter(HistoryAdapter adapter) {
+        this.adapter = adapter;
     }
     
-    public void setTtc(TranslationTabController ttc) {
-        this.ttc = ttc;
-    }
-
     public IntegerProperty entryIndexProperty() {
         return entryIndexProperty;
     }
@@ -95,11 +89,12 @@ public class History {
     }
     
     public void check(int entryIndex) {
-        if (translationFile == null || ttc == null || entryIndex == -1) {
+        if (adapter.getOldTranslations() == null || adapter.getNewTranslations() == null 
+                || entryIndex == -1) {
             return;
         }
 
-        compare(translationFile.getEntries().get(entryIndex), ttc.getTranslations(), entryIndex);
+        compare(adapter.getOldTranslations().get(entryIndex), adapter.getNewTranslations(), entryIndex);
     }
     
     public void check() {
@@ -107,11 +102,13 @@ public class History {
     }
     
     public boolean hasTranslationChanged() {
-        if (translationFile == null || ttc == null || entryIndexProperty.get() == -1) {
+        if (adapter.getOldTranslations() == null || adapter.getNewTranslations() == null
+                || entryIndexProperty.get() == -1) {
             return false;
         }
 
-        compare(translationFile.getEntries().get(entryIndexProperty.get()), ttc.getTranslations(), entryIndexProperty.get());
+        compare(adapter.getOldTranslations().get(entryIndexProperty.get()), 
+                adapter.getNewTranslations(), entryIndexProperty.get());
         
         return !changesSet.isEmpty();
     }

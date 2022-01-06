@@ -84,6 +84,7 @@ public class BrowserController implements Initializable {
     private IntegerProperty entryIndexProperty;
     private boolean dataLoaded;
     private History history;
+    private HistoryAdapter historyAdapter;
     private BooleanBinding menuItemNotSelected;
 
     @FXML
@@ -129,7 +130,9 @@ public class BrowserController implements Initializable {
         dataLoaded = false;
         history = new History();
         history.entryIndexProperty().bind(entryIndexProperty);
-        history.setTtc(translationTabController);
+        historyAdapter = new HistoryAdapter();
+        historyAdapter.setTranslationTabController(translationTabController);
+        history.setAdapter(historyAdapter);
 
         setupProjectListView();
         setupComponentsListView();
@@ -400,7 +403,7 @@ public class BrowserController implements Initializable {
                                 translation = App.getWeblate().getFile(selectedProject,
                                         selectedComponent, selectedLanguage);
                                 translationFile = translationParser.parse(translation);
-                                history.setTranslationFile(translationFile);
+                                historyAdapter.setOldTranslations(translationFile.getEntries());
 
                                 if (fileFormat.equalsIgnoreCase("json")) {
                                     String sourceLanguage = App.getWeblate().getFile(selectedProject,
