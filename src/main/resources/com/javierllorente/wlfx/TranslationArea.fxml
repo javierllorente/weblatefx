@@ -24,6 +24,12 @@
                                 <FontIcon iconLiteral="icm-copy" />
                             </graphic>
                         </Button>
+                        <Button id="undoButton" fx:id="undoButton" disable="true" mnemonicParsing="true" 
+                                onAction="#undoText" prefWidth="20.0">
+                            <graphic>
+                                <FontIcon iconLiteral="icm-undo" />
+                            </graphic>
+                        </Button>
                     </HBox>
                 </VBox>
                 <TextArea fx:id="translationTextArea" prefHeight="200.0" prefWidth="200.0" wrapText="true"  />

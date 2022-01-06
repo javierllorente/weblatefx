@@ -26,6 +26,8 @@ import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -40,6 +42,10 @@ import javafx.scene.input.KeyEvent;
  */
 public class TranslationAreaController implements Initializable {
 
+    private BooleanProperty translationChangedProperty;
+    private History history;
+    private StringProperty textCopyProperty;
+    
     @FXML
     private Tab tab;
 
@@ -51,8 +57,9 @@ public class TranslationAreaController implements Initializable {
     
     @FXML
     private Button copyButton;
-
-    private BooleanProperty translationChangedProperty;
+    
+    @FXML
+    private Button undoButton;
 
     /**
      * Initializes the controller class.
@@ -60,18 +67,30 @@ public class TranslationAreaController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         translationChangedProperty = new SimpleBooleanProperty(false);
+        textCopyProperty = new SimpleStringProperty();
         translationTextArea.scrollTopProperty().bindBidirectional(sourceTextArea.scrollTopProperty());
         translationTextArea.setOnKeyTyped((KeyEvent t) -> {
             translationChangedProperty.set(true);
         });
-        translationTextArea.editableProperty().bind(sourceTextArea.textProperty().isNotEmpty());
+        translationTextArea.editableProperty().bind(sourceTextArea.textProperty().isNotEmpty());        
         
         copyButton.disableProperty().bind(translationTextArea.editableProperty().not());
+        undoButton.disableProperty().bind(translationTextArea.editableProperty().not().or(textCopyProperty.isEmpty()));
     }
     
     @FXML
     public void copyText() {
+        if (textCopyProperty.get().isEmpty()) {
+            textCopyProperty.set(translationTextArea.getText());
+        }
         translationTextArea.setText(sourceTextArea.getText());
+        history.check();
+    }
+    
+    @FXML
+    public void undoText() {
+        translationTextArea.setText(textCopyProperty.get());
+        textCopyProperty.set("");
     }
 
     public void setTitle(String title) {
@@ -98,6 +117,7 @@ public class TranslationAreaController implements Initializable {
 
     private void addEntries(List<String> entries, TextArea textArea) {
         textArea.clear();
+        textCopyProperty.set("");
         Platform.runLater(() -> {
             entries.forEach(entry -> {
                 textArea.appendText(entry);
@@ -105,6 +125,10 @@ public class TranslationAreaController implements Initializable {
         });
     }
 
+    public void setHistory(History history) {
+        this.history = history;
+    }
+    
     public TranslationElement getTranslation() {
         List<String> paragraphs = new ArrayList<>(Arrays
                 .asList(translationTextArea.getText().split("\n")));
