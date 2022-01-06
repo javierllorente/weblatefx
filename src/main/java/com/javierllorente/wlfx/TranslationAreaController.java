@@ -85,6 +85,7 @@ public class TranslationAreaController implements Initializable {
         }
         translationTextArea.setText(sourceTextArea.getText());
         history.check();
+        translationChangedProperty.set(true);
     }
     
     @FXML
