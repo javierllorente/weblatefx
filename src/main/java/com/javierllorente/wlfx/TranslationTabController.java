@@ -115,11 +115,11 @@ public class TranslationTabController implements Initializable {
                             tabPane.getTabs().add(loader.load());
                             tac = loader.getController();
                             tac.setHistory(history);
+                            tacList.add(tac);
+                            propertyList.add(tac.translationChangedProperty());
                         } catch (IOException ex) {
                             Logger.getLogger(TranslationTabController.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        tacList.add(tac);
-                        propertyList.add(tac.translationChangedProperty());
                     } else {
                         tac = tacList.get(i);
                     }
