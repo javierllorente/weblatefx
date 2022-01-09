@@ -12,5 +12,7 @@ MODULE_PATH=$JAVAFX_HOME:$LIB_DIR
 MODULES=javafx.controls,javafx.fxml,org.kordamp.ikonli.javafx
 MODULES+=,com.javierllorente.jwl,com.javierllorente.jgettext
 MODULES+=,jakarta.annotation,jersey.hk2,org.jvnet.mimepull,jakarta.activation
+MODULES+=,org.glassfish.json.jaxrs,org.glassfish.hk2.api
 
-java --module-path $MODULE_PATH --add-modules $MODULES -jar $APP_JAR
+java --module-path $MODULE_PATH --add-modules $MODULES\
+ --add-opens org.glassfish.json.jaxrs/org.glassfish.json.jaxrs=org.glassfish.hk2.utilities -jar $APP_JAR
