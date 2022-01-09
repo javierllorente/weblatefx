@@ -482,7 +482,7 @@ public class BrowserController implements Initializable {
     private void handleAbout() {
         Alert aboutAlert = new Alert(AlertType.INFORMATION);
         aboutAlert.initOwner(borderPane.getScene().getWindow());
-        aboutAlert.getDialogPane().setPrefSize(495, 320);
+        aboutAlert.getDialogPane().setPrefSize(480, 320);
         aboutAlert.setTitle("About " + App.NAME);
         aboutAlert.setGraphic(new ImageView(App.class.getResource("/wlfx.png").toString()));
         aboutAlert.setHeaderText(App.NAME + " " + App.VERSION + "\n"
@@ -491,7 +491,7 @@ public class BrowserController implements Initializable {
                 + System.getProperty("java.runtime.name") + " "
                 + System.getProperty("java.runtime.version") + "\n"
                 + "JavaFX: " + System.getProperty("javafx.runtime.version") + "\n"
-                + "Libraries: jwl, jgettext, jakarta.json, java-diff-utils, "
+                + "Libraries: jwl, jgettext, java-diff-utils, "
                 + "ikonli-javafx, ikonli-icomoon-pack" + "\n\n"
                 + "Copyright © 2020-2022 Javier Llorente" + "\n"
                 + "This program is under the GPLv3");
