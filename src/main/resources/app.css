@@ -48,7 +48,15 @@
 #menuButton:hover,
 #signInButton:hover {
     -fx-text-fill: derive(-fx-button-text-color, 40%);
-    -fx-background-color: derive(-fx-button-bg-color, 10%);
+    -fx-background-color: derive(-fx-button-bg-color, 5%);
+}
+
+#previousButton:pressed,
+#nextButton:pressed,
+#settingsButton:pressed,
+#menuButton:pressed,
+#signInButton:pressed {
+    -fx-background-color: derive(-fx-button-bg-color, 0%);
 }
 
 .button .ikonli-font-icon {
@@ -67,6 +75,10 @@
 #submitButton:hover {
     -fx-text-fill: derive(white, 40%);
     -fx-background-color: derive(green, 10%);
+}
+
+#submitButton:pressed {
+    -fx-background-color: derive(green, -5%);
 }
 
 #submitButton .ikonli-font-icon {
