@@ -28,6 +28,8 @@ import com.javierllorente.jgettext.JsonParser;
 import com.javierllorente.jgettext.TranslationFile;
 import com.javierllorente.jgettext.TranslationParser;
 import com.javierllorente.wlfx.exception.UnsupportedFileFormatException;
+import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.ProcessingException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -64,7 +66,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
-import javax.naming.AuthenticationException;
 
 /**
  * FXML Controller class
@@ -560,21 +561,20 @@ public class BrowserController implements Initializable {
                 Platform.runLater(() -> {
                     progressIndicator.setVisible(true);
                 });
-            } catch (IOException | InterruptedException | AuthenticationException ex) {
+            } catch (NotAuthorizedException ex) {
+                Logger.getLogger(BrowserController.class.getName())
+                        .log(Level.WARNING, "Error {0}. Wrong authentication token.", ex.getMessage());
+                preferences.put(App.AUTH_TOKEN, authToken);
 
-                if ((ex.getMessage() != null) && (ex.getMessage().equals("401"))) {
-                    Logger.getLogger(BrowserController.class.getName())
-                            .log(Level.WARNING, "Error 401. Wrong auth token.");
-                    preferences.put(App.AUTH_TOKEN, authToken);
-                    Platform.runLater(() -> {
-                        LoginDialog dialog = new LoginDialog(borderPane.getScene().getWindow(),
-                                preferences);
-                        Optional<String> result = dialog.showAndWait();
-                        result.ifPresent(authTokenEntered -> {
-                            authenticate(authTokenEntered);
-                        });
+                Platform.runLater(() -> {
+                    LoginDialog dialog = new LoginDialog(borderPane.getScene().getWindow(),
+                            preferences);
+                    Optional<String> result = dialog.showAndWait();
+                    result.ifPresent(authTokenEntered -> {
+                        authenticate(authTokenEntered);
                     });
-                } else {
+                });                
+            } catch (ProcessingException ex) {
                     Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
 
                     Platform.runLater(() -> {
@@ -585,8 +585,7 @@ public class BrowserController implements Initializable {
                         alert.setHeaderText(ex.getClass().toString());
                         alert.setContentText(ex.getMessage());
                         alert.showAndWait();
-                    });
-                }
+                    });                
             }
 
             if (App.getWeblate().isAuthenticated()) {
