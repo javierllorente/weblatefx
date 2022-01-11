@@ -138,7 +138,7 @@
                                 <argument>--module-path</argument>
                                 <argument>${java.home}/jmods:${project.build.directory}/mods:${project.build.directory}/lib</argument>
                                 <argument>--add-modules</argument>
-                                <argument>javafx.controls,javafx.fxml,java.naming,java.base,java.logging,java.prefs,jdk.crypto.ec</argument>
+                                <argument>javafx.controls,javafx.fxml,java.base,java.logging,java.prefs,jdk.crypto.ec</argument>
                                 <argument>--icon</argument>
                                 <argument>../${project.artifactId}.png</argument>
                                 <argument>--linux-shortcut</argument>
