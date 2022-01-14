@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020, 2021 Javier Llorente <javier@opensuse.org>
+ * Copyright (C) 2020-2022 Javier Llorente <javier@opensuse.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,8 @@ import org.kordamp.ikonli.javafx.FontIcon;
  * @author javier
  */
 public class SettingsDialog extends Dialog<Map<String, String>> {
+    
+    private TextField apiUriField;
 
     public SettingsDialog(Window window, Preferences preferences) {
         super();
@@ -67,7 +69,7 @@ public class SettingsDialog extends Dialog<Map<String, String>> {
         emailField.setMaxWidth(260.0);
         emailField.setText(preferences.get(App.TRANSLATOR_EMAIL, ""));
         
-        TextField apiUriField = new TextField();
+        apiUriField = new TextField();
         apiUriField.setPrefWidth(260.0);
         apiUriField.setText(preferences.get(App.API_URI, ""));
         
@@ -109,5 +111,13 @@ public class SettingsDialog extends Dialog<Map<String, String>> {
             }
             return null;
         });
-    }    
+    }
+    
+    public void focusApiUriField() {
+        Platform.runLater(() -> {
+            apiUriField.requestFocus();
+            apiUriField.end();
+        });
+    }
+    
 }
