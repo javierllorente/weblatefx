@@ -256,7 +256,7 @@ public class BrowserController implements Initializable {
                 projectsListView.setItems(items);
                 progressIndicator.setVisible(false);
             });
-        } catch (URISyntaxException | InterruptedException | IOException ex) {
+        } catch (IOException ex) {
             Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
             Platform.runLater(() -> {
                 progressIndicator.setVisible(false);
@@ -300,7 +300,7 @@ public class BrowserController implements Initializable {
                                     }
                                     progressIndicator.setVisible(false);
                                 });
-                            } catch (URISyntaxException | InterruptedException | IOException ex) {
+                            } catch (IOException ex) {
                                 Logger.getLogger(BrowserController.class.getName())
                                         .log(Level.SEVERE, null, ex);
                                 Platform.runLater(() -> {
@@ -360,7 +360,7 @@ public class BrowserController implements Initializable {
                                     progressIndicator.setVisible(false);
                                 });
 
-                            } catch (URISyntaxException | InterruptedException | IOException ex) {
+                            } catch (IOException ex) {
                                 Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
                                 Platform.runLater(() -> {
                                     progressIndicator.setVisible(false);
@@ -428,8 +428,8 @@ public class BrowserController implements Initializable {
                                     entryIndexProperty.set(0);
                                     progressIndicator.setVisible(false);
                                 });
-                            } catch (URISyntaxException | InterruptedException
-                                    | IOException | UnsupportedFileFormatException | NullPointerException ex) {
+                            } catch (IOException | UnsupportedFileFormatException 
+                                    | NullPointerException ex) {
                                 Logger.getLogger(BrowserController.class.getName())
                                         .log(Level.SEVERE, null, ex);
                                 Platform.runLater(() -> {
@@ -704,7 +704,7 @@ public class BrowserController implements Initializable {
                         }
                     });
 
-                } catch (IOException | URISyntaxException | InterruptedException ex) {
+                } catch (IOException ex) {
                     Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
                     Platform.runLater(() -> {
                         progressIndicator.setVisible(false);
