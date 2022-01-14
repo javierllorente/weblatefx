@@ -28,8 +28,9 @@ import com.javierllorente.jgettext.JsonParser;
 import com.javierllorente.jgettext.TranslationFile;
 import com.javierllorente.jgettext.TranslationParser;
 import com.javierllorente.wlfx.exception.UnsupportedFileFormatException;
-import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.ServerErrorException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -470,13 +471,8 @@ public class BrowserController implements Initializable {
 
         Optional<Map<String, String>> result = dialog.showAndWait();
         result.ifPresent(data -> {
-            preferences.put(App.TRANSLATOR_NAME, data.get(App.TRANSLATOR_NAME));
-            preferences.put(App.TRANSLATOR_EMAIL, data.get(App.TRANSLATOR_EMAIL));
-            preferences.put(App.API_URI, data.get(App.API_URI));
-            preferences.put(App.AUTH_TOKEN, data.get(App.AUTH_TOKEN));
-            preferences.put(App.AUTOLOGIN, data.get(App.AUTOLOGIN));
+            updatePreferences(data);
         });
-
     }
 
     @FXML
@@ -541,6 +537,10 @@ public class BrowserController implements Initializable {
             alert.setHeaderText("Empty API URI");
             alert.setContentText("API URI is empty. Please add an API URI in settings");
             alert.showAndWait();
+            
+            handleSettings();
+            handleSignIn();
+            
         } else if (authToken.isEmpty()) {
             LoginDialog dialog = new LoginDialog(borderPane.getScene().getWindow(),
                     preferences);
@@ -561,31 +561,52 @@ public class BrowserController implements Initializable {
                 Platform.runLater(() -> {
                     progressIndicator.setVisible(true);
                 });
-            } catch (NotAuthorizedException ex) {
-                Logger.getLogger(BrowserController.class.getName())
-                        .log(Level.WARNING, "Error {0}. Wrong authentication token.", ex.getMessage());
-                preferences.put(App.AUTH_TOKEN, authToken);
+            } catch (ClientErrorException | ServerErrorException ex) {
+                Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);                
+                
+                switch (ex.getResponse().getStatusInfo().toEnum()) {
+                    case UNAUTHORIZED:
+                        preferences.put(App.AUTH_TOKEN, authToken);
+                        Platform.runLater(() -> {
+                            LoginDialog dialog = new LoginDialog(borderPane
+                                    .getScene().getWindow(), preferences);
+                            Optional<String> result = dialog.showAndWait();
+                            result.ifPresent(authTokenEntered -> {
+                                authenticate(authTokenEntered);
+                            });
+                        });       
+                        break;
+                    case NOT_FOUND:
+                        Platform.runLater(() -> {
+                            Alert alert = new Alert(AlertType.ERROR);
+                            alert.initOwner(borderPane.getScene().getWindow());
+                            alert.setResizable(true);
+                            alert.setTitle("Error");
+                            alert.setHeaderText("API URI not found");
+                            alert.setContentText(preferences.get(App.API_URI, ""));
+                            alert.showAndWait();
+                            
+                            SettingsDialog settingsDialog = new SettingsDialog(borderPane
+                                    .getScene().getWindow(), preferences);
+                            settingsDialog.focusApiUriField();
+                            Optional<Map<String, String>> result = settingsDialog.showAndWait();
+                            result.ifPresent(data -> {
+                                updatePreferences(data);
+                            });                            
+                            handleSignIn();
+                        });
+                        break;                        
+                    default:
+                        Platform.runLater(() -> {
+                            showExceptionAlert(ex);
+                        });
+                }
 
-                Platform.runLater(() -> {
-                    LoginDialog dialog = new LoginDialog(borderPane.getScene().getWindow(),
-                            preferences);
-                    Optional<String> result = dialog.showAndWait();
-                    result.ifPresent(authTokenEntered -> {
-                        authenticate(authTokenEntered);
-                    });
-                });                
             } catch (ProcessingException ex) {
-                    Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
-
-                    Platform.runLater(() -> {
-                        Alert alert = new Alert(AlertType.ERROR);
-                        alert.initOwner(borderPane.getScene().getWindow());
-                        alert.setResizable(true);
-                        alert.setTitle("Error");
-                        alert.setHeaderText(ex.getClass().toString());
-                        alert.setContentText(ex.getMessage());
-                        alert.showAndWait();
-                    });                
+                Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
+                Platform.runLater(() -> {
+                    showExceptionAlert(ex);
+                });
             }
 
             if (App.getWeblate().isAuthenticated()) {
@@ -598,6 +619,14 @@ public class BrowserController implements Initializable {
             }
 
         }).start();
+    }
+    
+    private void updatePreferences(Map<String, String> data) {
+        preferences.put(App.TRANSLATOR_NAME, data.get(App.TRANSLATOR_NAME));
+        preferences.put(App.TRANSLATOR_EMAIL, data.get(App.TRANSLATOR_EMAIL));
+        preferences.put(App.API_URI, data.get(App.API_URI));
+        preferences.put(App.AUTH_TOKEN, data.get(App.AUTH_TOKEN));
+        preferences.put(App.AUTOLOGIN, data.get(App.AUTOLOGIN));
     }
 
     private void showExceptionAlert(Throwable throwable) {
