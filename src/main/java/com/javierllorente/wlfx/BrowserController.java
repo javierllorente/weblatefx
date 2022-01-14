@@ -256,7 +256,7 @@ public class BrowserController implements Initializable {
                 projectsListView.setItems(items);
                 progressIndicator.setVisible(false);
             });
-        } catch (IOException ex) {
+        } catch (ClientErrorException | ServerErrorException | ProcessingException ex) {
             Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
             Platform.runLater(() -> {
                 progressIndicator.setVisible(false);
@@ -300,7 +300,7 @@ public class BrowserController implements Initializable {
                                     }
                                     progressIndicator.setVisible(false);
                                 });
-                            } catch (IOException ex) {
+                            } catch (ClientErrorException | ServerErrorException | ProcessingException ex) {
                                 Logger.getLogger(BrowserController.class.getName())
                                         .log(Level.SEVERE, null, ex);
                                 Platform.runLater(() -> {
@@ -360,7 +360,7 @@ public class BrowserController implements Initializable {
                                     progressIndicator.setVisible(false);
                                 });
 
-                            } catch (IOException ex) {
+                            } catch (ClientErrorException | ServerErrorException | ProcessingException ex) {
                                 Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
                                 Platform.runLater(() -> {
                                     progressIndicator.setVisible(false);
@@ -704,7 +704,7 @@ public class BrowserController implements Initializable {
                         }
                     });
 
-                } catch (IOException ex) {
+                } catch (ClientErrorException | ServerErrorException | ProcessingException ex) {
                     Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
                     Platform.runLater(() -> {
                         progressIndicator.setVisible(false);
