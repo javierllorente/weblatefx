@@ -497,52 +497,43 @@ public class BrowserController implements Initializable {
 
     @FXML
     private void handleSignIn() {
-
+        
         if (App.getWeblate().isAuthenticated()) {
+            App.getWeblate().logout();
+            projectsListView.getItems().clear();
+            clearWorkArea();
             signInButton.setText("Sign in");
-
-            LoginDialog dialog = new LoginDialog(borderPane.getScene().getWindow(),
-                    preferences);
-            Optional<String> result = dialog.showAndWait();
-            result.ifPresentOrElse((authTokenEntered) -> {
-                projectsListView.getItems().clear();
-                authenticate(authTokenEntered);
-            }, () -> {
-                signInButton.setText("Sign out");
-            });
-
-            return;
-        }
-
-        String authToken = preferences.get(App.AUTH_TOKEN, "");
-        String apiUri = preferences.get(App.API_URI, "");
-
-        try {
-            App.getWeblate().setApiUrl(new URI(apiUri));
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        if (apiUri.isEmpty()) {
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.initOwner(borderPane.getScene().getWindow());
-            alert.setResizable(true);
-            alert.setTitle("Error");
-            alert.setHeaderText("Empty API URI");
-            alert.setContentText("API URI is empty. Please add an API URI in settings");
-            alert.showAndWait();
-            
-            showSettingsDialog(true, true);
-            
-        } else if (authToken.isEmpty()) {
-            LoginDialog dialog = new LoginDialog(borderPane.getScene().getWindow(),
-                    preferences);
-            Optional<String> result = dialog.showAndWait();
-            result.ifPresent(authTokenEntered -> {
-                authenticate(authTokenEntered);
-            });
         } else {
-            authenticate(authToken);
+            String authToken = preferences.get(App.AUTH_TOKEN, "");
+            String apiUri = preferences.get(App.API_URI, "");
+
+            try {
+                App.getWeblate().setApiUrl(new URI(apiUri));
+            } catch (URISyntaxException ex) {
+                Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            if (apiUri.isEmpty()) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.initOwner(borderPane.getScene().getWindow());
+                alert.setResizable(true);
+                alert.setTitle("Error");
+                alert.setHeaderText("Empty API URI");
+                alert.setContentText("API URI is empty. Please add an API URI in settings");
+                alert.showAndWait();
+
+                showSettingsDialog(true, true);
+
+            } else if (authToken.isEmpty()) {
+                LoginDialog dialog = new LoginDialog(borderPane.getScene().getWindow(),
+                        preferences);
+                Optional<String> result = dialog.showAndWait();
+                result.ifPresent(authTokenEntered -> {
+                    authenticate(authTokenEntered);
+                });
+            } else {
+                authenticate(authToken);
+            }
         }
     }
 
