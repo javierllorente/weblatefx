@@ -466,13 +466,7 @@ public class BrowserController implements Initializable {
 
     @FXML
     private void handleSettings() {
-        SettingsDialog dialog = new SettingsDialog(borderPane.getScene().getWindow(),
-                preferences);
-
-        Optional<Map<String, String>> result = dialog.showAndWait();
-        result.ifPresent(data -> {
-            updatePreferences(data);
-        });
+        showSettingsDialog(false, false);
     }
 
     @FXML
@@ -538,8 +532,7 @@ public class BrowserController implements Initializable {
             alert.setContentText("API URI is empty. Please add an API URI in settings");
             alert.showAndWait();
             
-            handleSettings();
-            handleSignIn();
+            showSettingsDialog(true, true);
             
         } else if (authToken.isEmpty()) {
             LoginDialog dialog = new LoginDialog(borderPane.getScene().getWindow(),
@@ -586,14 +579,7 @@ public class BrowserController implements Initializable {
                             alert.setContentText(preferences.get(App.API_URI, ""));
                             alert.showAndWait();
                             
-                            SettingsDialog settingsDialog = new SettingsDialog(borderPane
-                                    .getScene().getWindow(), preferences);
-                            settingsDialog.focusApiUriField();
-                            Optional<Map<String, String>> result = settingsDialog.showAndWait();
-                            result.ifPresent(data -> {
-                                updatePreferences(data);
-                            });                            
-                            handleSignIn();
+                            showSettingsDialog(true, true);
                         });
                         break;                        
                     default:
@@ -619,6 +605,21 @@ public class BrowserController implements Initializable {
             }
 
         }).start();
+    }
+    
+    private void showSettingsDialog(boolean focusApiUriField, boolean callHandleSignIn) {
+        SettingsDialog settingsDialog = new SettingsDialog(borderPane
+                .getScene().getWindow(), preferences);
+        if (focusApiUriField) {
+            settingsDialog.focusApiUriField();
+        }
+        Optional<Map<String, String>> result = settingsDialog.showAndWait();
+        result.ifPresent(data -> {
+            updatePreferences(data);
+            if (callHandleSignIn) {
+                handleSignIn();
+            }
+        });        
     }
     
     private void updatePreferences(Map<String, String> data) {
