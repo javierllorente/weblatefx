@@ -67,6 +67,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 
@@ -192,8 +193,23 @@ public class BrowserController implements Initializable {
         quickPanelController.entryIndexProperty().addListener((ov, t, t1) -> {
             entryIndexProperty.set(t1.intValue());
         });
-
+        
+        registerEventFilters();
+        
         autoLogin();
+    }
+
+    private void registerEventFilters() {
+        loginButton.addEventFilter(MouseEvent.MOUSE_RELEASED, (e) -> {
+            if (entryIndexProperty.get() != -1 && history.hasTranslationChanged()) {
+                Alert alert = new UncommittedChangesAlert(borderPane.getScene().getWindow(), "close");
+                alert.showAndWait().ifPresent((response) -> {
+                    if (response == ButtonType.NO) {
+                        e.consume();
+                    }
+                });
+            }
+        });
     }
 
     public void setOnCloseWindow(Scene scene) {
@@ -470,7 +486,7 @@ public class BrowserController implements Initializable {
     private void handleSettings() {
         showSettingsDialog(false, false);
     }
-
+    
     @FXML
     private void handleAbout() {
         Alert aboutAlert = new Alert(AlertType.INFORMATION);
