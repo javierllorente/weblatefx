@@ -39,8 +39,8 @@ public class LoginDialog extends Dialog<String> {
     public LoginDialog(Window window, Preferences preferences) {
         super();
         initOwner(window);
-        setTitle("Sign In");
-        setHeaderText("Sign In");
+        setTitle("Log in");
+        setHeaderText("Log in");
         setGraphic(new FontIcon("icm-user"));
 
         ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);
