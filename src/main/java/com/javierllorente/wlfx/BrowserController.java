@@ -202,12 +202,16 @@ public class BrowserController implements Initializable {
     private void registerEventFilters() {
         loginButton.addEventFilter(MouseEvent.MOUSE_RELEASED, (e) -> {
             if (entryIndexProperty.get() != -1 && history.hasTranslationChanged()) {
-                Alert alert = new UncommittedChangesAlert(borderPane.getScene().getWindow(), "close");
-                alert.showAndWait().ifPresent((response) -> {
-                    if (response == ButtonType.NO) {
-                        e.consume();
-                    }
-                });
+                showUncommittedChangesAlert(e);
+            }
+        });
+    }
+
+    private void showUncommittedChangesAlert(Event event) {
+        Alert alert = new UncommittedChangesAlert(borderPane.getScene().getWindow(), "close");
+        alert.showAndWait().ifPresent((response) -> {
+            if (response == ButtonType.NO) {
+                event.consume();
             }
         });
     }
@@ -224,16 +228,9 @@ public class BrowserController implements Initializable {
     }
 
     private void closeWindowEvent(Event event) {
-        if (entryIndexProperty.get() != -1) {
-
-            if (history.hasTranslationChanged()) {
-                Alert alert = new UncommittedChangesAlert(borderPane.getScene().getWindow(), "close");
-                alert.showAndWait().ifPresent((response) -> {
-                    if (response == ButtonType.NO) {
-                        event.consume();
-                    }
-                });
-            }
+        if (entryIndexProperty.get() != -1
+                && history.hasTranslationChanged()) {
+            showUncommittedChangesAlert(event);
         }
     }
 
