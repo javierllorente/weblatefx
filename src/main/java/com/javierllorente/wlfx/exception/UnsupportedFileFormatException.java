@@ -23,6 +23,6 @@ package com.javierllorente.wlfx.exception;
 public class UnsupportedFileFormatException extends RuntimeException {
 
     public UnsupportedFileFormatException(String fileFormat) {
-        super("File format " + fileFormat + " not supported");
+        super(fileFormat.toUpperCase() + " file format not supported");
     }    
 }
