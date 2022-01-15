@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Javier Llorente <javier@opensuse.org>
+ * Copyright (C) 2021-2022 Javier Llorente <javier@opensuse.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,7 @@ public class ParserFactory {
         } else if(fileFormat.equalsIgnoreCase("json")) {
             return new JsonParser();
         } else {
-            throw new UnsupportedFileFormatException("The " + fileFormat
-                    + " file format is currently not supported");
+            throw new UnsupportedFileFormatException(fileFormat);
         }
     }
 }

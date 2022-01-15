@@ -623,12 +623,7 @@ public class BrowserController implements Initializable {
 
     private void showExceptionAlert(Throwable throwable) {
         ExceptionAlert exceptionAlert = new ExceptionAlert(borderPane.getScene().getWindow());
-        
-        String header = (throwable instanceof UnsupportedFileFormatException) 
-                ? "File format not supported" 
-                : throwable.getMessage();
-        exceptionAlert.setHeader(header);
-        
+        exceptionAlert.setHeader(throwable.getMessage());        
         exceptionAlert.setThrowable(throwable);
         exceptionAlert.showAndWait();
     }
