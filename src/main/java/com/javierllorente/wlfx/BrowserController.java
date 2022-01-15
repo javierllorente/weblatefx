@@ -16,6 +16,7 @@
  */
 package com.javierllorente.wlfx;
 
+import com.javierllorente.jgettext.ParserFactory;
 import com.javierllorente.wlfx.dialog.LoginDialog;
 import com.javierllorente.wlfx.dialog.SettingsDialog;
 import com.javierllorente.wlfx.alert.ExceptionAlert;
@@ -27,7 +28,7 @@ import com.github.difflib.patch.Patch;
 import com.javierllorente.jgettext.JsonParser;
 import com.javierllorente.jgettext.TranslationFile;
 import com.javierllorente.jgettext.TranslationParser;
-import com.javierllorente.wlfx.exception.UnsupportedFileFormatException;
+import com.javierllorente.jgettext.exception.UnsupportedFileFormatException;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.ServerErrorException;
