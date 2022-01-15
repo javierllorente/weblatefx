@@ -57,7 +57,7 @@
                             </graphic>
                         </MenuButton>
                         <Pane prefWidth="5.0" />
-                        <Button id="signInButton" fx:id="signInButton" mnemonicParsing="false" onAction="#handleSignIn" text="Sign in">
+                        <Button id="loginButton" fx:id="loginButton" mnemonicParsing="false" onAction="#handleLogin" text="Log in">
                             <graphic>
                                 <FontIcon iconLiteral="icm-user" />
                             </graphic>

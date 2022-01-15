@@ -101,7 +101,7 @@ public class BrowserController implements Initializable {
     private QuickPanelController quickPanelController;
 
     @FXML
-    private Button signInButton;
+    private Button loginButton;
 
     @FXML
     private Button submitButton;
@@ -231,7 +231,7 @@ public class BrowserController implements Initializable {
 
     public void autoLogin() {
         if (preferences.getBoolean(App.AUTOLOGIN, false)) {
-            handleSignIn();
+            handleLogin();
         }
     }
 
@@ -498,13 +498,13 @@ public class BrowserController implements Initializable {
     }
 
     @FXML
-    private void handleSignIn() {
+    private void handleLogin() {
         
         if (App.getWeblate().isAuthenticated()) {
             App.getWeblate().logout();
             projectsListView.getItems().clear();
             clearWorkArea();
-            signInButton.setText("Sign in");
+            loginButton.setText("Log in");
         } else {
             String authToken = preferences.get(App.AUTH_TOKEN, "");
             String apiUri = preferences.get(App.API_URI, "");
@@ -591,7 +591,7 @@ public class BrowserController implements Initializable {
             if (App.getWeblate().isAuthenticated()) {
                 Platform.runLater(() -> {
                     progressIndicator.setVisible(false);
-                    signInButton.setText("Sign out");
+                    loginButton.setText("Log out");
                 });
                 preferences.put(App.AUTH_TOKEN, authToken);
                 getProjects();
@@ -600,7 +600,7 @@ public class BrowserController implements Initializable {
         }).start();
     }
     
-    private void showSettingsDialog(boolean focusApiUriField, boolean callHandleSignIn) {
+    private void showSettingsDialog(boolean focusApiUriField, boolean callHandleLogin) {
         SettingsDialog settingsDialog = new SettingsDialog(borderPane
                 .getScene().getWindow(), preferences);
         if (focusApiUriField) {
@@ -609,8 +609,8 @@ public class BrowserController implements Initializable {
         Optional<Map<String, String>> result = settingsDialog.showAndWait();
         result.ifPresent(data -> {
             updatePreferences(data);
-            if (callHandleSignIn) {
-                handleSignIn();
+            if (callHandleLogin) {
+                handleLogin();
             }
         });        
     }

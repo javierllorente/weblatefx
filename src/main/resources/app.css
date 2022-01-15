@@ -37,7 +37,7 @@
     -fx-padding: 0;
 }
 
-#previousButton, #nextButton, #settingsButton, #menuButton, #signInButton {
+#previousButton, #nextButton, #settingsButton, #menuButton, #loginButton {
     -fx-text-fill: -fx-button-text-color;
     -fx-background-color: -fx-button-bg-color;  
 }
@@ -46,7 +46,7 @@
 #nextButton:hover, 
 #settingsButton:hover, 
 #menuButton:hover,
-#signInButton:hover {
+#loginButton:hover {
     -fx-text-fill: derive(-fx-button-text-color, 40%);
     -fx-background-color: derive(-fx-button-bg-color, 5%);
 }
@@ -55,7 +55,7 @@
 #nextButton:pressed,
 #settingsButton:pressed,
 #menuButton:pressed,
-#signInButton:pressed {
+#loginButton:pressed {
     -fx-background-color: derive(-fx-button-bg-color, 0%);
 }
 
