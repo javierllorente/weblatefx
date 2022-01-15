@@ -16,7 +16,7 @@
  */
 package com.javierllorente.wlfx;
 
-import com.javierllorente.jgettext.ParserFactory;
+import com.javierllorente.jgettext.TranslationParserFactory;
 import com.javierllorente.wlfx.dialog.LoginDialog;
 import com.javierllorente.wlfx.dialog.SettingsDialog;
 import com.javierllorente.wlfx.alert.ExceptionAlert;
@@ -26,6 +26,7 @@ import com.github.difflib.DiffUtils;
 import com.github.difflib.UnifiedDiffUtils;
 import com.github.difflib.patch.Patch;
 import com.javierllorente.jgettext.JsonParser;
+import com.javierllorente.jgettext.ParserFactory;
 import com.javierllorente.jgettext.TranslationFile;
 import com.javierllorente.jgettext.TranslationParser;
 import com.javierllorente.jgettext.exception.UnsupportedFileFormatException;
@@ -401,7 +402,7 @@ public class BrowserController implements Initializable {
                                 String fileFormat = App.getWeblate().getFileFormat(selectedProject,
                                         selectedComponent, selectedLanguage);
 
-                                ParserFactory parserFactory = new ParserFactory();
+                                TranslationParserFactory parserFactory = new ParserFactory();
                                 TranslationParser translationParser = parserFactory.getParser(fileFormat);
 
                                 translation = App.getWeblate().getFile(selectedProject,
