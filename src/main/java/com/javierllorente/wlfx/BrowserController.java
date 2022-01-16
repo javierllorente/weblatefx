@@ -70,6 +70,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 /**
  * FXML Controller class
@@ -483,6 +484,25 @@ public class BrowserController implements Initializable {
     @FXML
     private void handleSettings() {
         showSettingsDialog(false, false);
+    }
+    
+    @FXML
+    private void handleShortcuts() {
+        Alert shortcutsAlert = new Alert(AlertType.INFORMATION);
+        shortcutsAlert.initOwner(borderPane.getScene().getWindow());
+        shortcutsAlert.getDialogPane().setPrefSize(380, 220);
+        shortcutsAlert.setTitle("Shortcuts");
+        FontIcon keyboardIcon = new FontIcon("icm-keyboard");
+        keyboardIcon.setIconSize(20);
+        shortcutsAlert.setGraphic(keyboardIcon);
+        shortcutsAlert.setHeaderText("Keyboard shortcuts");
+        shortcutsAlert.setContentText(
+                "Previous entry:        Alt + P\n\n"
+                + "Next entry:               Alt + N\n\n"
+                + "Submit changes:     Alt + S\n\n"
+                + "Quit:                          Ctrl + Q");
+        shortcutsAlert.setResizable(true);
+        shortcutsAlert.showAndWait();
     }
     
     @FXML

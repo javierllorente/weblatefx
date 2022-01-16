@@ -49,6 +49,7 @@
                         <MenuButton id="menuButton" fx:id="menuButton" mnemonicParsing="false">
                             <items>
                                 <MenuItem mnemonicParsing="false" onAction="#handleSettings" text="Settings" />
+                                <MenuItem mnemonicParsing="false" onAction="#handleShortcuts" text="Shortcuts" />
                                 <MenuItem mnemonicParsing="true" onAction="#handleAbout" text="_About" />
                                 <MenuItem accelerator="Shortcut+Q" mnemonicParsing="false" onAction="#handleQuit" text="Quit" />
                             </items>
