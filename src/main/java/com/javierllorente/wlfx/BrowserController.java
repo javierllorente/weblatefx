@@ -202,13 +202,14 @@ public class BrowserController implements Initializable {
     private void registerEventFilters() {
         loginButton.addEventFilter(MouseEvent.MOUSE_RELEASED, (e) -> {
             if (entryIndexProperty.get() != -1 && history.hasTranslationChanged()) {
-                showUncommittedChangesAlert(e);
+                showUncommittedChangesAlert(e, UncommittedChangesAlert.ActionType.LOGOUT);
             }
         });
     }
 
-    private void showUncommittedChangesAlert(Event event) {
-        Alert alert = new UncommittedChangesAlert(borderPane.getScene().getWindow(), "close");
+    private void showUncommittedChangesAlert(Event event, 
+            UncommittedChangesAlert.ActionType actionType) {
+        Alert alert = new UncommittedChangesAlert(borderPane.getScene().getWindow(), actionType);
         alert.showAndWait().ifPresent((response) -> {
             if (response == ButtonType.NO) {
                 event.consume();
@@ -230,7 +231,7 @@ public class BrowserController implements Initializable {
     private void closeWindowEvent(Event event) {
         if (entryIndexProperty.get() != -1
                 && history.hasTranslationChanged()) {
-            showUncommittedChangesAlert(event);
+            showUncommittedChangesAlert(event, UncommittedChangesAlert.ActionType.EXIT);
         }
     }
 
@@ -285,7 +286,7 @@ public class BrowserController implements Initializable {
         componentsListView.setItems(components);
 
         projectsListView.setCellFactory(new SelectionCellFactory(
-                history, borderPane, "project"));
+                history, borderPane, UncommittedChangesAlert.ActionType.SWITCH_PROJECT));
 
         projectsListView.getSelectionModel().selectedItemProperty().
                 addListener((ov, t, t1) -> {
@@ -333,7 +334,7 @@ public class BrowserController implements Initializable {
         languagesComboBox.setItems(languages);
 
         componentsListView.setCellFactory(new SelectionCellFactory(
-                history, borderPane, "component"));
+                history, borderPane, UncommittedChangesAlert.ActionType.SWITCH_COMPONENT));
 
         componentsListView.getSelectionModel().selectedItemProperty().
                 addListener((ov, t, t1) -> {
@@ -390,7 +391,7 @@ public class BrowserController implements Initializable {
 
     private void setupLanguagesComboBox() {
         languagesComboBox.setCellFactory(new SelectionCellFactory(
-                history, borderPane, "language"));
+                history, borderPane, UncommittedChangesAlert.ActionType.SWITCH_LANGUAGE));
 
         languagesComboBox.getSelectionModel().selectedItemProperty().
                 addListener((ov, t, t1) -> {

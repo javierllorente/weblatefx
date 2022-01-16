@@ -28,18 +28,47 @@ import javafx.stage.Window;
  */
 public class UncommittedChangesAlert extends Alert {
     
-    public UncommittedChangesAlert(Window w, String component) {
+    public enum ActionType {
+        SWITCH_PROJECT, SWITCH_COMPONENT, SWITCH_LANGUAGE, LOGOUT, EXIT
+    };
+    
+    public UncommittedChangesAlert(Window window, ActionType actionType) {
 
-        super(AlertType.WARNING, 
-                "There are uncommitted changes. Are you sure you want to " 
-                + (component.equals("close") ? "exit" : "switch to another " + component)
-                + "?",
-                ButtonType.NO, ButtonType.YES
-        );
-        initOwner(w.getScene().getWindow());        
+        super(AlertType.WARNING, "", ButtonType.NO, ButtonType.YES);
+
+        initOwner(window.getScene().getWindow());   
         setTitle("Uncommitted changes");
-        
+        setContentText(buildContextText(actionType));
         setupButtons();
+    }
+
+    private String buildContextText(ActionType actionType) {
+        String contentText = "There are uncommitted changes. Are you sure you want to ";
+        String component = "";
+        switch (actionType) {
+            case SWITCH_PROJECT:
+                component = "project";
+                break;
+            case SWITCH_COMPONENT:
+                component = "component";
+                break;
+            case SWITCH_LANGUAGE:
+                component = "language";
+                break;
+            case LOGOUT:
+                contentText += "log out";
+                break;
+            case EXIT:
+                contentText += "exit";
+                break;
+            default:
+                contentText += "???";
+        }
+        if (!component.isEmpty()) {
+            contentText += "switch to another " + component;
+        }
+        contentText += "?";
+        return contentText;
     }
 
     private void setupButtons() {

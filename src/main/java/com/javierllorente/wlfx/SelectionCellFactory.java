@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Javier Llorente <javier@opensuse.org>
+ * Copyright (C) 2021-2022 Javier Llorente <javier@opensuse.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,12 +33,12 @@ public class SelectionCellFactory implements Callback<ListView<String>, ListCell
 
     private final History history;
     private final Pane pane;
-    private final String element;
+    private final UncommittedChangesAlert.ActionType actionType;
 
-    public SelectionCellFactory(History history, Pane pane, String element) {
+    public SelectionCellFactory(History history, Pane pane, UncommittedChangesAlert.ActionType actionType) {
         this.history = history;
         this.pane = pane;
-        this.element = element;
+        this.actionType = actionType;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class SelectionCellFactory implements Callback<ListView<String>, ListCell
 
         cell.addEventFilter(MouseEvent.MOUSE_PRESSED, (e) -> {
             if (history.hasTranslationChanged()) {
-                Alert alert = new UncommittedChangesAlert(pane.getScene().getWindow(), element);
+                Alert alert = new UncommittedChangesAlert(pane.getScene().getWindow(), actionType);
 
                 alert.showAndWait().ifPresent((response) -> {
                     if (response == ButtonType.NO) {
