@@ -35,12 +35,16 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
 
 /**
@@ -80,6 +84,14 @@ public class QuickPanelController implements Initializable {
         entryIndexProperty = new ReadOnlyIntegerWrapper();
         quickTableIndex = 0;
         setupTable();
+    }
+
+    public void setupAccelerators(Scene scene) {
+        KeyCombination quickFilterShortcut = new KeyCodeCombination(KeyCode.F, 
+                KeyCombination.CONTROL_DOWN);
+        scene.getAccelerators().put(quickFilterShortcut, () -> {
+            quickFilter.requestFocus();
+        });
     }
     
     private void setupTable() {        

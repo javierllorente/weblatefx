@@ -61,6 +61,7 @@ public class App extends Application {
         stage.show(); 
         BrowserController browserController = (BrowserController) loader.getController();
         browserController.setOnCloseWindow(scene);
+        browserController.setupAccelerators(scene);
     }
 
     static void setRoot(String fxml) throws IOException {

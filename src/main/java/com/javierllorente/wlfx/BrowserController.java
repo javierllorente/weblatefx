@@ -235,6 +235,10 @@ public class BrowserController implements Initializable {
             showUncommittedChangesAlert(event, UncommittedChangesAlert.ActionType.EXIT);
         }
     }
+    
+    public void setupAccelerators(Scene scene) {
+        quickPanelController.setupAccelerators(scene);
+    }
 
     private void clearWorkArea() {
         translationTabController.clearTranslationAreas();
@@ -490,7 +494,7 @@ public class BrowserController implements Initializable {
     private void handleShortcuts() {
         Alert shortcutsAlert = new Alert(AlertType.INFORMATION);
         shortcutsAlert.initOwner(borderPane.getScene().getWindow());
-        shortcutsAlert.getDialogPane().setPrefSize(380, 220);
+        shortcutsAlert.getDialogPane().setPrefSize(380, 260);
         shortcutsAlert.setTitle("Shortcuts");
         FontIcon keyboardIcon = new FontIcon("icm-keyboard");
         keyboardIcon.setIconSize(20);
@@ -499,6 +503,7 @@ public class BrowserController implements Initializable {
         shortcutsAlert.setContentText(
                 "Previous entry:        Alt + P\n\n"
                 + "Next entry:               Alt + N\n\n"
+                + "Quick search:          Ctrl + F\n\n"
                 + "Submit changes:     Alt + S\n\n"
                 + "Quit:                          Ctrl + Q");
         shortcutsAlert.setResizable(true);
