@@ -60,8 +60,7 @@ public class App extends Application {
         stage.getIcons().add(new Image(App.class.getResourceAsStream("/wlfx.png")));
         stage.show(); 
         BrowserController browserController = (BrowserController) loader.getController();
-        browserController.setOnCloseWindow(scene);
-        browserController.setupAccelerators(scene);
+        browserController.setupScene(scene);
     }
 
     static void setRoot(String fxml) throws IOException {

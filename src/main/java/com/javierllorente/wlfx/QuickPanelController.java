@@ -31,11 +31,11 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -86,10 +86,10 @@ public class QuickPanelController implements Initializable {
         setupTable();
     }
 
-    public void setupAccelerators(Scene scene) {
+    public void setupAccelerators(ObservableMap<KeyCombination, Runnable> accelerators) {
         KeyCombination quickFilterShortcut = new KeyCodeCombination(KeyCode.F, 
                 KeyCombination.CONTROL_DOWN);
-        scene.getAccelerators().put(quickFilterShortcut, () -> {
+        accelerators.put(quickFilterShortcut, () -> {
             quickFilter.requestFocus();
         });
     }

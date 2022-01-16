@@ -218,7 +218,7 @@ public class BrowserController implements Initializable {
         });
     }
 
-    public void setOnCloseWindow(Scene scene) {
+    private void setOnCloseWindow(Scene scene) {
         scene.getWindow().setOnCloseRequest((e) -> {
             closeWindowEvent(e);
         });
@@ -236,8 +236,9 @@ public class BrowserController implements Initializable {
         }
     }
     
-    public void setupAccelerators(Scene scene) {
-        quickPanelController.setupAccelerators(scene);
+    public void setupScene(Scene scene) {
+        setOnCloseWindow(scene);
+        quickPanelController.setupAccelerators(scene.getAccelerators());
     }
 
     private void clearWorkArea() {
