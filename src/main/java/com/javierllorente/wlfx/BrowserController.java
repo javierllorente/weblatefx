@@ -546,6 +546,7 @@ public class BrowserController implements Initializable {
             clearWorkArea();
             loginButton.setText("Log in");
         } else {
+            progressIndicator.setVisible(true);
             String authToken = preferences.get(App.AUTH_TOKEN, "");
             String apiUri = preferences.get(App.API_URI, "");
 
@@ -584,9 +585,6 @@ public class BrowserController implements Initializable {
             try {
                 App.getWeblate().setAuthToken(authToken);
                 App.getWeblate().authenticate();
-                Platform.runLater(() -> {
-                    progressIndicator.setVisible(true);
-                });
             } catch (ClientErrorException | ServerErrorException ex) {
                 Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);                
                 
