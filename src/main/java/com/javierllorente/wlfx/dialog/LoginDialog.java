@@ -55,7 +55,7 @@ public class LoginDialog extends Dialog<String> {
 
         TextField authTokenField = new TextField();
         authTokenField.setPromptText("Auth Token:");
-        authTokenField.setText(preferences.get(App.AUTH_TOKEN, ""));
+        authTokenField.setText(App.getAuthTokenEncryptor().decrypt(preferences.get(App.AUTH_TOKEN, "")));
         authTokenField.setPrefWidth(360.0);
         gridPane.add(new Label("Auth Token:"), 0, 0);
         gridPane.add(authTokenField, 1, 0);

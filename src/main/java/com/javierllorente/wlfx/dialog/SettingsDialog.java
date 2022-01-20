@@ -75,7 +75,7 @@ public class SettingsDialog extends Dialog<Map<String, String>> {
         
         TextField authTokenField = new TextField();
         authTokenField.setPrefWidth(360.0);
-        authTokenField.setText(preferences.get(App.AUTH_TOKEN, ""));
+        authTokenField.setText(App.getAuthTokenEncryptor().decrypt(preferences.get(App.AUTH_TOKEN, "")));
         
         CheckBox autoLoginCheckBox = new CheckBox();
         autoLoginCheckBox.setSelected(preferences.getBoolean(App.AUTOLOGIN, false));
@@ -105,7 +105,7 @@ public class SettingsDialog extends Dialog<Map<String, String>> {
                 data.put(App.TRANSLATOR_NAME, nameField.getText());
                 data.put(App.TRANSLATOR_EMAIL, emailField.getText());
                 data.put(App.API_URI, apiUriField.getText());
-                data.put(App.AUTH_TOKEN, authTokenField.getText());
+                data.put(App.AUTH_TOKEN, App.getAuthTokenEncryptor().encrypt(authTokenField.getText()));
                 data.put(App.AUTOLOGIN, String.valueOf(autoLoginCheckBox.isSelected()));
                 return data;
             }

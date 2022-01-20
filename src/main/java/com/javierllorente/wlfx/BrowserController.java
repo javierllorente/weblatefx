@@ -547,7 +547,7 @@ public class BrowserController implements Initializable {
             loginButton.setText("Log in");
         } else {
             progressIndicator.setVisible(true);
-            String authToken = preferences.get(App.AUTH_TOKEN, "");
+            String authToken = App.getAuthTokenEncryptor().decrypt(preferences.get(App.AUTH_TOKEN, ""));
             String apiUri = preferences.get(App.API_URI, "");
 
             try {
@@ -590,7 +590,7 @@ public class BrowserController implements Initializable {
                 
                 switch (ex.getResponse().getStatusInfo().toEnum()) {
                     case UNAUTHORIZED:
-                        preferences.put(App.AUTH_TOKEN, authToken);
+                        preferences.put(App.AUTH_TOKEN, App.getAuthTokenEncryptor().encrypt(authToken));
                         Platform.runLater(() -> {
                             LoginDialog dialog = new LoginDialog(borderPane
                                     .getScene().getWindow(), preferences);
@@ -631,7 +631,7 @@ public class BrowserController implements Initializable {
                     progressIndicator.setVisible(false);
                     loginButton.setText("Log out");
                 });
-                preferences.put(App.AUTH_TOKEN, authToken);
+                preferences.put(App.AUTH_TOKEN, App.getAuthTokenEncryptor().encrypt(authToken));
                 getProjects();
             }
 

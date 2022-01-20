@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020, 2021 Javier Llorente <javier@opensuse.org>
+ * Copyright (C) 2020-2022 Javier Llorente <javier@opensuse.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
  */
 package com.javierllorente.wlfx;
 
+import com.javierllorente.wlfx.crypto.AuthTokenEncryptor;
 import com.javierllorente.jwl.Weblate;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -45,9 +46,11 @@ public class App extends Application {
     
     private static Scene scene;
     private static Weblate weblate;
+    private static AuthTokenEncryptor authTokenEncryptor;
 
     public App() throws URISyntaxException {
         weblate = new Weblate();
+        authTokenEncryptor = new AuthTokenEncryptor();
     }
 
     @Override
@@ -79,6 +82,10 @@ public class App extends Application {
     
     public static Weblate getWeblate() {
         return weblate;
+    }
+
+    public static AuthTokenEncryptor getAuthTokenEncryptor() {
+        return authTokenEncryptor;
     }
 
     public static void main(String[] args) {
