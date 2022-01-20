@@ -131,7 +131,7 @@ public class BrowserController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        preferences = Preferences.userRoot();
+        preferences = Preferences.userNodeForPackage(getClass());
         entryIndexProperty = new SimpleIntegerProperty(-1);
         dataLoaded = false;
         history = new History();
