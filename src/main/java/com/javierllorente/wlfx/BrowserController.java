@@ -571,9 +571,9 @@ public class BrowserController implements Initializable {
                 LoginDialog dialog = new LoginDialog(borderPane.getScene().getWindow(),
                         preferences);
                 Optional<String> result = dialog.showAndWait();
-                result.ifPresent(authTokenEntered -> {
+                result.ifPresentOrElse((authTokenEntered) -> {
                     authenticate(authTokenEntered);
-                });
+                }, () -> progressIndicator.setVisible(false));
             } else {
                 authenticate(authToken);
             }
@@ -595,9 +595,9 @@ public class BrowserController implements Initializable {
                             LoginDialog dialog = new LoginDialog(borderPane
                                     .getScene().getWindow(), preferences);
                             Optional<String> result = dialog.showAndWait();
-                            result.ifPresent(authTokenEntered -> {
+                            result.ifPresentOrElse((authTokenEntered) -> {
                                 authenticate(authTokenEntered);
-                            });
+                            }, () -> progressIndicator.setVisible(false));
                         });       
                         break;
                     case NOT_FOUND:
