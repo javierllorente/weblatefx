@@ -30,6 +30,7 @@ import com.javierllorente.jgettext.ParserFactory;
 import com.javierllorente.jgettext.TranslationFile;
 import com.javierllorente.jgettext.TranslationParser;
 import com.javierllorente.jgettext.exception.UnsupportedFileFormatException;
+import com.javierllorente.wlfx.alert.ShortcutsAlert;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.ServerErrorException;
@@ -70,7 +71,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 /**
  * FXML Controller class
@@ -494,22 +494,8 @@ public class BrowserController implements Initializable {
     
     @FXML
     private void handleShortcuts() {
-        Alert shortcutsAlert = new Alert(AlertType.INFORMATION);
-        shortcutsAlert.initOwner(borderPane.getScene().getWindow());
-        shortcutsAlert.getDialogPane().setPrefSize(380, 260);
-        shortcutsAlert.setTitle("Shortcuts");
-        FontIcon keyboardIcon = new FontIcon("icm-keyboard");
-        keyboardIcon.setIconSize(20);
-        shortcutsAlert.setGraphic(keyboardIcon);
-        shortcutsAlert.setHeaderText("Keyboard shortcuts");
-        shortcutsAlert.setContentText(
-                "Previous entry:        Alt + P\n\n"
-                + "Next entry:               Alt + N\n\n"
-                + "Quick search:          Ctrl + F\n\n"
-                + "Submit changes:     Alt + S\n\n"
-                + "Quit:                          Ctrl + Q");
-        shortcutsAlert.setResizable(true);
-        shortcutsAlert.showAndWait();
+        ShortcutsAlert alert = new ShortcutsAlert(borderPane.getScene().getWindow());
+        alert.showAndWait();
     }
     
     @FXML
