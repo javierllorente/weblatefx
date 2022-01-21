@@ -51,7 +51,7 @@ public class ShortcutsAlert extends Alert {
 
     private TableView<Map.Entry<String, String>> createTable() {
         TableView<Map.Entry<String, String>> tableView = new TableView<>();
-        tableView.setId("shortcutTable");
+        tableView.setId("shortcutsTable");
         TableColumn<Map.Entry<String, String>, String> labelColumn = new TableColumn<>();
         labelColumn.setMinWidth(260);
         labelColumn.setCellValueFactory((p) -> {
