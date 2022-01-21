@@ -33,10 +33,14 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TabPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 
 /**
  *
@@ -76,6 +80,19 @@ public class TranslationTabController implements Initializable {
 
         tacList.add(translationAreaController);
         propertyList.add(translationAreaController.translationChangedProperty());
+    }
+   
+    public void setupAccelerators(ObservableMap<KeyCombination, Runnable> accelerators) {
+        KeyCombination quickFilterShortcut = new KeyCodeCombination(KeyCode.D,
+                KeyCombination.CONTROL_DOWN);
+        accelerators.put(quickFilterShortcut, () -> {
+            for (int i = 0; i < tabPane.getTabs().size(); i++) {
+                if (tabPane.getTabs().get(i).isSelected()) {
+                    tacList.get(i).requestTranslationTextAreaFocus();
+                    return;
+                }
+            }
+        });
     }
 
     public int size() {

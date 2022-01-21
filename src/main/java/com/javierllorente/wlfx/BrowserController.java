@@ -238,6 +238,7 @@ public class BrowserController implements Initializable {
     
     public void setupScene(Scene scene) {
         setOnCloseWindow(scene);
+        translationTabController.setupAccelerators(scene.getAccelerators());
         quickPanelController.setupAccelerators(scene.getAccelerators());
     }
 

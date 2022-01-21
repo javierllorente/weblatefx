@@ -158,4 +158,8 @@ public class TranslationAreaController implements Initializable {
         return translationChangedProperty;
     }
     
+    public void requestTranslationTextAreaFocus() {
+        translationTextArea.requestFocus();
+    }
+    
 }

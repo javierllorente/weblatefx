@@ -67,6 +67,7 @@ public class ShortcutsAlert extends Alert {
                 new AbstractMap.SimpleEntry<>("Previous entry", "Alt + P"),
                 new AbstractMap.SimpleEntry<>("Next entry", "Alt + N"),
                 new AbstractMap.SimpleEntry<>("Quick search", "Ctrl + F"),
+                new AbstractMap.SimpleEntry<>("Translate", "Ctrl + D"),
                 new AbstractMap.SimpleEntry<>("Submit changes", "Alt + S"),
                 new AbstractMap.SimpleEntry<>("Quit", "Ctrl + Q")        
         );
