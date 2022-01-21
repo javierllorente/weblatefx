@@ -450,7 +450,8 @@ public class BrowserController implements Initializable {
                                     entryIndexProperty.set(0);
                                     progressIndicator.setVisible(false);
                                 });
-                            } catch (IOException | UnsupportedFileFormatException 
+                            } catch (ClientErrorException | ServerErrorException | ProcessingException
+                                    | IOException | UnsupportedFileFormatException 
                                     | NullPointerException ex) {
                                 Logger.getLogger(BrowserController.class.getName())
                                         .log(Level.SEVERE, null, ex);
