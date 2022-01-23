@@ -93,6 +93,16 @@ public class TranslationTabController implements Initializable {
                 }
             }
         });
+        
+        KeyCombination switchTabsShortcut = new KeyCodeCombination(KeyCode.T,
+                KeyCombination.CONTROL_DOWN);
+        accelerators.put(switchTabsShortcut, () -> {
+            if (tabPane.getSelectionModel().isSelected(tabPane.getTabs().size() - 1)) {
+                tabPane.getSelectionModel().selectFirst();
+            } else {
+                tabPane.getSelectionModel().selectNext();
+            }
+        });
     }
 
     public int size() {

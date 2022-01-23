@@ -69,6 +69,7 @@ public class ShortcutsAlert extends Alert {
                 new AbstractMap.SimpleEntry<>(App.getBundle().getString("next_entry"), "Ctrl + ."),
                 new AbstractMap.SimpleEntry<>(App.getBundle().getString("quick_search"), "Ctrl + F"),
                 new AbstractMap.SimpleEntry<>(App.getBundle().getString("translate"), "Ctrl + D"),
+                new AbstractMap.SimpleEntry<>(App.getBundle().getString("switch_tabs"), "Ctrl + T"),
                 new AbstractMap.SimpleEntry<>(App.getBundle().getString("submit.title"), "Ctrl + S"),
                 new AbstractMap.SimpleEntry<>(App.getBundle().getString("quit"), "Ctrl + Q")        
         );
