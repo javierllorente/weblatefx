@@ -60,7 +60,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader loader = getFXMLLoader("browser");
+        FXMLLoader loader = getFXMLLoader("Browser");
         scene = new Scene(loader.load(), WINDOW_WIDTH, WINDOW_HEIGHT);
         scene.getStylesheets().add("app.css");
         stage.setScene(scene);
