@@ -26,6 +26,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ResourceBundle;
 import javafx.scene.image.Image;
 
 /**
@@ -44,13 +45,17 @@ public class App extends Application {
     public static final String API_URI = "api_uri";
     public static final String AUTOLOGIN = "autologin";
     
+    private final String applicationBundle = getClass().getPackageName() + "/i18n/ApplicationBundle";
+    
     private static Scene scene;
     private static Weblate weblate;
     private static AuthTokenEncryptor authTokenEncryptor;
+    private static ResourceBundle bundle;
 
     public App() throws URISyntaxException {
         weblate = new Weblate();
         authTokenEncryptor = new AuthTokenEncryptor();
+        bundle = ResourceBundle.getBundle(applicationBundle);
     }
 
     @Override
@@ -76,7 +81,7 @@ public class App extends Application {
     }
     
     public static FXMLLoader getFXMLLoader(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"), bundle);
         return fxmlLoader;
     }
     
@@ -86,6 +91,10 @@ public class App extends Application {
 
     public static AuthTokenEncryptor getAuthTokenEncryptor() {
         return authTokenEncryptor;
+    }
+
+    public static ResourceBundle getBundle() {
+        return bundle;
     }
 
     public static void main(String[] args) {

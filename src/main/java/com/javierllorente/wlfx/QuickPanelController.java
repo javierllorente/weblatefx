@@ -174,7 +174,8 @@ public class QuickPanelController implements Initializable {
         
         quickFilter.textProperty().addListener(quickFilterListener);
         
-        quickChoice.setItems(FXCollections.observableArrayList("Source", "Target"));
+        quickChoice.setItems(FXCollections.observableArrayList(App.getBundle().getString("source"), 
+                App.getBundle().getString("target")));
         quickChoice.getSelectionModel().select(1);
         quickChoice.setOnAction((t) -> {
             quickFilterListener.changed(quickFilter.textProperty(), "",

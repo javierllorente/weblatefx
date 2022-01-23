@@ -16,6 +16,7 @@
  */
 package com.javierllorente.wlfx.alert;
 
+import com.javierllorente.wlfx.App;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.List;
@@ -37,8 +38,8 @@ public class ShortcutsAlert extends Alert {
         super(AlertType.INFORMATION);
         initOwner(window);
         getDialogPane().setPrefSize(380, 260);
-        setTitle("Shortcuts");
-        setHeaderText("Keyboard shortcuts");
+        setTitle(App.getBundle().getString("shortcuts"));
+        setHeaderText(App.getBundle().getString("keyboard_shortcuts"));
         
         FontIcon keyboardIcon = new FontIcon("icm-keyboard");
         keyboardIcon.setIconSize(20);
@@ -64,12 +65,12 @@ public class ShortcutsAlert extends Alert {
         });
         tableView.getColumns().addAll(labelColumn, shortcutColumn);
         List<Map.Entry<String, String>> data = Arrays.asList(
-                new AbstractMap.SimpleEntry<>("Previous entry", "Alt + P"),
-                new AbstractMap.SimpleEntry<>("Next entry", "Alt + N"),
-                new AbstractMap.SimpleEntry<>("Quick search", "Ctrl + F"),
-                new AbstractMap.SimpleEntry<>("Translate", "Ctrl + D"),
-                new AbstractMap.SimpleEntry<>("Submit changes", "Alt + S"),
-                new AbstractMap.SimpleEntry<>("Quit", "Ctrl + Q")        
+                new AbstractMap.SimpleEntry<>(App.getBundle().getString("previous_entry"), "Alt + P"),
+                new AbstractMap.SimpleEntry<>(App.getBundle().getString("next_entry"), "Alt + N"),
+                new AbstractMap.SimpleEntry<>(App.getBundle().getString("quick_search"), "Ctrl + F"),
+                new AbstractMap.SimpleEntry<>(App.getBundle().getString("translate"), "Ctrl + D"),
+                new AbstractMap.SimpleEntry<>(App.getBundle().getString("submit.title"), "Alt + S"),
+                new AbstractMap.SimpleEntry<>(App.getBundle().getString("quit"), "Ctrl + Q")        
         );
         tableView.getItems().addAll(data);
         return tableView;

@@ -16,6 +16,8 @@
  */
 package com.javierllorente.wlfx.alert;
 
+import com.javierllorente.wlfx.App;
+import java.text.MessageFormat;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -37,35 +39,36 @@ public class UncommittedChangesAlert extends Alert {
         super(AlertType.WARNING, "", ButtonType.NO, ButtonType.YES);
 
         initOwner(window.getScene().getWindow());   
-        setTitle("Uncommitted changes");
+        setTitle(App.getBundle().getString("uncommittedchanges.title"));
         setContentText(buildContextText(actionType));
         setupButtons();
     }
 
     private String buildContextText(ActionType actionType) {
-        String contentText = "There are uncommitted changes. Are you sure you want to ";
+        String contentText = App.getBundle().getString("uncommittedchanges.content");
         String component = "";
         switch (actionType) {
             case SWITCH_PROJECT:
-                component = "project";
+                component = App.getBundle().getString("project");
                 break;
             case SWITCH_COMPONENT:
-                component = "component";
+                component = App.getBundle().getString("component");
                 break;
             case SWITCH_LANGUAGE:
-                component = "language";
+                component = App.getBundle().getString("language");
                 break;
             case LOGOUT:
-                contentText += "log out";
+                contentText += App.getBundle().getString("logout");
                 break;
             case EXIT:
-                contentText += "exit";
+                contentText += App.getBundle().getString("exit");
                 break;
             default:
                 contentText += "???";
         }
         if (!component.isEmpty()) {
-            contentText += "switch to another " + component;
+            contentText += MessageFormat.format(App.getBundle().getString("uncommittedchanges.switch {0}"), 
+                    new Object[] {component});
         }
         contentText += "?";
         return contentText;

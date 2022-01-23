@@ -127,7 +127,8 @@ public class TranslationTabController implements Initializable {
                 } else {
 
                     if (moreTranslationAreasNeeded) {
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("TranslationArea.fxml"));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("TranslationArea.fxml"), 
+                                App.getBundle());
                         try {
                             tabPane.getTabs().add(loader.load());
                             tac = loader.getController();
@@ -143,12 +144,12 @@ public class TranslationTabController implements Initializable {
                     tac.setSource(entry.getMsgIdPluralElement().get());
                 }
 
-                tac.setTitle("Plural " + (i + 1));
+                tac.setTitle(App.getBundle().getString("plural") + (i + 1));
                 tac.setTranslation(entry.getMsgStrElements().get(i).get());
             }
 
         } else {
-            tacList.get(0).setTitle("Translation");
+            tacList.get(0).setTitle(App.getBundle().getString("translation"));
             tacList.get(0).setSource(entry.getMsgId());
             tacList.get(0).setTranslation(entry.getMsgStr());
         }

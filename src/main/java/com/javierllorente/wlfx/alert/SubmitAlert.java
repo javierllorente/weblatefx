@@ -16,6 +16,7 @@
  */
 package com.javierllorente.wlfx.alert;
 
+import com.javierllorente.wlfx.App;
 import java.util.List;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -42,8 +43,8 @@ public class SubmitAlert extends Alert {
     public SubmitAlert(AlertType at, Window w) {
         super(at);
         initOwner(w);
-        setTitle("Submit changes");
-        setContentText("Please review your changes");
+        setTitle(App.getBundle().getString("submit.title"));
+        setContentText(App.getBundle().getString("submit.content"));
         setResizable(true); // FIXME: Workaround for JavaFX 11
         getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
         getDialogPane().setMinWidth(Region.USE_PREF_SIZE);

@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -504,18 +505,20 @@ public class BrowserController implements Initializable {
         Alert aboutAlert = new Alert(AlertType.INFORMATION);
         aboutAlert.initOwner(borderPane.getScene().getWindow());
         aboutAlert.getDialogPane().setPrefSize(480, 320);
-        aboutAlert.setTitle("About " + App.NAME);
+        aboutAlert.setTitle(MessageFormat.format(App.getBundle().getString("about.title {0}"), 
+                new Object[] {App.NAME}));
         aboutAlert.setGraphic(new ImageView(App.class.getResource("/wlfx.png").toString()));
         aboutAlert.setHeaderText(App.NAME + " " + App.VERSION + "\n"
-                + "A JavaFX-based Weblate client");
+                + App.getBundle().getString("about.description"));
         aboutAlert.setContentText("Java: "
                 + System.getProperty("java.runtime.name") + " "
                 + System.getProperty("java.runtime.version") + "\n"
                 + "JavaFX: " + System.getProperty("javafx.runtime.version") + "\n"
-                + "Libraries: jwl, jgettext, java-diff-utils, "
+                + App.getBundle().getString("about.libraries")
+                +  "jwl, jgettext, java-diff-utils, "
                 + "ikonli-javafx, ikonli-icomoon-pack" + "\n\n"
-                + "Copyright © 2020-2022 Javier Llorente" + "\n"
-                + "This program is under the GPLv3");
+                + App.getBundle().getString("about.copyright") + "\n"
+                + App.getBundle().getString("about.license"));
         aboutAlert.setResizable(true);
         aboutAlert.showAndWait();
     }
@@ -532,7 +535,7 @@ public class BrowserController implements Initializable {
             App.getWeblate().logout();
             projectsListView.getItems().clear();
             clearWorkArea();
-            loginButton.setText("Log in");
+            loginButton.setText(App.getBundle().getString("login"));
         } else {
             progressIndicator.setVisible(true);
             String authToken = App.getAuthTokenEncryptor().decrypt(preferences.get(App.AUTH_TOKEN, ""));
@@ -548,9 +551,9 @@ public class BrowserController implements Initializable {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.initOwner(borderPane.getScene().getWindow());
                 alert.setResizable(true);
-                alert.setTitle("Error");
-                alert.setHeaderText("Empty API URI");
-                alert.setContentText("API URI is empty. Please add an API URI in settings");
+                alert.setTitle(App.getBundle().getString("error.title"));
+                alert.setHeaderText(App.getBundle().getString("error.api_uri.empty.header"));
+                alert.setContentText(App.getBundle().getString("error.api_uri.empty.content"));
                 alert.showAndWait();
 
                 showSettingsDialog(true, true);
@@ -593,8 +596,8 @@ public class BrowserController implements Initializable {
                             Alert alert = new Alert(AlertType.ERROR);
                             alert.initOwner(borderPane.getScene().getWindow());
                             alert.setResizable(true);
-                            alert.setTitle("Error");
-                            alert.setHeaderText("API URI not found");
+                            alert.setTitle(App.getBundle().getString("error.title"));
+                            alert.setHeaderText(App.getBundle().getString("error.api_uri.not_found.header"));
                             alert.setContentText(preferences.get(App.API_URI, ""));
                             alert.showAndWait();
                             
@@ -617,7 +620,7 @@ public class BrowserController implements Initializable {
             if (App.getWeblate().isAuthenticated()) {
                 Platform.runLater(() -> {
                     progressIndicator.setVisible(false);
-                    loginButton.setText("Log out");
+                    loginButton.setText(App.getBundle().getString("logout"));
                 });
                 preferences.put(App.AUTH_TOKEN, App.getAuthTokenEncryptor().encrypt(authToken));
                 getProjects();
@@ -685,7 +688,8 @@ public class BrowserController implements Initializable {
 
         Patch<String> patch = DiffUtils.diff(oldTranslation, newTranslation);
         List<String> unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff(
-                "Old translation", "New translation", oldTranslation, patch, 0);
+                App.getBundle().getString("diff.oldtranslation"), 
+                App.getBundle().getString("diff.newtranslation"), oldTranslation, patch, 0);
 //            unifiedDiff.forEach(System.out::println);
 
         SubmitAlert submitAlert = new SubmitAlert(AlertType.CONFIRMATION,
@@ -716,8 +720,9 @@ public class BrowserController implements Initializable {
 
                         Alert alert = new Alert(AlertType.INFORMATION);
                         alert.initOwner(borderPane.getScene().getWindow());
-                        alert.setTitle("Submit results");
-                        alert.setHeaderText("Accepted changes: " + acceptedChanges);
+                        alert.setTitle(App.getBundle().getString("submit.results"));
+                        alert.setHeaderText(MessageFormat.format(App.getBundle()
+                                .getString("submit.accepted {0}"), new Object[] {acceptedChanges}));
                         alert.setContentText(contextText);
                         alert.setResizable(true); // FIXME: Workaround for JavaFX 11
                         alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);

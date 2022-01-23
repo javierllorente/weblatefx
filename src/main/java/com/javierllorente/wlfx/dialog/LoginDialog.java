@@ -39,11 +39,12 @@ public class LoginDialog extends Dialog<String> {
     public LoginDialog(Window window, Preferences preferences) {
         super();
         initOwner(window);
-        setTitle("Log in");
-        setHeaderText("Log in");
+        setTitle(App.getBundle().getString("login"));
+        setHeaderText(App.getBundle().getString("login"));
         setGraphic(new FontIcon("icm-user"));
 
-        ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);
+        ButtonType loginButtonType = new ButtonType(App.getBundle().getString("login"), 
+                ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
         ButtonBar buttonBar = (ButtonBar) getDialogPane().lookup(".button-bar");
         buttonBar.setButtonOrder(ButtonBar.BUTTON_ORDER_WINDOWS);        
@@ -54,10 +55,10 @@ public class LoginDialog extends Dialog<String> {
         gridPane.setPadding(new Insets(20, 40, 10, 10));
 
         TextField authTokenField = new TextField();
-        authTokenField.setPromptText("Auth Token:");
+        authTokenField.setPromptText(App.getBundle().getString("login.authtoken"));
         authTokenField.setText(App.getAuthTokenEncryptor().decrypt(preferences.get(App.AUTH_TOKEN, "")));
         authTokenField.setPrefWidth(360.0);
-        gridPane.add(new Label("Auth Token:"), 0, 0);
+        gridPane.add(new Label(App.getBundle().getString("login.authtoken")), 0, 0);
         gridPane.add(authTokenField, 1, 0);
 
         Node loginButton = getDialogPane().lookupButton(loginButtonType);

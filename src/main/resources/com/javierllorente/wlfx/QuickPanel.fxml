@@ -18,7 +18,7 @@
     <VBox>
         <HBox>
             <children>
-                <TextField fx:id="quickFilter" promptText="Quick search (Ctrl + F)" HBox.hgrow="ALWAYS">
+                <TextField fx:id="quickFilter" promptText="%quick_search.prompt_text" HBox.hgrow="ALWAYS">
                     <HBox.margin>
                         <Insets bottom="2.0" left="1.0" right="1.0" top="2.0" />
                     </HBox.margin>
@@ -35,14 +35,14 @@
                 <Label text="" />
             </placeholder>
             <columns>
-                <TableColumn fx:id="entryColumn" editable="false" prefWidth="45.0" text="Entry" />
-                <TableColumn fx:id="sourceColumn" editable="false" prefWidth="100.0" text="Source" />
-                <TableColumn fx:id="targetColumn" editable="false" prefWidth="100.0" text="Target" />
+                <TableColumn fx:id="entryColumn" editable="false" prefWidth="45.0" text="%entry" />
+                <TableColumn fx:id="sourceColumn" editable="false" prefWidth="100.0" text="%source" />
+                <TableColumn fx:id="targetColumn" editable="false" prefWidth="100.0" text="%target" />
             </columns>
         </TableView>
     </VBox>
     <VBox SplitPane.resizableWithParent="false">
-        <Label text="Metadata">
+        <Label text="%metadata">
             <VBox.margin>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </VBox.margin>

@@ -44,14 +44,15 @@ public class SettingsDialog extends Dialog<Map<String, String>> {
     public SettingsDialog(Window window, Preferences preferences) {
         super();
         initOwner(window);
-        setTitle("Settings");
-        setHeaderText("Identity");
+        setTitle(App.getBundle().getString("settings"));
+        setHeaderText(App.getBundle().getString("settings.header"));
         setGraphic(new FontIcon("icm-wrench"));
         
         getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
         getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
         
-        ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+        ButtonType saveButtonType = new ButtonType(App.getBundle().getString("settings.save"), 
+                ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
         ButtonBar buttonBar = (ButtonBar) getDialogPane().lookup(".button-bar");
         buttonBar.setButtonOrder(ButtonBar.BUTTON_ORDER_WINDOWS);
@@ -80,15 +81,15 @@ public class SettingsDialog extends Dialog<Map<String, String>> {
         CheckBox autoLoginCheckBox = new CheckBox();
         autoLoginCheckBox.setSelected(preferences.getBoolean(App.AUTOLOGIN, false));
 
-        gridPane.add(new Label("Name:"), 0, 0);
+        gridPane.add(new Label(App.getBundle().getString("settings.name")), 0, 0);
         gridPane.add(nameField, 1, 0);
-        gridPane.add(new Label("Email:"), 0, 1);
+        gridPane.add(new Label(App.getBundle().getString("settings.email")), 0, 1);
         gridPane.add(emailField, 1, 1);
-        gridPane.add(new Label("API URI:"), 0, 2);
+        gridPane.add(new Label(App.getBundle().getString("settings.apiuri")), 0, 2);
         gridPane.add(apiUriField, 1, 2);
-        gridPane.add(new Label("Auth Token:"), 0, 3);
+        gridPane.add(new Label(App.getBundle().getString("login.authtoken")), 0, 3);
         gridPane.add(authTokenField, 1, 3);
-        gridPane.add(new Label("Autologin"), 0, 4);
+        gridPane.add(new Label(App.getBundle().getString("settings.autologin")), 0, 4);
         gridPane.add(autoLoginCheckBox, 1, 4);
         
         getDialogPane().setContent(gridPane);

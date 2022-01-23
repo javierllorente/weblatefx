@@ -16,6 +16,7 @@
  */
 package com.javierllorente.wlfx.alert;
 
+import com.javierllorente.wlfx.App;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import javafx.scene.control.Alert;
@@ -36,9 +37,9 @@ public class ExceptionAlert extends Alert {
     public ExceptionAlert(Window w) {
         super(AlertType.ERROR);
         initOwner(w);
-        setTitle("Exception Dialog");
-        setHeaderText("Something went wrong");
-        Label label = new Label("The exception stacktrace was:");
+        setTitle(App.getBundle().getString("exception.title"));
+        setHeaderText(App.getBundle().getString("exception.header"));
+        Label label = new Label(App.getBundle().getString("exception.stacktrace"));
 
         textArea = new TextArea();
         textArea.setEditable(false);

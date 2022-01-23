@@ -22,18 +22,18 @@
             <children>
                 <ToolBar prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                     <items>
-                        <Button id="submitButton" fx:id="submitButton" disable="true" mnemonicParsing="true" onAction="#submit" prefWidth="80.0" text="_Submit">
+                        <Button id="submitButton" fx:id="submitButton" disable="true" mnemonicParsing="true" onAction="#submit" prefWidth="80.0" text="%button.submit">
                             <graphic>
                                 <FontIcon iconLiteral="icm-upload" />
                             </graphic>
                         </Button>
                         <Pane prefWidth="15.0" />
-                        <Button id="previousButton" fx:id="previousButton" disable="true" mnemonicParsing="true" onAction="#previousItem" prefWidth="90.0" text="_Previous">
+                        <Button id="previousButton" fx:id="previousButton" disable="true" mnemonicParsing="true" onAction="#previousItem" prefWidth="90.0" text="%button.previous">
                             <graphic>
                                 <FontIcon iconLiteral="icm-arrow-left2" />
                             </graphic>
                         </Button>
-                        <Button id="nextButton" fx:id="nextButton" contentDisplay="RIGHT" disable="true" mnemonicParsing="true" onAction="#nextItem" prefWidth="90.0" text="_Next">
+                        <Button id="nextButton" fx:id="nextButton" contentDisplay="RIGHT" disable="true" mnemonicParsing="true" onAction="#nextItem" prefWidth="90.0" text="%button.next">
                             <graphic>
                                 <FontIcon iconLiteral="icm-arrow-right2" />
                             </graphic>
@@ -48,17 +48,17 @@
                         </Button>
                         <MenuButton id="menuButton" fx:id="menuButton" mnemonicParsing="false">
                             <items>
-                                <MenuItem mnemonicParsing="false" onAction="#handleSettings" text="Settings" />
-                                <MenuItem mnemonicParsing="false" onAction="#handleShortcuts" text="Shortcuts" />
-                                <MenuItem mnemonicParsing="true" onAction="#handleAbout" text="_About" />
-                                <MenuItem accelerator="Shortcut+Q" mnemonicParsing="false" onAction="#handleQuit" text="Quit" />
+                                <MenuItem mnemonicParsing="false" onAction="#handleSettings" text="%settings" />
+                                <MenuItem mnemonicParsing="false" onAction="#handleShortcuts" text="%shortcuts" />
+                                <MenuItem mnemonicParsing="true" onAction="#handleAbout" text="%about" />
+                                <MenuItem accelerator="Shortcut+Q" mnemonicParsing="false" onAction="#handleQuit" text="%quit" />
                             </items>
                             <graphic>
                                 <FontIcon iconLiteral="icm-menu" />
                             </graphic>
                         </MenuButton>
                         <Pane prefWidth="5.0" />
-                        <Button id="loginButton" fx:id="loginButton" mnemonicParsing="false" onAction="#handleLogin" prefWidth="80.0" text="Log in">
+                        <Button id="loginButton" fx:id="loginButton" mnemonicParsing="false" onAction="#handleLogin" prefWidth="80.0" text="%login">
                             <graphic>
                                 <FontIcon iconLiteral="icm-user" />
                             </graphic>
@@ -73,7 +73,7 @@
             <SplitPane orientation="VERTICAL" dividerPositions="0.5471f, 0.9245f" 
                        prefWidth="200.0" SplitPane.resizableWithParent="false">
                 <VBox>
-                    <Label text="Projects">
+                    <Label text="%projects">
                         <VBox.margin>
                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                         </VBox.margin>
@@ -81,7 +81,7 @@
                     <ListView fx:id="projectsListView" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                 </VBox>
                 <VBox>
-                    <Label text="Components">
+                    <Label text="%components">
                         <VBox.margin>
                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                         </VBox.margin>
@@ -89,7 +89,7 @@
                     <ListView fx:id="componentsListView" prefHeight="251.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                 </VBox>
                 <VBox minHeight="52" maxHeight="52">
-                    <Label text="Languages">
+                    <Label text="%languages">
                         <VBox.margin>
                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                         </VBox.margin>
