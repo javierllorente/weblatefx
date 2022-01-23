@@ -507,7 +507,7 @@ public class BrowserController implements Initializable {
         aboutAlert.getDialogPane().setPrefSize(480, 320);
         aboutAlert.setTitle(MessageFormat.format(App.getBundle().getString("about.title {0}"), 
                 new Object[] {App.NAME}));
-        aboutAlert.setGraphic(new ImageView(App.class.getResource("/wlfx.png").toString()));
+        aboutAlert.setGraphic(new ImageView(App.class.getResource(App.ICON).toString()));
         aboutAlert.setHeaderText(App.NAME + " " + App.VERSION + "\n"
                 + App.getBundle().getString("about.description"));
         aboutAlert.setContentText("Java: "
