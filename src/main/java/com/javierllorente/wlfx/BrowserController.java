@@ -42,6 +42,7 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -516,7 +517,8 @@ public class BrowserController implements Initializable {
                 + "JavaFX: " + System.getProperty("javafx.runtime.version") + "\n"
                 + App.getBundle().getString("about.libraries")
                 +  "jwl, jgettext, java-diff-utils, "
-                + "ikonli-javafx, ikonli-icomoon-pack" + "\n\n"
+                + "ikonli-javafx, ikonli-icomoon-pack" + "\n"
+                + App.getBundle().getString("about.locale") + Locale.getDefault() + "\n\n"
                 + App.getBundle().getString("about.copyright") + "\n"
                 + App.getBundle().getString("about.license"));
         aboutAlert.setResizable(true);
