@@ -28,12 +28,12 @@
                             </graphic>
                         </Button>
                         <Pane prefWidth="15.0" />
-                        <Button id="previousButton" fx:id="previousButton" disable="true" mnemonicParsing="true" onAction="#previousItem" prefWidth="90.0" text="%button.previous">
+                        <Button id="previousButton" fx:id="previousButton" disable="true" mnemonicParsing="false" onAction="#previousItem" prefWidth="90.0" text="%button.previous">
                             <graphic>
                                 <FontIcon iconLiteral="icm-arrow-left2" />
                             </graphic>
                         </Button>
-                        <Button id="nextButton" fx:id="nextButton" contentDisplay="RIGHT" disable="true" mnemonicParsing="true" onAction="#nextItem" prefWidth="90.0" text="%button.next">
+                        <Button id="nextButton" fx:id="nextButton" contentDisplay="RIGHT" disable="true" mnemonicParsing="false" onAction="#nextItem" prefWidth="90.0" text="%button.next">
                             <graphic>
                                 <FontIcon iconLiteral="icm-arrow-right2" />
                             </graphic>

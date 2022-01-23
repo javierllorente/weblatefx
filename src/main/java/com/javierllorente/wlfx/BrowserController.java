@@ -250,10 +250,16 @@ public class BrowserController implements Initializable {
     
     private void setupAccelerators(ObservableMap<KeyCombination, Runnable> accelerators) {
         KeyCombination submitShortcut = new KeyCodeCombination(KeyCode.S,
+                KeyCombination.CONTROL_DOWN);        
+        KeyCombination previousShortcut = new KeyCodeCombination(KeyCode.COMMA,
+                KeyCombination.CONTROL_DOWN);        
+        KeyCombination nextShortcut = new KeyCodeCombination(KeyCode.PERIOD,
                 KeyCombination.CONTROL_DOWN);
-        accelerators.put(submitShortcut, () -> {
-            submit();
-        });
+        accelerators.putAll(Map.of(
+                submitShortcut, this::submit,
+                previousShortcut, this::previousItem,
+                nextShortcut, this::nextItem
+        ));
     }
 
     private void clearWorkArea() {
