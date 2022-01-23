@@ -57,6 +57,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -70,6 +71,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
@@ -240,8 +243,17 @@ public class BrowserController implements Initializable {
     
     public void setupScene(Scene scene) {
         setOnCloseWindow(scene);
+        setupAccelerators(scene.getAccelerators());
         translationTabController.setupAccelerators(scene.getAccelerators());
         quickPanelController.setupAccelerators(scene.getAccelerators());
+    }
+    
+    private void setupAccelerators(ObservableMap<KeyCombination, Runnable> accelerators) {
+        KeyCombination submitShortcut = new KeyCodeCombination(KeyCode.S,
+                KeyCombination.CONTROL_DOWN);
+        accelerators.put(submitShortcut, () -> {
+            submit();
+        });
     }
 
     private void clearWorkArea() {

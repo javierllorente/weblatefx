@@ -69,7 +69,7 @@ public class ShortcutsAlert extends Alert {
                 new AbstractMap.SimpleEntry<>(App.getBundle().getString("next_entry"), "Alt + N"),
                 new AbstractMap.SimpleEntry<>(App.getBundle().getString("quick_search"), "Ctrl + F"),
                 new AbstractMap.SimpleEntry<>(App.getBundle().getString("translate"), "Ctrl + D"),
-                new AbstractMap.SimpleEntry<>(App.getBundle().getString("submit.title"), "Alt + S"),
+                new AbstractMap.SimpleEntry<>(App.getBundle().getString("submit.title"), "Ctrl + S"),
                 new AbstractMap.SimpleEntry<>(App.getBundle().getString("quit"), "Ctrl + Q")        
         );
         tableView.getItems().addAll(data);

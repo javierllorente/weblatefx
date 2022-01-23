@@ -22,7 +22,7 @@
             <children>
                 <ToolBar prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                     <items>
-                        <Button id="submitButton" fx:id="submitButton" disable="true" mnemonicParsing="true" onAction="#submit" prefWidth="80.0" text="%button.submit">
+                        <Button id="submitButton" fx:id="submitButton" disable="true" mnemonicParsing="false" onAction="#submit" prefWidth="80.0" text="%button.submit">
                             <graphic>
                                 <FontIcon iconLiteral="icm-upload" />
                             </graphic>
