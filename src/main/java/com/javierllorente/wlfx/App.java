@@ -47,6 +47,7 @@ public class App extends Application {
     public static final String API_URI = "api_uri";
     public static final String AUTOLOGIN = "autologin";    
     
+    private final String applicationStyle = "app.css";
     private final String applicationBundle = getClass().getPackageName() + "/i18n/ApplicationBundle";
     
     private static Scene scene;
@@ -64,7 +65,7 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader loader = getFXMLLoader("Browser");
         scene = new Scene(loader.load(), WINDOW_WIDTH, WINDOW_HEIGHT);
-        scene.getStylesheets().add("app.css");
+        scene.getStylesheets().add(applicationStyle);
         stage.setScene(scene);
         stage.setTitle(NAME);
         stage.getIcons().add(new Image(App.class.getResourceAsStream(ICON)));
