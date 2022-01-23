@@ -45,6 +45,7 @@ public class App extends Application {
     public static final String API_URI = "api_uri";
     public static final String AUTOLOGIN = "autologin";
     
+    private final String applicationIcon = "/wlfx.png";
     private final String applicationBundle = getClass().getPackageName() + "/i18n/ApplicationBundle";
     
     private static Scene scene;
@@ -65,7 +66,7 @@ public class App extends Application {
         scene.getStylesheets().add("app.css");
         stage.setScene(scene);
         stage.setTitle(NAME);
-        stage.getIcons().add(new Image(App.class.getResourceAsStream("/wlfx.png")));
+        stage.getIcons().add(new Image(App.class.getResourceAsStream(applicationIcon)));
         stage.show(); 
         BrowserController browserController = (BrowserController) loader.getController();
         browserController.setupScene(scene);
