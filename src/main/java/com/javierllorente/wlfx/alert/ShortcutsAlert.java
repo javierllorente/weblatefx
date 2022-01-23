@@ -37,7 +37,7 @@ public class ShortcutsAlert extends Alert {
     public ShortcutsAlert(Window window) {
         super(AlertType.INFORMATION);
         initOwner(window);
-        getDialogPane().setPrefSize(380, 260);
+        getDialogPane().setPrefSize(375, 275);
         setTitle(App.getBundle().getString("shortcuts"));
         setHeaderText(App.getBundle().getString("keyboard_shortcuts"));
         
