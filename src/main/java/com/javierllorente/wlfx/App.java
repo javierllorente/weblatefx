@@ -49,7 +49,7 @@ public class App extends Application {
     
     private final String applicationView = "Browser";
     private final String applicationStyle = "style.css";
-    private final String applicationBundle = getClass().getPackageName() + "/i18n/ApplicationBundle";
+    private final String applicationBundle = getClass().getPackageName() + ".i18n.ApplicationBundle";
     
     private static Scene scene;
     private static Weblate weblate;
