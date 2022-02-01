@@ -293,7 +293,7 @@ public class BrowserController implements Initializable {
                 progressIndicator.setVisible(true);
             });
             ObservableList<String> items = FXCollections.observableArrayList(
-                    App.getWeblate().getProjects());
+                    App.getTranslationProvider().getProjects());
             Collections.sort(items);
             Platform.runLater(() -> {
                 projectsListView.setItems(items);
@@ -335,7 +335,8 @@ public class BrowserController implements Initializable {
                                 Platform.runLater(() -> {
                                     progressIndicator.setVisible(true);
                                 });
-                                List<String> items = App.getWeblate().getComponents(selectedProject);
+                                List<String> items = App.getTranslationProvider()
+                                        .getComponents(selectedProject);
                                 Platform.runLater(() -> {
                                     components.setAll(items);
                                     if (lastComponent != null && components.contains(lastComponent)) {
@@ -381,7 +382,7 @@ public class BrowserController implements Initializable {
                                 Platform.runLater(() -> {
                                     progressIndicator.setVisible(true);
                                 });
-                                List<String> items = App.getWeblate().getTranslations(
+                                List<String> items = App.getTranslationProvider().getTranslations(
                                         selectedProject, selectedComponent.toLowerCase());
                                 Collections.sort(items);
                                 Platform.runLater(() -> {
@@ -440,20 +441,21 @@ public class BrowserController implements Initializable {
                                     progressIndicator.setVisible(true);
                                 });
 
-                                String fileFormat = App.getWeblate().getFileFormat(selectedProject,
-                                        selectedComponent, selectedLanguage);
+                                String fileFormat = App.getTranslationProvider()
+                                        .getFileFormat(selectedProject, selectedComponent, 
+                                                selectedLanguage);
 
                                 TranslationParserFactory parserFactory = new ParserFactory();
                                 TranslationParser translationParser = parserFactory.getParser(fileFormat);
 
-                                translation = App.getWeblate().getFile(selectedProject,
+                                translation = App.getTranslationProvider().getFile(selectedProject,
                                         selectedComponent, selectedLanguage);
                                 translationFile = translationParser.parse(translation);
                                 historyAdapter.setOldTranslations(translationFile.getEntries());
 
                                 if (fileFormat.equalsIgnoreCase("json")) {
-                                    String sourceLanguage = App.getWeblate().getFile(selectedProject,
-                                            selectedComponent, "en");
+                                    String sourceLanguage = App.getTranslationProvider()
+                                            .getFile(selectedProject, selectedComponent, "en");
                                     JsonParser jsonTranslationParser
                                             = (JsonParser) translationParser;
                                     jsonTranslationParser.setSourceLanguage(true);
@@ -551,8 +553,8 @@ public class BrowserController implements Initializable {
     @FXML
     private void handleLogin() {
         
-        if (App.getWeblate().isAuthenticated()) {
-            App.getWeblate().logout();
+        if (App.getTranslationProvider().isAuthenticated()) {
+            App.getTranslationProvider().logout();
             projectsListView.getItems().clear();
             clearWorkArea();
             loginButton.setText(App.getBundle().getString("login"));
@@ -562,7 +564,7 @@ public class BrowserController implements Initializable {
             String apiUri = preferences.get(App.API_URI, "");
 
             try {
-                App.getWeblate().setApiUrl(new URI(apiUri));
+                App.getTranslationProvider().setApiUrl(new URI(apiUri));
             } catch (URISyntaxException ex) {
                 Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -594,8 +596,8 @@ public class BrowserController implements Initializable {
     private void authenticate(String authToken) {
         new Thread(() -> {
             try {
-                App.getWeblate().setAuthToken(authToken);
-                App.getWeblate().authenticate();
+                App.getTranslationProvider().setAuthToken(authToken);
+                App.getTranslationProvider().authenticate();
             } catch (ClientErrorException | ServerErrorException ex) {
                 Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);                
                 
@@ -637,7 +639,7 @@ public class BrowserController implements Initializable {
                 });
             }
 
-            if (App.getWeblate().isAuthenticated()) {
+            if (App.getTranslationProvider().isAuthenticated()) {
                 Platform.runLater(() -> {
                     progressIndicator.setVisible(false);
                     loginButton.setText(App.getBundle().getString("logout"));
@@ -723,7 +725,7 @@ public class BrowserController implements Initializable {
                     progressIndicator.setVisible(true);
                 });
                 try {
-                    Map<String, String> submitResult = App.getWeblate().submit(selectedProject,
+                    Map<String, String> submitResult = App.getTranslationProvider().submit(selectedProject,
                             selectedComponent, selectedLanguage, translationFileStr);
 
                     Platform.runLater(() -> {

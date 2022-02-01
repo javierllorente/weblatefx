@@ -16,6 +16,7 @@
  */
 package com.javierllorente.wlfx;
 
+import com.javierllorente.jwl.TranslationProvider;
 import com.javierllorente.wlfx.crypto.AuthTokenEncryptor;
 import com.javierllorente.jwl.Weblate;
 import javafx.application.Application;
@@ -52,12 +53,12 @@ public class App extends Application {
     private final String applicationBundle = getClass().getPackageName() + ".i18n.ApplicationBundle";
     
     private static Scene scene;
-    private static Weblate weblate;
+    private static TranslationProvider translationProvider;
     private static AuthTokenEncryptor authTokenEncryptor;
     private static ResourceBundle bundle;
 
     public App() throws URISyntaxException {
-        weblate = new Weblate();
+        translationProvider = new Weblate();
         authTokenEncryptor = new AuthTokenEncryptor();
         bundle = ResourceBundle.getBundle(applicationBundle);
     }
@@ -89,8 +90,8 @@ public class App extends Application {
         return fxmlLoader;
     }
     
-    public static Weblate getWeblate() {
-        return weblate;
+    public static TranslationProvider getTranslationProvider() {
+        return translationProvider;
     }
 
     public static AuthTokenEncryptor getAuthTokenEncryptor() {
