@@ -256,9 +256,21 @@ public class BrowserController implements Initializable {
         KeyCombination nextShortcut = new KeyCodeCombination(KeyCode.PERIOD,
                 KeyCombination.CONTROL_DOWN);
         accelerators.putAll(Map.of(
-                submitShortcut, this::submit,
-                previousShortcut, this::previousItem,
-                nextShortcut, this::nextItem
+                submitShortcut, () -> {
+                    if (!submitButton.isDisabled()) {
+                        submit();
+                    }
+                },
+                previousShortcut, () -> {
+                    if (!previousButton.isDisabled()) {
+                        previousItem();
+                    }
+                },
+                nextShortcut, () -> {
+                    if (!nextButton.isDisabled()) {
+                        nextItem();
+                    }
+                }
         ));
     }
 
