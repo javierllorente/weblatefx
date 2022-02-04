@@ -51,7 +51,6 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
@@ -66,8 +65,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -86,20 +83,17 @@ public class BrowserController implements Initializable {
 
     private static final Logger logger = Logger.getLogger(BrowserController.class.getName());
     private Preferences preferences;
-    private String selectedProject;
-    private String selectedComponent;
-    private String lastComponent;
-    private String selectedLanguage;
     private String translation;
     private TranslationFile translationFile;
     private IntegerProperty entryIndexProperty;
-    private boolean dataLoaded;
     private History history;
     private HistoryAdapter historyAdapter;
-    private BooleanBinding menuItemNotSelected;
 
     @FXML
     private BorderPane borderPane;
+    
+    @FXML
+    private SelectionPanelController selectionPanelController;
 
     @FXML
     private TranslationTabController translationTabController;
@@ -121,15 +115,6 @@ public class BrowserController implements Initializable {
 
     @FXML
     private ProgressIndicator progressIndicator;
-
-    @FXML
-    private ListView<String> projectsListView;
-
-    @FXML
-    private ListView<String> componentsListView;
-
-    @FXML
-    private ComboBox<String> languagesComboBox;
     
     /**
      * Initializes the controller class.
@@ -138,7 +123,6 @@ public class BrowserController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         preferences = Preferences.userNodeForPackage(getClass());
         entryIndexProperty = new SimpleIntegerProperty(-1);
-        dataLoaded = false;
         history = new History();
         history.entryIndexProperty().bind(entryIndexProperty);
         historyAdapter = new HistoryAdapter();
@@ -146,9 +130,7 @@ public class BrowserController implements Initializable {
         history.setAdapter(historyAdapter);
         translationTabController.setHistory(history);
 
-        setupProjectListView();
-        setupComponentsListView();
-        setupLanguagesComboBox();
+        setupSelectionPanel();
         setupBindings();
 
         entryIndexProperty.addListener((ObservableValue<? extends Number> ov,
@@ -197,7 +179,7 @@ public class BrowserController implements Initializable {
         });
 
         quickPanelController.entryIndexProperty().addListener((ov, t, t1) -> {
-            entryIndexProperty.set(t1.intValue());
+                entryIndexProperty.set(t1.intValue());
         });
         
         registerEventFilters();
@@ -246,6 +228,7 @@ public class BrowserController implements Initializable {
         setupAccelerators(scene.getAccelerators());
         translationTabController.setupAccelerators(scene.getAccelerators());
         quickPanelController.setupAccelerators(scene.getAccelerators());
+        selectionPanelController.setWindow(scene.getWindow());
     }
     
     private void setupAccelerators(ObservableMap<KeyCombination, Runnable> accelerators) {
@@ -278,7 +261,6 @@ public class BrowserController implements Initializable {
         translationTabController.clearTranslationAreas();
         history.clear();
         quickPanelController.clear();
-        dataLoaded = false;
         entryIndexProperty.set(-1);
     }
 
@@ -308,7 +290,7 @@ public class BrowserController implements Initializable {
                     App.getTranslationProvider().getProjects());
             Collections.sort(items);
             Platform.runLater(() -> {
-                projectsListView.setItems(items);
+                selectionPanelController.setProjects(items);
                 progressIndicator.setVisible(false);
             });
         } catch (ClientErrorException | ServerErrorException | ProcessingException ex) {
@@ -320,201 +302,94 @@ public class BrowserController implements Initializable {
         }
     }
 
-    private void setupProjectListView() {
-        ObservableList<String> components = FXCollections.observableArrayList();
-        componentsListView.setItems(components);
+    private void setupSelectionPanel() {
+        selectionPanelController.setupCellFactories(history, borderPane);
+        
+        selectionPanelController.fetchingDataProperty().addListener((ov, t, t1) -> {
+            progressIndicator.setVisible(t1);
+            if (t1) {
+                clearWorkArea();
+            }
+        });
+     
+        selectionPanelController.selectedLanguageProperty().addListener((ov, t, t1) -> {
+            if (t1 != null) {
+                String selectedLanguage = t1;
+                logger.log(Level.INFO, "Selected language: {0}", selectedLanguage);
 
-        projectsListView.setCellFactory(new SelectionCellFactory(
-                history, borderPane, UncommittedChangesAlert.ActionType.SWITCH_PROJECT));
+                clearWorkArea();
 
-        projectsListView.getSelectionModel().selectedItemProperty().
-                addListener((ov, t, t1) -> {
-                    selectedProject = t1;
-                    componentsListView.getItems().clear();
-                    languagesComboBox.getItems().clear();
+                if (!selectedLanguage.equals(preferences.get(App.TRANSLATOR_LANGUAGE, ""))) {
+                    preferences.put(App.TRANSLATOR_LANGUAGE, selectedLanguage);
+                }
 
-                    if (t1 == null) {
-                        lastComponent = null;
-                    } else {
-                        logger.log(Level.INFO, "Selected project: {0}", selectedProject);
+                new Thread(() -> {
+                    try {
+                        Platform.runLater(() -> {
+                            progressIndicator.setVisible(true);
+                        });
+                        
+                        String selectedProject = selectionPanelController.selectedProjectProperty().get();
+                        String selectedComponent = selectionPanelController.selectedComponentProperty().get();
 
-                        if (dataLoaded) {
-                            clearWorkArea();
+                        String fileFormat = App.getTranslationProvider()
+                                .getFileFormat(selectedProject, selectedComponent,
+                                        selectedLanguage);
+
+                        TranslationParserFactory parserFactory = new ParserFactory();
+                        TranslationParser translationParser = parserFactory.getParser(fileFormat);
+
+                        translation = App.getTranslationProvider().getFile(selectedProject,
+                                selectedComponent, selectedLanguage);
+                        translationFile = translationParser.parse(translation);
+                        historyAdapter.setOldTranslations(translationFile.getEntries());
+
+                        if (fileFormat.equalsIgnoreCase("json")) {
+                            String sourceLanguage = App.getTranslationProvider()
+                                    .getFile(selectedProject, selectedComponent, "en");
+                            JsonParser jsonTranslationParser
+                                    = (JsonParser) translationParser;
+                            jsonTranslationParser.setSourceLanguage(true);
+                            translationFile = translationParser.parse(sourceLanguage);
+                            jsonTranslationParser.setSourceLanguage(false);
                         }
 
-                        new Thread(() -> {
-                            try {
-                                Platform.runLater(() -> {
-                                    progressIndicator.setVisible(true);
-                                });
-                                List<String> items = App.getTranslationProvider()
-                                        .getComponents(selectedProject);
-                                Platform.runLater(() -> {
-                                    components.setAll(items);
-                                    if (lastComponent != null && components.contains(lastComponent)) {
-                                        componentsListView.getSelectionModel().select(lastComponent);
-                                    }
-                                    progressIndicator.setVisible(false);
-                                });
-                            } catch (ClientErrorException | ServerErrorException | ProcessingException ex) {
-                                Logger.getLogger(BrowserController.class.getName())
-                                        .log(Level.SEVERE, null, ex);
-                                Platform.runLater(() -> {
-                                    progressIndicator.setVisible(false);
-                                    showExceptionAlert(ex);
-                                });
+                        quickPanelController.addTableData(translationFile.getEntries());
+
+                        Platform.runLater(() -> {
+                            if (entryIndexProperty.equals(0)) {
+                                entryIndexProperty.set(-1);
                             }
-                        }).start();
+                            entryIndexProperty.set(0);
+                            progressIndicator.setVisible(false);
+                        });
+                    } catch (ClientErrorException | ServerErrorException | ProcessingException
+                            | IOException | UnsupportedFileFormatException
+                            | NullPointerException ex) {
+                        Logger.getLogger(BrowserController.class.getName())
+                                .log(Level.SEVERE, null, ex);
+                        Platform.runLater(() -> {
+                            progressIndicator.setVisible(false);
+                            showExceptionAlert(ex);
+                        });
                     }
-                });
-    }
-
-    private void setupComponentsListView() {
-        ObservableList<String> languages = FXCollections.observableArrayList();
-        languagesComboBox.setItems(languages);
-
-        componentsListView.setCellFactory(new SelectionCellFactory(
-                history, borderPane, UncommittedChangesAlert.ActionType.SWITCH_COMPONENT));
-
-        componentsListView.getSelectionModel().selectedItemProperty().
-                addListener((ov, t, t1) -> {
-                    languagesComboBox.getItems().clear();
-                    
-                    if (t1 != null) {
-                        selectedComponent = t1;
-                        lastComponent = selectedComponent;
-                        logger.log(Level.INFO, "Selected component: {0}", selectedComponent);
-
-                        if (dataLoaded) {
-                            clearWorkArea();
-                        }
-
-                        new Thread(() -> {
-                            try {
-                                Platform.runLater(() -> {
-                                    progressIndicator.setVisible(true);
-                                });
-                                List<String> items = App.getTranslationProvider().getTranslations(
-                                        selectedProject, selectedComponent.toLowerCase());
-                                Collections.sort(items);
-                                Platform.runLater(() -> {
-                                    languages.setAll(items);
-
-                                    String translatorLanguage = preferences
-                                            .get(App.TRANSLATOR_LANGUAGE, "");
-
-                                    if (!translatorLanguage.isEmpty()) {
-                                        if (languages.contains(translatorLanguage)) {
-                                            languagesComboBox.getSelectionModel()
-                                                    .select(translatorLanguage);
-                                        } else {
-                                            // Clear selection
-                                            languagesComboBox.setValue(null);
-                                        }
-                                    }
-
-                                    progressIndicator.setVisible(false);
-                                });
-
-                            } catch (ClientErrorException | ServerErrorException | ProcessingException ex) {
-                                Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
-                                Platform.runLater(() -> {
-                                    progressIndicator.setVisible(false);
-                                    showExceptionAlert(ex);
-                                });
-                            }
-                        }).start();
-
-                    }
-                });
-    }
-
-    private void setupLanguagesComboBox() {
-        languagesComboBox.setCellFactory(new SelectionCellFactory(
-                history, borderPane, UncommittedChangesAlert.ActionType.SWITCH_LANGUAGE));
-
-        languagesComboBox.getSelectionModel().selectedItemProperty().
-                addListener((ov, t, t1) -> {
-                    if (t1 != null) {
-                        selectedLanguage = t1;
-                        logger.log(Level.INFO, "Selected language: {0}", selectedLanguage);
-
-                        if (dataLoaded) {
-                            clearWorkArea();
-                        }
-
-                        if (!selectedLanguage.equals(preferences.get(App.TRANSLATOR_LANGUAGE, ""))) {
-                            preferences.put(App.TRANSLATOR_LANGUAGE, selectedLanguage);
-                        }
-
-                        new Thread(() -> {
-                            try {
-                                Platform.runLater(() -> {
-                                    progressIndicator.setVisible(true);
-                                });
-
-                                String fileFormat = App.getTranslationProvider()
-                                        .getFileFormat(selectedProject, selectedComponent, 
-                                                selectedLanguage);
-
-                                TranslationParserFactory parserFactory = new ParserFactory();
-                                TranslationParser translationParser = parserFactory.getParser(fileFormat);
-
-                                translation = App.getTranslationProvider().getFile(selectedProject,
-                                        selectedComponent, selectedLanguage);
-                                translationFile = translationParser.parse(translation);
-                                historyAdapter.setOldTranslations(translationFile.getEntries());
-
-                                if (fileFormat.equalsIgnoreCase("json")) {
-                                    String sourceLanguage = App.getTranslationProvider()
-                                            .getFile(selectedProject, selectedComponent, "en");
-                                    JsonParser jsonTranslationParser
-                                            = (JsonParser) translationParser;
-                                    jsonTranslationParser.setSourceLanguage(true);
-                                    translationFile = translationParser.parse(sourceLanguage);
-                                    jsonTranslationParser.setSourceLanguage(false);
-                                }
-
-                                quickPanelController.addTableData(translationFile.getEntries());
-                                dataLoaded = !quickPanelController.isTableDataEmpty();
-
-                                Platform.runLater(() -> {
-                                    if (entryIndexProperty.equals(0)) {
-                                        entryIndexProperty.set(-1);
-                                    }
-                                    entryIndexProperty.set(0);
-                                    progressIndicator.setVisible(false);
-                                });
-                            } catch (ClientErrorException | ServerErrorException | ProcessingException
-                                    | IOException | UnsupportedFileFormatException 
-                                    | NullPointerException ex) {
-                                Logger.getLogger(BrowserController.class.getName())
-                                        .log(Level.SEVERE, null, ex);
-                                Platform.runLater(() -> {
-                                    progressIndicator.setVisible(false);
-                                    showExceptionAlert(ex);
-                                });
-                            }
-                        }).start();
-                    }
-                });
-    }
-
+                }).start();
+            }            
+        });
+        
+    }    
+    
     private void setupBindings() {
-        menuItemNotSelected = projectsListView.getSelectionModel().selectedItemProperty().isNull()
-                .or(componentsListView.getSelectionModel().selectedItemProperty().isNull())
-                .or(languagesComboBox.getSelectionModel().selectedItemProperty().isNull());
-
-        submitButton.disableProperty().bind(menuItemNotSelected
+        submitButton.disableProperty().bind(selectionPanelController.noSelectionProperty()
                 .or(quickPanelController.tableSelectedIndexProperty().isEqualTo(-1)));
 
-        previousButton.disableProperty().bind(menuItemNotSelected
+        previousButton.disableProperty().bind(selectionPanelController.noSelectionProperty()
                 .or(quickPanelController.filterTextProperty().isEmpty()
                         .and(quickPanelController.tableSelectedIndexProperty().lessThanOrEqualTo(0)))
                 .or(quickPanelController.filterTextProperty().isNotEmpty()
                         .and(quickPanelController.tableSelectedIndexProperty().lessThanOrEqualTo(0))));
 
-        nextButton.disableProperty().bind(menuItemNotSelected
+        nextButton.disableProperty().bind(selectionPanelController.noSelectionProperty()
                 .or(quickPanelController.tableSelectedIndexProperty().isEqualTo(-1)
                         .and(quickPanelController.filterTextProperty().isEmpty()))
                 .or(Bindings.createBooleanBinding(() -> {
@@ -567,7 +442,7 @@ public class BrowserController implements Initializable {
         
         if (App.getTranslationProvider().isAuthenticated()) {
             App.getTranslationProvider().logout();
-            projectsListView.getItems().clear();
+            selectionPanelController.clearProjects();
             clearWorkArea();
             loginButton.setText(App.getBundle().getString("login"));
         } else {
@@ -737,6 +612,10 @@ public class BrowserController implements Initializable {
                     progressIndicator.setVisible(true);
                 });
                 try {
+                    String selectedProject = selectionPanelController.selectedProjectProperty().get();
+                    String selectedComponent = selectionPanelController.selectedComponentProperty().get();
+                    String selectedLanguage = selectionPanelController.selectedLanguageProperty().get();
+                    
                     Map<String, String> submitResult = App.getTranslationProvider().submit(selectedProject,
                             selectedComponent, selectedLanguage, translationFileStr);
 
