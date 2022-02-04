@@ -140,7 +140,7 @@ public class BrowserController implements Initializable {
 
             if (newIndex.equals(-1)) {
                 return;
-            }
+            }            
 
             if (!oldIndex.equals(-1)
                     && translationTabController.translationChangedProperty().get()) {
@@ -353,14 +353,16 @@ public class BrowserController implements Initializable {
                             translationFile = translationParser.parse(sourceLanguage);
                             jsonTranslationParser.setSourceLanguage(false);
                         }
-
+                        
                         quickPanelController.addTableData(translationFile.getEntries());
 
                         Platform.runLater(() -> {
                             if (entryIndexProperty.equals(0)) {
                                 entryIndexProperty.set(-1);
+                            }                            
+                            if (!translationFile.getEntries().isEmpty()) {
+                                 entryIndexProperty.set(0);
                             }
-                            entryIndexProperty.set(0);
                             progressIndicator.setVisible(false);
                         });
                     } catch (ClientErrorException | ServerErrorException | ProcessingException
