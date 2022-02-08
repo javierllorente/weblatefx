@@ -34,10 +34,13 @@ import com.javierllorente.wlfx.alert.ShortcutsAlert;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.ServerErrorException;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
@@ -65,6 +68,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -73,6 +77,8 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 /**
  * FXML Controller class
@@ -84,6 +90,7 @@ public class BrowserController implements Initializable {
     private static final Logger logger = Logger.getLogger(BrowserController.class.getName());
     private Preferences preferences;
     private String translation;
+    private String fileFormat;
     private TranslationFile translationFile;
     private IntegerProperty entryIndexProperty;
     private History history;
@@ -115,6 +122,12 @@ public class BrowserController implements Initializable {
 
     @FXML
     private ProgressIndicator progressIndicator;
+    
+    @FXML
+    private MenuItem importMenuItem;
+    
+    @FXML
+    private MenuItem exportMenuItem;
     
     /**
      * Initializes the controller class.
@@ -241,7 +254,7 @@ public class BrowserController implements Initializable {
         accelerators.putAll(Map.of(
                 submitShortcut, () -> {
                     if (!submitButton.isDisabled()) {
-                        submit();
+                        handleSubmit();
                     }
                 },
                 previousShortcut, () -> {
@@ -332,7 +345,7 @@ public class BrowserController implements Initializable {
                         String selectedProject = selectionPanelController.selectedProjectProperty().get();
                         String selectedComponent = selectionPanelController.selectedComponentProperty().get();
 
-                        String fileFormat = App.getTranslationProvider()
+                        fileFormat = App.getTranslationProvider()
                                 .getFileFormat(selectedProject, selectedComponent,
                                         selectedLanguage);
 
@@ -397,6 +410,45 @@ public class BrowserController implements Initializable {
                 .or(Bindings.createBooleanBinding(() -> {
                     return quickPanelController.isFilterIndexAtEnd();
                 }, quickPanelController.tableSelectedIndexProperty())));
+        
+        importMenuItem.disableProperty().bind(submitButton.disableProperty());
+        exportMenuItem.disableProperty().bind(submitButton.disableProperty());
+    }
+    
+    @FXML
+    private void handleImport() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(new ExtensionFilter("po", "*.po"), 
+                new ExtensionFilter("json", "*.json"));
+        
+        File selectedFile = fileChooser.showOpenDialog(borderPane.getScene().getWindow());
+        if (selectedFile != null) {
+            try {
+                String importedTranslation = Files.readString(selectedFile.toPath(), StandardCharsets.UTF_8);
+                submit(importedTranslation);
+            } catch (IOException ex) {
+                Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    @FXML
+    private void handleExport() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(new ExtensionFilter("po", "*.po"),
+                new ExtensionFilter("json", "*.json"));
+        fileChooser.setInitialFileName(selectionPanelController.selectedProjectProperty().get() 
+                + "-" + selectionPanelController.selectedComponentProperty().get()
+                + "-" + selectionPanelController.selectedLanguageProperty().get() 
+                + "." + fileFormat);
+        File file = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
+        if (file != null) {
+            try {
+                Files.writeString(file.toPath(), translationFile.toString());
+            } catch (IOException ex) {
+                Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     @FXML
@@ -569,23 +621,8 @@ public class BrowserController implements Initializable {
         exceptionAlert.setThrowable(throwable);
         exceptionAlert.showAndWait();
     }
-    
-    @FXML
-    private void submit() {
-        translationFile.setTranslator(preferences.get(App.TRANSLATOR_NAME, ""),
-                preferences.get(App.TRANSLATOR_EMAIL, ""));
-        translationFile.setRevisionDate();
-        translationFile.setGenerator(App.NAME + " " + App.VERSION);
 
-        if (translationTabController.translationChangedProperty().get()) {
-            translationFile.updateEntry(entryIndexProperty.get(), translationTabController.getTranslations());
-
-            if (translationFile.getEntries().get(entryIndexProperty.get()).isFuzzy()) {
-                translationFile.getEntries().get(entryIndexProperty.get()).removeFuzzyFlag();
-            }
-        }
-
-        String translationFileStr = translationFile.toString();
+    private void submit(String translationFileStr) {
         logger.log(Level.INFO, "lines old: {0} lines new: {1}", new Object[]{
             translation.split("\n", -1).length, translationFileStr.split("\n", -1).length});
 
@@ -659,5 +696,22 @@ public class BrowserController implements Initializable {
                 }
             }).start();
         }
+    }
+    
+    @FXML
+    private void handleSubmit() {
+        translationFile.setTranslator(preferences.get(App.TRANSLATOR_NAME, ""),
+                preferences.get(App.TRANSLATOR_EMAIL, ""));
+        translationFile.setRevisionDate();
+        translationFile.setGenerator(App.NAME + " " + App.VERSION);
+
+        if (translationTabController.translationChangedProperty().get()) {
+            translationFile.updateEntry(entryIndexProperty.get(), translationTabController.getTranslations());
+
+            if (translationFile.getEntries().get(entryIndexProperty.get()).isFuzzy()) {
+                translationFile.getEntries().get(entryIndexProperty.get()).removeFuzzyFlag();
+            }
+        }
+        submit(translationFile.toString());
     }
 }

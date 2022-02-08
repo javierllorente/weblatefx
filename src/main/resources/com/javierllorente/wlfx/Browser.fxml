@@ -5,6 +5,7 @@
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.BorderPane?>
@@ -19,7 +20,7 @@
             <children>
                 <ToolBar prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                     <items>
-                        <Button id="submitButton" fx:id="submitButton" disable="true" mnemonicParsing="false" onAction="#submit" prefWidth="80.0" text="%button.submit">
+                        <Button id="submitButton" fx:id="submitButton" disable="true" mnemonicParsing="false" onAction="#handleSubmit" prefWidth="80.0" text="%button.submit">
                             <graphic>
                                 <FontIcon iconLiteral="icm-upload" />
                             </graphic>
@@ -45,6 +46,9 @@
                         </Button>
                         <MenuButton id="menuButton" fx:id="menuButton" mnemonicParsing="false">
                             <items>
+                                <MenuItem fx:id="importMenuItem" disable="true" mnemonicParsing="false" onAction="#handleImport" text="%import" />
+                                <MenuItem fx:id="exportMenuItem" disable="true" mnemonicParsing="false" onAction="#handleExport" text="%export" />
+                                <SeparatorMenuItem />
                                 <MenuItem mnemonicParsing="false" onAction="#handleSettings" text="%settings" />
                                 <MenuItem mnemonicParsing="false" onAction="#handleShortcuts" text="%shortcuts" />
                                 <MenuItem mnemonicParsing="true" onAction="#handleAbout" text="%about" />
