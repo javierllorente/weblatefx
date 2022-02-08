@@ -444,7 +444,7 @@ public class BrowserController implements Initializable {
         File file = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
         if (file != null) {
             try {
-                Files.writeString(file.toPath(), translationFile.toString());
+                Files.writeString(file.toPath(), translationFile.toString(), StandardCharsets.UTF_8);
             } catch (IOException ex) {
                 Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
             }
