@@ -60,6 +60,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -621,11 +622,8 @@ public class BrowserController implements Initializable {
         exceptionAlert.setThrowable(throwable);
         exceptionAlert.showAndWait();
     }
-
-    private void submit(String translationFileStr) {
-        logger.log(Level.INFO, "lines old: {0} lines new: {1}", new Object[]{
-            translation.split("\n", -1).length, translationFileStr.split("\n", -1).length});
-
+    
+    private List<String> diff(String translationFileStr) {
         List<String> oldTranslation = Arrays.asList(translation.split("\n"));
         List<String> newTranslation = Arrays.asList(translationFileStr.split("\n"));
 
@@ -636,66 +634,105 @@ public class BrowserController implements Initializable {
 
         Patch<String> patch = DiffUtils.diff(oldTranslation, newTranslation);
         List<String> unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff(
-                App.getBundle().getString("diff.oldtranslation"), 
+                App.getBundle().getString("diff.oldtranslation"),
                 App.getBundle().getString("diff.newtranslation"), oldTranslation, patch, 0);
 //            unifiedDiff.forEach(System.out::println);
 
-        SubmitAlert submitAlert = new SubmitAlert(AlertType.CONFIRMATION,
-                borderPane.getScene().getWindow());
-        submitAlert.setDiff(unifiedDiff);
-        Optional<ButtonType> result = submitAlert.showAndWait();
+        return unifiedDiff;
+    }
 
-        if (result.get() == ButtonType.OK) {
-            new Thread(() -> {
-                Platform.runLater(() -> {
-                    progressIndicator.setVisible(true);
-                });
-                try {
-                    String selectedProject = selectionPanelController.selectedProjectProperty().get();
-                    String selectedComponent = selectionPanelController.selectedComponentProperty().get();
-                    String selectedLanguage = selectionPanelController.selectedLanguageProperty().get();
-                    
-                    Map<String, String> submitResult = App.getTranslationProvider().submit(selectedProject,
-                            selectedComponent, selectedLanguage, translationFileStr);
+    private void submit(String translationFileStr) {
+        logger.log(Level.INFO, "lines old: {0} lines new: {1}", new Object[]{
+            translation.split("\n", -1).length, translationFileStr.split("\n", -1).length});
+        
+        Task<Map<String, String>> submitTask = new Task() {
+            @Override
+            protected Object call() throws Exception {
+                progressIndicator.setVisible(true);
+                return App.getTranslationProvider().submit(
+                        selectionPanelController.selectedProjectProperty().get(),
+                        selectionPanelController.selectedComponentProperty().get(),
+                        selectionPanelController.selectedLanguageProperty().get(),
+                        translationFileStr);
+            }
 
-                    Platform.runLater(() -> {
-                        progressIndicator.setVisible(false);
+            @Override
+            protected void succeeded() {
+                super.succeeded();
+                progressIndicator.setVisible(false);
+                
+                Map<String, String> submitResult = (Map<String, String>) getValue();
 
-                        String contextText = "";
-                        int acceptedChanges = Integer.parseInt(submitResult.get("accepted"));
-                                                
-                        for (Map.Entry<String, String> entry : submitResult.entrySet()) {
-                            contextText += entry.getKey() + ": " + entry.getValue() + "\n";
-                        }
+                String contextText = "";
+                int acceptedChanges = Integer.parseInt(submitResult.get("accepted"));
 
-                        contextText = contextText.substring(0, contextText.length() - 1);
-
-                        Alert alert = new Alert(AlertType.INFORMATION);
-                        alert.initOwner(borderPane.getScene().getWindow());
-                        alert.setTitle(App.getBundle().getString("submit.results"));
-                        alert.setHeaderText(MessageFormat.format(App.getBundle()
-                                .getString("submit.accepted {0}"), new Object[] {acceptedChanges}));
-                        alert.setContentText(contextText);
-                        alert.setResizable(true); // FIXME: Workaround for JavaFX 11
-                        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-                        alert.getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
-                        alert.showAndWait();
-
-                        if (acceptedChanges > 0) {
-                            translation = translationFileStr;
-                            history.clear();
-                        }
-                    });
-
-                } catch (ClientErrorException | ServerErrorException | ProcessingException ex) {
-                    Logger.getLogger(BrowserController.class.getName()).log(Level.SEVERE, null, ex);
-                    Platform.runLater(() -> {
-                        progressIndicator.setVisible(false);
-                        showExceptionAlert(ex);
-                    });
+                for (Map.Entry<String, String> entry : submitResult.entrySet()) {
+                    contextText += entry.getKey() + ": " + entry.getValue() + "\n";
                 }
-            }).start();
-        }
+
+                contextText = contextText.substring(0, contextText.length() - 1);
+
+                Alert alert = new Alert(AlertType.INFORMATION);
+                alert.initOwner(borderPane.getScene().getWindow());
+                alert.setTitle(App.getBundle().getString("submit.results"));
+                alert.setHeaderText(MessageFormat.format(App.getBundle()
+                        .getString("submit.accepted {0}"), new Object[]{acceptedChanges}));
+                alert.setContentText(contextText);
+                alert.setResizable(true); // FIXME: Workaround for JavaFX 11
+                alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+                alert.getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
+                alert.showAndWait();
+
+                if (acceptedChanges > 0) {
+                    translation = translationFileStr;
+                    history.clear();
+                }
+            }
+
+            @Override
+            protected void failed() {
+                super.failed();
+                progressIndicator.setVisible(false);
+                logger.log(Level.SEVERE, null, getException());
+                showExceptionAlert(getException());
+            }
+            
+        };
+        
+        Task<List<String>> diffTask = new Task<List<String>>() {
+
+            @Override
+            protected List<String> call() throws Exception {
+                progressIndicator.setVisible(true);
+                return diff(translationFileStr);
+            }
+
+            @Override
+            protected void succeeded() {
+                super.succeeded();
+                progressIndicator.setVisible(false);
+
+                SubmitAlert submitAlert = new SubmitAlert(AlertType.CONFIRMATION,
+                        borderPane.getScene().getWindow());
+                submitAlert.setDiff(getValue());
+                Optional<ButtonType> result = submitAlert.showAndWait();
+
+                if (result.get() == ButtonType.OK) {
+                    new Thread(submitTask).start();
+                }
+            }
+            
+            @Override
+            protected void failed() {
+                super.failed();
+                progressIndicator.setVisible(false);
+                logger.log(Level.SEVERE, null, getException());
+                showExceptionAlert(getException());
+            }
+            
+        };
+        
+        new Thread(diffTask).start();
     }
     
     @FXML
