@@ -92,6 +92,7 @@ public class TranslationAreaController implements Initializable {
     public void undoText() {
         translationTextArea.setText(textCopyProperty.get());
         textCopyProperty.set("");
+        translationChangedProperty.set(false);
     }
 
     public void setTitle(String title) {
