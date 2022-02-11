@@ -30,6 +30,7 @@ import com.javierllorente.jgettext.ParserFactory;
 import com.javierllorente.jgettext.TranslationFile;
 import com.javierllorente.jgettext.TranslationParser;
 import com.javierllorente.jgettext.exception.UnsupportedFileFormatException;
+import com.javierllorente.wlfx.dialog.GoToDialog;
 import com.javierllorente.wlfx.alert.ShortcutsAlert;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.ProcessingException;
@@ -246,6 +247,12 @@ public class BrowserController implements Initializable {
     }
     
     private void setupAccelerators(ObservableMap<KeyCombination, Runnable> accelerators) {
+        KeyCombination projectsShortcut = new KeyCodeCombination(KeyCode.DIGIT1,
+                KeyCombination.CONTROL_DOWN);
+        KeyCombination componentsShortcut = new KeyCodeCombination(KeyCode.DIGIT2,
+                KeyCombination.CONTROL_DOWN);
+        KeyCombination languagesShortcut = new KeyCodeCombination(KeyCode.DIGIT3,
+                KeyCombination.CONTROL_DOWN);
         KeyCombination submitShortcut = new KeyCodeCombination(KeyCode.S,
                 KeyCombination.CONTROL_DOWN);        
         KeyCombination previousShortcut = new KeyCodeCombination(KeyCode.COMMA,
@@ -253,6 +260,21 @@ public class BrowserController implements Initializable {
         KeyCombination nextShortcut = new KeyCodeCombination(KeyCode.PERIOD,
                 KeyCombination.CONTROL_DOWN);
         accelerators.putAll(Map.of(
+                projectsShortcut, () -> {
+                    if (!selectionPanelController.getProjects().isEmpty()) {
+                        showGoToDialog("projects");
+                    }
+                },
+                componentsShortcut, () -> {
+                    if (!selectionPanelController.getComponents().isEmpty()) {
+                        showGoToDialog("components");
+                    }
+                },
+                languagesShortcut, () -> {
+                    if (!selectionPanelController.getLanguages().isEmpty()) {
+                        showGoToDialog("languages");
+                    }
+                },
                 submitShortcut, () -> {
                     if (!submitButton.isDisabled()) {
                         handleSubmit();
@@ -269,6 +291,43 @@ public class BrowserController implements Initializable {
                     }
                 }
         ));
+    }
+
+    private void showGoToDialog(String title) {
+        ObservableList<String> data;        
+        switch (title) {
+            case "projects":
+                data = selectionPanelController.getProjects();
+                break;
+            case "components":
+                data = selectionPanelController.getComponents();
+                break;
+            case "languages":
+                data = selectionPanelController.getLanguages();
+                break;
+            default:
+                throw new AssertionError();
+        }
+        
+        GoToDialog dialog = new GoToDialog(borderPane.getScene().getWindow(),
+                App.getBundle().getString(title));
+        dialog.setData(data);
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent((t) -> {
+            switch (title) {
+                case "projects":
+                    selectionPanelController.selectProject(t);
+                    break;
+                case "components":
+                    selectionPanelController.selectComponent(t);
+                    break;
+                case "languages":
+                    selectionPanelController.selectLanguage(t);
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+        });
     }
 
     private void clearWorkArea() {

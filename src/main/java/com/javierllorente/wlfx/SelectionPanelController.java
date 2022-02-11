@@ -96,21 +96,55 @@ public class SelectionPanelController implements Initializable {
     public ReadOnlyObjectProperty<String> selectedLanguageProperty() {
         return languagesComboBox.getSelectionModel().selectedItemProperty();
     }
+        
+    public ObservableList<String> getProjects() {
+        return projectsListView.getItems();
+    }
     
     public void setProjects(ObservableList<String> ol) {
         projectsListView.setItems(ol);
     }
     
-    public void setComponents(ObservableList<String> ol) {
-        componentsListView.setItems(ol);
+    public void selectProject(String project) {
+        projectsListView.getSelectionModel().select(project);
+        projectsListView.scrollTo(project);
     }
     
     public void clearProjects() {
         projectsListView.getItems().clear();
     }
     
+    public ObservableList<String> getComponents() {
+        return componentsListView.getItems();
+    }
+    
+    public void setComponents(ObservableList<String> ol) {
+        componentsListView.setItems(ol);
+    }
+    
+    public void selectComponent(String component) {
+        componentsListView.getSelectionModel().select(component);
+        componentsListView.scrollTo(component);
+    }
+    
     public void clearComponents() {
         componentsListView.getItems().clear();
+    }
+    
+    public ObservableList<String> getLanguages() {
+        return languagesComboBox.getItems();
+    }
+    
+    public void setLanguages(ObservableList<String> ol) {
+        languagesComboBox.setItems(ol);
+    }
+    
+    public void selectLanguage(String component) {
+        languagesComboBox.getSelectionModel().select(component);
+    }
+    
+    public void clearLanguages() {
+        languagesComboBox.getItems().clear();
     }
     
     public void setWindow(Window window) {

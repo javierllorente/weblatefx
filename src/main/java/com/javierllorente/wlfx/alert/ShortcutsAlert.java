@@ -65,6 +65,9 @@ public class ShortcutsAlert extends Alert {
         });
         tableView.getColumns().addAll(labelColumn, shortcutColumn);
         List<Map.Entry<String, String>> data = Arrays.asList(
+                new AbstractMap.SimpleEntry<>(App.getBundle().getString("projects"), "Ctrl + 1"),
+                new AbstractMap.SimpleEntry<>(App.getBundle().getString("components"), "Ctrl + 2"),
+                new AbstractMap.SimpleEntry<>(App.getBundle().getString("languages"), "Ctrl + 3"),
                 new AbstractMap.SimpleEntry<>(App.getBundle().getString("previous_entry"), "Ctrl + ,"),
                 new AbstractMap.SimpleEntry<>(App.getBundle().getString("next_entry"), "Ctrl + ."),
                 new AbstractMap.SimpleEntry<>(App.getBundle().getString("quick_search"), "Ctrl + F"),
