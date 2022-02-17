@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2021 Javier Llorente <javier@opensuse.org>
+ * Copyright (C) 2020-2022 Javier Llorente <javier@opensuse.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,11 +87,20 @@
 
 .scroll-pane {
    -fx-background: white;
-   -fx-border-color: white;
+   -fx-border-color: transparent;
+}
+
+.text-area {
+    -fx-background-insets: 0;
+    -fx-background-color: transparent;
 }
 
 #sourceTextArea.text-area .content {
     -fx-background-color: #f7f7f7;
+}
+
+#metadataTextArea.text-area .content {
+    -fx-background-color: #fafafa;
 }
 
 .scroll-bar:horizontal .track,
@@ -101,7 +110,6 @@
     -fx-background-radius: 0.0em;
     -fx-border-radius: 2.0em;
 }
-
 
 .scroll-bar:horizontal .increment-button ,
 .scroll-bar:horizontal .decrement-button {
@@ -146,6 +154,7 @@
 .split-pane-divider {
     -fx-padding: 2;
     -fx-background-color: transparent;
+    -fx-border-color: transparent;
 }
 
 #shortcutsTable .column-header-background {
