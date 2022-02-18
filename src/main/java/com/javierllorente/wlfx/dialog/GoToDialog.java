@@ -28,6 +28,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Window;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -57,7 +58,7 @@ public class GoToDialog extends Dialog<String> {
         ButtonBar buttonBar = (ButtonBar) getDialogPane().lookup(".button-bar");
         buttonBar.setButtonOrder(ButtonBar.BUTTON_ORDER_WINDOWS);
 
-        textField = new TextField();
+        textField = new TextField();        
         Platform.runLater(() -> textField.requestFocus());
 
         listView = new ListView<>();
@@ -67,6 +68,7 @@ public class GoToDialog extends Dialog<String> {
 
         filteredList.addListener((ListChangeListener)(change) -> {
             listView.getSelectionModel().selectFirst();
+            listView.scrollTo(0);
         });
 
         ChangeListener<String> changeListener = ((ov, oldValue, newValue) -> {
@@ -79,6 +81,28 @@ public class GoToDialog extends Dialog<String> {
         });
 
         textField.textProperty().addListener(changeListener);
+        textField.addEventHandler(KeyEvent.KEY_PRESSED, (t) -> {
+            switch (t.getCode()) {
+                case DOWN:
+                    if (listView.getSelectionModel().getSelectedIndex() != listView.getItems().size() - 1) {
+                        listView.getSelectionModel().selectNext();
+                    } else {
+                        listView.getSelectionModel().selectFirst();
+                    }
+                    listView.scrollTo(listView.getSelectionModel().getSelectedIndex());
+                    t.consume();
+                    break;
+                case UP:
+                    if (listView.getSelectionModel().getSelectedIndex() != 0) {
+                        listView.getSelectionModel().selectPrevious();
+                    } else {
+                        listView.getSelectionModel().selectLast();
+                    }
+                    listView.scrollTo(listView.getSelectionModel().getSelectedIndex());
+                    t.consume();
+                    break;
+            }
+        });
 
         VBox vBox = new VBox();
         vBox.getChildren().add(textField);
