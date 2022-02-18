@@ -99,6 +99,11 @@
     -fx-background-color: #f7f7f7;
 }
 
+#translationTextArea.text-area:focused {
+    -fx-focus-color: #2daeda;
+    -fx-faint-focus-color: #2daeda55;
+}
+
 #metadataTextArea.text-area .content {
     -fx-background-color: #fafafa;
 }
