@@ -37,6 +37,7 @@ public class App extends Application {
 
     public static final String NAME = "WLFX";
     public static final String VERSION = "0.1";
+    public static final String USER_AGENT = NAME + "/" + VERSION;
     public static final int WINDOW_WIDTH = 1024;
     public static final int WINDOW_HEIGHT = 768;
     public static final String ICON = "/wlfx.png";
@@ -59,6 +60,7 @@ public class App extends Application {
 
     public App() throws URISyntaxException {
         translationProvider = new Weblate();
+        translationProvider.setUserAgent(USER_AGENT);
         authTokenEncryptor = new AuthTokenEncryptor();
         bundle = ResourceBundle.getBundle(applicationBundle);
     }
