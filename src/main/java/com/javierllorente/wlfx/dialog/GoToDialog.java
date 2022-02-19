@@ -101,6 +101,32 @@ public class GoToDialog extends Dialog<String> {
                     listView.scrollTo(listView.getSelectionModel().getSelectedIndex());
                     t.consume();
                     break;
+                case PAGE_DOWN:
+                    if (listView.getSelectionModel().getSelectedIndex() != listView.getItems().size() - 1) {
+                        if (listView.getSelectionModel().getSelectedIndex() + 5 < listView.getItems().size() - 1) {
+                            int index = listView.getSelectionModel().getSelectedIndex();
+                            listView.getSelectionModel().select(index + 5);
+                            listView.scrollTo(index);
+                        } else {
+                            listView.getSelectionModel().select(listView.getItems().size() - 1);
+                            listView.scrollTo(listView.getSelectionModel().getSelectedIndex());
+                        }
+                    }
+                    t.consume();
+                    break;
+                case PAGE_UP:
+                    if (listView.getSelectionModel().getSelectedIndex() != 0) {
+                        if (listView.getSelectionModel().getSelectedIndex() - 5 > 0) {
+                            int index = listView.getSelectionModel().getSelectedIndex() - 5;
+                            listView.getSelectionModel().select(index);
+                            listView.scrollTo(index);
+                        } else {
+                            listView.getSelectionModel().select(0);
+                            listView.scrollTo(0);
+                        }
+                    }
+                    t.consume();
+                    break;
             }
         });
 
