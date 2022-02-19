@@ -109,7 +109,7 @@ public class GoToDialog extends Dialog<String> {
                     if (selected != last) {
                         if (selected + 5 < last) {
                             listView.getSelectionModel().select(selected + 5);
-                            listView.scrollTo(selected);
+                            listView.scrollTo(selected + 5);
                         } else {
                             listView.getSelectionModel().select(last);
                             listView.scrollTo(last);
