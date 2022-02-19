@@ -81,10 +81,14 @@ public class GoToDialog extends Dialog<String> {
         });
 
         textField.textProperty().addListener(changeListener);
+        
         textField.addEventHandler(KeyEvent.KEY_PRESSED, (t) -> {
+            int selected = listView.getSelectionModel().getSelectedIndex();
+            int last = listView.getItems().size() - 1;
+
             switch (t.getCode()) {
                 case DOWN:
-                    if (listView.getSelectionModel().getSelectedIndex() != listView.getItems().size() - 1) {
+                    if (selected != last) {
                         listView.getSelectionModel().selectNext();
                     } else {
                         listView.getSelectionModel().selectFirst();
@@ -93,7 +97,7 @@ public class GoToDialog extends Dialog<String> {
                     t.consume();
                     break;
                 case UP:
-                    if (listView.getSelectionModel().getSelectedIndex() != 0) {
+                    if (selected != 0) {
                         listView.getSelectionModel().selectPrevious();
                     } else {
                         listView.getSelectionModel().selectLast();
@@ -102,24 +106,22 @@ public class GoToDialog extends Dialog<String> {
                     t.consume();
                     break;
                 case PAGE_DOWN:
-                    if (listView.getSelectionModel().getSelectedIndex() != listView.getItems().size() - 1) {
-                        if (listView.getSelectionModel().getSelectedIndex() + 5 < listView.getItems().size() - 1) {
-                            int index = listView.getSelectionModel().getSelectedIndex();
-                            listView.getSelectionModel().select(index + 5);
-                            listView.scrollTo(index);
+                    if (selected != last) {
+                        if (selected + 5 < last) {
+                            listView.getSelectionModel().select(selected + 5);
+                            listView.scrollTo(selected);
                         } else {
-                            listView.getSelectionModel().select(listView.getItems().size() - 1);
-                            listView.scrollTo(listView.getSelectionModel().getSelectedIndex());
+                            listView.getSelectionModel().select(last);
+                            listView.scrollTo(last);
                         }
                     }
                     t.consume();
                     break;
                 case PAGE_UP:
-                    if (listView.getSelectionModel().getSelectedIndex() != 0) {
-                        if (listView.getSelectionModel().getSelectedIndex() - 5 > 0) {
-                            int index = listView.getSelectionModel().getSelectedIndex() - 5;
-                            listView.getSelectionModel().select(index);
-                            listView.scrollTo(index);
+                    if (selected != 0) {
+                        if (selected - 5 > 0) {
+                            listView.getSelectionModel().select(selected - 5);
+                            listView.scrollTo(selected - 5);
                         } else {
                             listView.getSelectionModel().select(0);
                             listView.scrollTo(0);
