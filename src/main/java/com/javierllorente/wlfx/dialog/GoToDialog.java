@@ -39,6 +39,9 @@ import org.kordamp.ikonli.javafx.FontIcon;
  */
 public class GoToDialog extends Dialog<String> {
 
+    public static final String PROJECTS = "projects";
+    public static final String COMPONENTS = "components";
+    public static final String LANGUAGES = "languages";
     private final ListView<String> listView;
     private final ObservableList<String> list;
     private final TextField textField;

@@ -262,17 +262,17 @@ public class BrowserController implements Initializable {
         accelerators.putAll(Map.of(
                 projectsShortcut, () -> {
                     if (!selectionPanelController.getProjects().isEmpty()) {
-                        showGoToDialog("projects");
+                        showGoToDialog(GoToDialog.PROJECTS);
                     }
                 },
                 componentsShortcut, () -> {
                     if (!selectionPanelController.getComponents().isEmpty()) {
-                        showGoToDialog("components");
+                        showGoToDialog(GoToDialog.COMPONENTS);
                     }
                 },
                 languagesShortcut, () -> {
                     if (!selectionPanelController.getLanguages().isEmpty()) {
-                        showGoToDialog("languages");
+                        showGoToDialog(GoToDialog.LANGUAGES);
                     }
                 },
                 submitShortcut, () -> {
@@ -296,13 +296,13 @@ public class BrowserController implements Initializable {
     private void showGoToDialog(String title) {
         ObservableList<String> data;        
         switch (title) {
-            case "projects":
+            case GoToDialog.PROJECTS:
                 data = selectionPanelController.getProjects();
                 break;
-            case "components":
+            case GoToDialog.COMPONENTS:
                 data = selectionPanelController.getComponents();
                 break;
-            case "languages":
+            case GoToDialog.LANGUAGES:
                 data = selectionPanelController.getLanguages();
                 break;
             default:
@@ -315,13 +315,13 @@ public class BrowserController implements Initializable {
         Optional<String> result = dialog.showAndWait();
         result.ifPresent((t) -> {
             switch (title) {
-                case "projects":
+                case GoToDialog.PROJECTS:
                     selectionPanelController.selectProject(t);
                     break;
-                case "components":
+                case GoToDialog.COMPONENTS:
                     selectionPanelController.selectComponent(t);
                     break;
-                case "languages":
+                case GoToDialog.LANGUAGES:
                     selectionPanelController.selectLanguage(t);
                     break;
                 default:
