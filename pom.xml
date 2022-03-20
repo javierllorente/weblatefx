@@ -64,6 +64,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.2.0</version>
                 <configuration>
+                    <outputDirectory>${project.build.directory}/dist/</outputDirectory>
                     <archive>
                         <manifest>
                             <mainClass>com.javierllorente.wlfx.App</mainClass>
@@ -83,19 +84,19 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/lib/</outputDirectory>
+                            <outputDirectory>${project.build.directory}/dist/lib/</outputDirectory>
                             <includeScope>runtime</includeScope>
                             <excludeGroupIds>org.openjfx</excludeGroupIds>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>copy-modules</id>
+                        <id>copy-javafx</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/mods/</outputDirectory>
+                            <outputDirectory>${project.build.directory}/javafx/</outputDirectory>
                             <includeScope>runtime</includeScope>
                             <includeGroupIds>org.openjfx</includeGroupIds>
                         </configuration>
@@ -130,13 +131,13 @@
                             <arguments>
                                 <argument>--verbose</argument>
                                 <argument>--input</argument>
-                                <argument>${project.build.directory}</argument>
+                                <argument>${project.build.directory}/dist/</argument>
                                 <argument>--main-jar</argument>
                                 <argument>${project.build.finalName}.jar</argument>
                                 <argument>--name</argument>
                                 <argument>${project.artifactId}</argument>
                                 <argument>--module-path</argument>
-                                <argument>${java.home}/jmods:${project.build.directory}/mods:${project.build.directory}/lib</argument>
+                                <argument>${project.build.directory}/javafx/:${project.build.directory}/dist/lib/</argument>
                                 <argument>--add-modules</argument>
                                 <argument>javafx.controls,javafx.fxml,java.base,java.logging,java.prefs,jdk.crypto.ec</argument>
                                 <argument>--icon</argument>
@@ -144,6 +145,8 @@
                                 <argument>--linux-shortcut</argument>
                                 <argument>--linux-menu-group</argument>
                                 <argument>Development;Translation;</argument>
+                                <argument>--dest</argument>
+                                <argument>${project.build.directory}</argument>
                             </arguments>
                         </configuration>
                     </execution>
