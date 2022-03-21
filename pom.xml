@@ -130,6 +130,12 @@
                             </environmentVariables>
                             <arguments>
                                 <argument>--verbose</argument>
+                                <argument>--type</argument>
+                                <argument>rpm</argument>
+                                <argument>--linux-rpm-license-type</argument>
+                                <argument>Apache-2.0</argument>
+                                <argument>--license-file</argument>
+                                <argument>../LICENSE</argument>
                                 <argument>--input</argument>
                                 <argument>${project.build.directory}/dist/</argument>
                                 <argument>--main-jar</argument>
