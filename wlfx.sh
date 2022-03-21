@@ -4,9 +4,9 @@
 #
 BASE_DIR=target
 APP_VERSION=1.0-SNAPSHOT
-APP_JAR=$BASE_DIR/wlfx-$APP_VERSION.jar
-JAVAFX_HOME=/usr/share/openjfx/lib
-LIB_DIR=$BASE_DIR/lib/
+APP_JAR=$BASE_DIR/dist/wlfx-$APP_VERSION.jar
+JAVAFX_HOME=$BASE_DIR/javafx
+LIB_DIR=$BASE_DIR/dist/lib
 
 MODULE_PATH=$JAVAFX_HOME:$LIB_DIR
 MODULES=javafx.controls,javafx.fxml,org.kordamp.ikonli.javafx
