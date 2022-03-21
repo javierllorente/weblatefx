@@ -2,8 +2,8 @@
 #
 # Script for launching WLFX
 #
-base_dir=target
 name=wlfx
+base_dir=target
 jar_filepath=`ls $base_dir/dist/$name*.jar`
 jar_filename=$(basename -- "$jar_filepath")
 version=${jar_filename:${#name}+1:-4}
