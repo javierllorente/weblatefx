@@ -64,7 +64,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.2.0</version>
                 <configuration>
-                    <outputDirectory>${project.build.directory}/dist/</outputDirectory>
+                    <outputDirectory>${project.build.directory}/dist</outputDirectory>
                     <archive>
                         <manifest>
                             <mainClass>com.javierllorente.wlfx.App</mainClass>
@@ -84,7 +84,7 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/dist/lib/</outputDirectory>
+                            <outputDirectory>${project.build.directory}/dist/lib</outputDirectory>
                             <includeScope>runtime</includeScope>
                             <excludeGroupIds>org.openjfx</excludeGroupIds>
                         </configuration>
@@ -96,7 +96,7 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/javafx/</outputDirectory>
+                            <outputDirectory>${project.build.directory}/javafx</outputDirectory>
                             <includeScope>runtime</includeScope>
                             <includeGroupIds>org.openjfx</includeGroupIds>
                         </configuration>
