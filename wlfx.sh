@@ -2,17 +2,17 @@
 #
 # Script for launching WLFX
 #
-BASE_DIR=target
-APP_VERSION=1.0-SNAPSHOT
-APP_JAR=$BASE_DIR/dist/wlfx-$APP_VERSION.jar
-JAVAFX_HOME=$BASE_DIR/javafx
-LIB_DIR=$BASE_DIR/dist/lib
+base_dir=target
+app_version=1.0-SNAPSHOT
+app_jar=$base_dir/dist/wlfx-$app_version.jar
+JAVAFX_HOME=$base_dir/javafx
+lib_dir=$base_dir/dist/lib
 
-MODULE_PATH=$JAVAFX_HOME:$LIB_DIR
-MODULES=javafx.controls,javafx.fxml,org.kordamp.ikonli.javafx
-MODULES+=,com.javierllorente.jwl,com.javierllorente.jgettext
-MODULES+=,jakarta.annotation,jersey.hk2,org.jvnet.mimepull,jakarta.activation
-MODULES+=,org.glassfish.json.jaxrs,org.glassfish.hk2.api
+module_path=$JAVAFX_HOME:$lib_dir
+modules=javafx.controls,javafx.fxml,org.kordamp.ikonli.javafx
+modules+=,com.javierllorente.jwl,com.javierllorente.jgettext
+modules+=,jakarta.annotation,jersey.hk2,org.jvnet.mimepull,jakarta.activation
+modules+=,org.glassfish.json.jaxrs,org.glassfish.hk2.api
 
-java --module-path $MODULE_PATH --add-modules $MODULES\
- --add-opens org.glassfish.json.jaxrs/org.glassfish.json.jaxrs=org.glassfish.hk2.utilities -jar $APP_JAR
+java --module-path $module_path --add-modules $modules\
+ --add-opens org.glassfish.json.jaxrs/org.glassfish.json.jaxrs=org.glassfish.hk2.utilities -jar $app_jar
