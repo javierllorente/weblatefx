@@ -8,8 +8,21 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <jpackage.path>/usr/lib64/jvm/java-17-openjdk-17/bin/jpackage</jpackage.path>
+        <jpackage.path>/usr/lib64/jvm/java-17-openjdk-17/bin/jpackage</jpackage.path>        
     </properties>
+    <developers>
+        <developer>
+            <name>Javier Llorente</name>
+            <email>javier@opensuse.org</email>
+        </developer>
+    </developers>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>manual</distribution>
+        </license>
+    </licenses>
     <dependencies>
         <dependency>
             <groupId>org.openjfx</groupId>
