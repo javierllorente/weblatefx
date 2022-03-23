@@ -22,6 +22,7 @@ module_path=:$JAVAFX_HOME:$lib_dir
 modules=javafx.controls,javafx.fxml,java.base,java.logging,java.prefs,jdk.crypto.ec
 
 echo "Building package..."
-$jpackage_path/jpackage --verbose --type rpm --app-version $version --linux-app-release $release --linux-rpm-license-type $license_type --license-file $license_file \
+$jpackage_path/jpackage --verbose --type rpm --app-version $version --linux-app-release $release \
+--linux-rpm-license-type $license_type --license-file $license_file \
 --input $dist_dir --main-jar $jar_filename --name $name --module-path $module_path --add-modules $modules \
 --icon $name.png --linux-shortcut --linux-menu-group $menu_group --dest $build_dir
