@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Builds a custom runtime image with the required JavaFX modules
+# Assembles a custom runtime image with the required JavaFX modules
 #
 JAVA_HOME=/usr/lib64/jvm/java-17-openjdk-17
 build_dir=../target

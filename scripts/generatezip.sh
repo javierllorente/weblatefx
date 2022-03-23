@@ -36,7 +36,7 @@ case $1 in
         zip_name=$zip_name-jre.zip
         module_path=$lib_dir
         popd
-        ./buildruntime.sh
+        ./assembleruntime.sh
         pushd $build_dir
         runtime_dir=runtime
         java_bin=$runtime_dir/bin/
