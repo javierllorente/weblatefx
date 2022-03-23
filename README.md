@@ -16,3 +16,7 @@ Dependencies
 Build & Run with Maven
 ------------
 `mvn javafx:run`
+
+Screenshot
+------------
+![Main window](screenshot.png)
