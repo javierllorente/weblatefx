@@ -13,7 +13,7 @@ else
 fi
 
 name=wlfx
-build_dir=./target
+build_dir=../target
 jar_filepath=`ls $build_dir/dist/$name*.jar`
 jar_filename=$(basename -- "$jar_filepath")
 version=${jar_filename:${#name}+1:-4}

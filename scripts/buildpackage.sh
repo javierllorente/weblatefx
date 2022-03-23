@@ -3,11 +3,12 @@
 # Builds a rpm package
 #
 name=wlfx
+base_dir=..
 license_type=Apache-2.0
-license_file=LICENSE
+license_file=$base_dir/LICENSE
 menu_group="Development;Translation;"
 
-build_dir=./target
+build_dir=$base_dir/target
 lib_dir=$build_dir/dist/lib
 dist_dir=$build_dir/dist
 jar_filepath=`ls $dist_dir/$name*.jar`
@@ -25,4 +26,4 @@ echo "Building package..."
 $jpackage_path/jpackage --verbose --type rpm --app-version $version --linux-app-release $release \
 --linux-rpm-license-type $license_type --license-file $license_file \
 --input $dist_dir --main-jar $jar_filename --name $name --module-path $module_path --add-modules $modules \
---icon $name.png --linux-shortcut --linux-menu-group $menu_group --dest $build_dir
+--icon $base_dir/$name.png --linux-shortcut --linux-menu-group $menu_group --dest $build_dir
