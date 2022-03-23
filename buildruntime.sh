@@ -11,5 +11,5 @@ module_path=$JAVAFX_HOME
 modules=javafx.controls,javafx.fxml,java.base,java.logging,java.prefs,jdk.crypto.ec
 
 echo "Building runtime image..."
-$jlink_path/jlink --verbose --strip-debug --no-header-files --no-man-pages --module-path $module_path --add-modules $modules\
- --output $build_dir/runtime/
+$jlink_path/jlink --verbose --strip-debug --no-header-files --no-man-pages\
+ --module-path $module_path --add-modules $modules --output $build_dir/runtime/
