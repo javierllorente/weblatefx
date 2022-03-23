@@ -13,6 +13,7 @@ dist_dir=$build_dir/dist
 jar_filepath=`ls $dist_dir/$name*.jar`
 jar_filename=$(basename -- "$jar_filepath")
 version=${jar_filename:${#name}+1:-4}
+release=0
 
 JAVA_HOME=/usr/lib64/jvm/java-17-openjdk-17
 JAVAFX_HOME=$build_dir/javafx
@@ -21,6 +22,6 @@ module_path=:$JAVAFX_HOME:$lib_dir
 modules=javafx.controls,javafx.fxml,java.base,java.logging,java.prefs,jdk.crypto.ec
 
 echo "Building package..."
-$jpackage_path/jpackage --verbose --type rpm --app-version $version --linux-rpm-license-type $license_type --license-file $license_file \
+$jpackage_path/jpackage --verbose --type rpm --app-version $version --linux-app-release $release --linux-rpm-license-type $license_type --license-file $license_file \
 --input $dist_dir --main-jar $jar_filename --name $name --module-path $module_path --add-modules $modules \
 --icon $name.png --linux-shortcut --linux-menu-group $menu_group --dest $build_dir

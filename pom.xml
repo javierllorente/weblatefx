@@ -147,6 +147,8 @@
                                 <argument>rpm</argument>
                                 <argument>--app-version</argument>
                                 <argument>${project.version}</argument>
+                                <argument>--linux-app-release</argument>
+                                <argument>0</argument>
                                 <argument>--linux-rpm-license-type</argument>
                                 <argument>Apache-2.0</argument>
                                 <argument>--license-file</argument>
