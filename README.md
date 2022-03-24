@@ -17,7 +17,7 @@ Build & Run with Maven
 
 Keyboard shortcuts
 ------------
-|             |             |
+| Task        | Shortcut    |
 | ----------- | ----------- |
 | Quick access to projects | Ctrl + 1 |
 | Quick access to components | Ctrl + 2 | 
