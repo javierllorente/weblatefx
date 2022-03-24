@@ -4,6 +4,7 @@
     <groupId>com.javierllorente</groupId>
     <artifactId>wlfx</artifactId>
     <version>0.9.9</version>
+    <packaging>jar</packaging>
     <name>wlfx</name>
     <description>A JavaFX-based Weblate client</description>
     <properties>
