@@ -4,6 +4,8 @@
     <groupId>com.javierllorente</groupId>
     <artifactId>wlfx</artifactId>
     <version>0.9.9</version>
+    <name>wlfx</name>
+    <description>A JavaFX-based Weblate client</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
