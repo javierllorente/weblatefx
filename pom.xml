@@ -8,7 +8,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <jpackage.path>/usr/lib64/jvm/java-17-openjdk-17/bin/jpackage</jpackage.path>        
     </properties>
     <developers>
         <developer>
@@ -128,48 +127,40 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
+                <configuration>
+                    <workingDirectory>scripts</workingDirectory>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>create-package</id>
-                        <!--<phase>package</phase>-->
+                        <id>build-package</id>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>${jpackage.path}</executable>
-                            <workingDirectory>${project.build.directory}</workingDirectory>
-                            <environmentVariables>
-                                <JAVA_HOME>${java.home}</JAVA_HOME>
-                            </environmentVariables>
+                            <executable>./buildpackage.sh</executable>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-zip-jre</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>./generatezip.sh</executable>
                             <arguments>
-                                <argument>--verbose</argument>
-                                <argument>--type</argument>
-                                <argument>rpm</argument>
-                                <argument>--app-version</argument>
-                                <argument>${project.version}</argument>
-                                <argument>--linux-app-release</argument>
-                                <argument>0</argument>
-                                <argument>--linux-rpm-license-type</argument>
-                                <argument>Apache-2.0</argument>
-                                <argument>--license-file</argument>
-                                <argument>../LICENSE</argument>
-                                <argument>--input</argument>
-                                <argument>${project.build.directory}/dist/</argument>
-                                <argument>--main-jar</argument>
-                                <argument>${project.build.finalName}.jar</argument>
-                                <argument>--name</argument>
-                                <argument>${project.artifactId}</argument>
-                                <argument>--module-path</argument>
-                                <argument>${project.build.directory}/javafx/:${project.build.directory}/dist/lib/</argument>
-                                <argument>--add-modules</argument>
-                                <argument>javafx.controls,javafx.fxml,java.base,java.logging,java.prefs,jdk.crypto.ec</argument>
-                                <argument>--icon</argument>
-                                <argument>../${project.artifactId}.png</argument>
-                                <argument>--linux-shortcut</argument>
-                                <argument>--linux-menu-group</argument>
-                                <argument>Development;Translation;</argument>
-                                <argument>--dest</argument>
-                                <argument>${project.build.directory}</argument>
+                                <argument>--jre</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-zip-nojre</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>./generatezip.sh</executable>
+                            <arguments>
+                                <argument>--no-jre</argument>
                             </arguments>
                         </configuration>
                     </execution>
