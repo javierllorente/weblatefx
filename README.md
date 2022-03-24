@@ -33,7 +33,3 @@ Keyboard shortcuts
 Screenshot
 ------------
 ![Main window](screenshot.png)
-
-
-
-Copyright (C) 2020-2022 Javier Llorente javier@opensuse.org
