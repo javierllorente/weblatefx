@@ -24,7 +24,7 @@ launcher=$name.sh
 
 lib_dir=lib
 modules=javafx.controls,javafx.fxml,org.kordamp.ikonli.javafx
-modules+=,com.javierllorente.jwl,com.javierllorente.jgettext
+modules+=,com.javierllorente.jweblate,com.javierllorente.jgettext
 modules+=,jakarta.annotation,jersey.hk2,org.jvnet.mimepull,jakarta.activation
 modules+=,org.glassfish.json.jaxrs,org.glassfish.hk2.api
 
