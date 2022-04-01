@@ -1,4 +1,4 @@
-# weblatefx
+# WeblateFX
 WeblateFX is a JavaFX-based Weblate client
 
 
