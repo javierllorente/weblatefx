@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.javierllorente.wlfx;
+package com.javierllorente.weblatefx;
 
 import com.javierllorente.jgettext.TranslationParserFactory;
-import com.javierllorente.wlfx.dialog.LoginDialog;
-import com.javierllorente.wlfx.dialog.SettingsDialog;
-import com.javierllorente.wlfx.alert.ExceptionAlert;
-import com.javierllorente.wlfx.alert.UncommittedChangesAlert;
-import com.javierllorente.wlfx.alert.SubmitAlert;
+import com.javierllorente.weblatefx.dialog.LoginDialog;
+import com.javierllorente.weblatefx.dialog.SettingsDialog;
+import com.javierllorente.weblatefx.alert.ExceptionAlert;
+import com.javierllorente.weblatefx.alert.UncommittedChangesAlert;
+import com.javierllorente.weblatefx.alert.SubmitAlert;
 import com.github.difflib.DiffUtils;
 import com.github.difflib.UnifiedDiffUtils;
 import com.github.difflib.patch.Patch;
@@ -29,8 +29,8 @@ import com.javierllorente.jgettext.ParserFactory;
 import com.javierllorente.jgettext.TranslationFile;
 import com.javierllorente.jgettext.TranslationParser;
 import com.javierllorente.jgettext.exception.UnsupportedFileFormatException;
-import com.javierllorente.wlfx.dialog.GoToDialog;
-import com.javierllorente.wlfx.alert.ShortcutsAlert;
+import com.javierllorente.weblatefx.dialog.GoToDialog;
+import com.javierllorente.weblatefx.alert.ShortcutsAlert;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.ServerErrorException;
@@ -536,7 +536,7 @@ public class BrowserController implements Initializable {
                 + System.getProperty("java.runtime.version") + "\n"
                 + "JavaFX: " + System.getProperty("javafx.runtime.version") + "\n"
                 + App.getBundle().getString("about.libraries")
-                +  "jwl, jgettext, java-diff-utils, "
+                +  "jweblate, jgettext, java-diff-utils, "
                 + "ikonli-javafx, ikonli-icomoon-pack" + "\n"
                 + App.getBundle().getString("about.locale") + Locale.getDefault() + "\n\n"
                 + App.getBundle().getString("about.copyright") + "\n"

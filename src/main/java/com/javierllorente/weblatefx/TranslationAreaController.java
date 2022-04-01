@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.javierllorente.wlfx;
+package com.javierllorente.weblatefx;
 
 import com.javierllorente.jgettext.PoElement;
 import com.javierllorente.jgettext.TranslationElement;

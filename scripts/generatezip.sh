@@ -12,7 +12,7 @@ else
     exit 1
 fi
 
-name=wlfx
+name=weblatefx
 build_dir=../target
 jar_filepath=`ls $build_dir/dist/$name*.jar`
 jar_filename=$(basename -- "$jar_filepath")
@@ -63,7 +63,7 @@ cp ../$name.png $zip_dir/
 cat > $zip_dir/$launcher <<EOF
 #!/bin/bash
 #
-# Script for launching WLFX
+# Script for launching WeblateFX
 #
 
 $java_bin --module-path $module_path --add-modules $modules\

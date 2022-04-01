@@ -1,11 +1,11 @@
-# wlfx
-WLFX is a JavaFX-based Weblate client
+# weblatefx
+WeblateFX is a JavaFX-based Weblate client
 
 
 Dependencies
 ------------
 * JavaFX 11+
-* jwl (from https://github.com/javierllorente/jwl)
+* jweblate (from https://github.com/javierllorente/jweblate)
 * jgettext (from https://github.com/javierllorente/jgettext)
 * ikonli-javafx
 * ikonli-icomoon-pack

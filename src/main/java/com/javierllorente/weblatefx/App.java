@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.javierllorente.wlfx;
+package com.javierllorente.weblatefx;
 
-import com.javierllorente.jwl.TranslationProvider;
-import com.javierllorente.wlfx.crypto.AuthTokenEncryptor;
-import com.javierllorente.jwl.Weblate;
+import com.javierllorente.jweblate.TranslationProvider;
+import com.javierllorente.weblatefx.crypto.AuthTokenEncryptor;
+import com.javierllorente.jweblate.Weblate;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -34,12 +34,12 @@ import javafx.scene.image.Image;
  */
 public class App extends Application {
 
-    public static final String NAME = "WLFX";
+    public static final String NAME = "WeblateFX";
     public static final String VERSION = "0.9.9";
     public static final String USER_AGENT = NAME + "/" + VERSION;
     public static final int WINDOW_WIDTH = 1024;
     public static final int WINDOW_HEIGHT = 768;
-    public static final String ICON = "/wlfx.png";
+    public static final String ICON = "/weblatefx.png";
     
     public static final String TRANSLATOR_NAME = "translator_name";
     public static final String TRANSLATOR_EMAIL = "translator_email";

@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# Script for launching WLFX
+# Script for launching WeblateFX
 #
-name=wlfx
+name=weblatefx
 base_dir=target
 jar_filepath=`ls $base_dir/dist/$name*.jar`
 jar_filename=$(basename -- "$jar_filepath")

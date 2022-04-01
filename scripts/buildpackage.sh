@@ -2,7 +2,7 @@
 #
 # Builds a rpm package
 #
-name=wlfx
+name=weblatefx
 base_dir=..
 license_type=Apache-2.0
 license_file=$base_dir/LICENSE

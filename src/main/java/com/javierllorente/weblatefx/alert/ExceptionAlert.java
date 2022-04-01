@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.javierllorente.wlfx.alert;
+package com.javierllorente.weblatefx.alert;
 
-import com.javierllorente.wlfx.App;
+import com.javierllorente.weblatefx.App;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import javafx.scene.control.Alert;

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.javierllorente.wlfx;
+package com.javierllorente.weblatefx;
 
-import com.javierllorente.wlfx.alert.UncommittedChangesAlert;
+import com.javierllorente.weblatefx.alert.UncommittedChangesAlert;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListCell;

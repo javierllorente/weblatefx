@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.javierllorente.wlfx.dialog;
+package com.javierllorente.weblatefx.dialog;
 
-import com.javierllorente.wlfx.App;
+import com.javierllorente.weblatefx.App;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
