@@ -1,6 +1,8 @@
 # WeblateFX
 WeblateFX is a JavaFX-based Weblate client
 
+:warning: Please note that WeblateFX works with translations as files, so only one 
+translator should work on a file to avoid overwriting other's work. Currently, Weblate only supports locking translations at the component level and not at the file level.
 
 Dependencies
 ------------
